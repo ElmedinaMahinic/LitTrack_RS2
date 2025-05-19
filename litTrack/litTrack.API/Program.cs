@@ -1,4 +1,10 @@
+using litTrack.API.Filters;
+using litTrack.Services.Auth;
 using litTrack.Services.Database;
+using litTrack.Services.Interfaces;
+using litTrack.Services.ServicesImplementation;
+using litTrack.Services.Validators.Interfaces;
+using litTrack.Services.Validators.Implementation;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +12,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
+builder.Services.AddTransient<IAutorService, AutorService>();
+builder.Services.AddTransient<IZanrService, ZanrService>();
+builder.Services.AddTransient<IUlogaService, UlogaService>();
+builder.Services.AddTransient<ICiljnaGrupaService, CiljnaGrupaService>();
+
+builder.Services.AddTransient<IAutorValidator, AutorValidator>();
+builder.Services.AddTransient<ICiljnaGrupaValidator, CiljnaGrupaValidator>();
+builder.Services.AddTransient<IUlogaValidator, UlogaValidator>();
+builder.Services.AddTransient<IZanrValidator, ZanrValidator>();
+
+builder.Services.AddTransient<IPasswordService, PasswordService>();
+
+builder.Services.AddControllers(x=>
+{
+    x.Filters.Add<ExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

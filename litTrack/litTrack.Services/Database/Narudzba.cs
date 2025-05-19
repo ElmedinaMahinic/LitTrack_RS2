@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace litTrack.Services.Database;
 
-public partial class Narudzba
+public partial class Narudzba : ISoftDelete
 {
     public int NarudzbaId { get; set; }
 

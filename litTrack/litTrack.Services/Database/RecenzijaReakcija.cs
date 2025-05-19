@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace litTrack.Services.Database;
 
-public partial class RecenzijaReakcija
+public partial class RecenzijaReakcija : ISoftDelete
 {
     public int RecenzijaReakcijaId { get; set; }
 
@@ -18,4 +18,8 @@ public partial class RecenzijaReakcija
     public virtual Korisnik Korisnik { get; set; } = null!;
 
     public virtual Recenzija Recenzija { get; set; } = null!;
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime? VrijemeBrisanja { get; set; }
 }
