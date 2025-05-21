@@ -95,7 +95,7 @@ namespace litTrack.Services.BaseServicesImplementation
             }
         }
 
-        public async Task<TModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var entity = await Context.Set<TDbEntity>().FindAsync(id, cancellationToken);
 
