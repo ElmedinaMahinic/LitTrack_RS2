@@ -18,12 +18,14 @@ builder.Services.AddTransient<IZanrService, ZanrService>();
 builder.Services.AddTransient<IUlogaService, UlogaService>();
 builder.Services.AddTransient<ICiljnaGrupaService, CiljnaGrupaService>();
 builder.Services.AddTransient<IKnjigaService, KnjigaService>();
+builder.Services.AddTransient<IKorisnikService, KorisnikService>();
 
 builder.Services.AddTransient<IAutorValidator, AutorValidator>();
 builder.Services.AddTransient<ICiljnaGrupaValidator, CiljnaGrupaValidator>();
 builder.Services.AddTransient<IUlogaValidator, UlogaValidator>();
 builder.Services.AddTransient<IZanrValidator, ZanrValidator>();
 builder.Services.AddTransient<IKnjigaValidator, KnjigaValidator>();
+builder.Services.AddTransient<IKorisnikValidator, KorisnikValidator>();
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 
