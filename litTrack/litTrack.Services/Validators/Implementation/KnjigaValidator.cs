@@ -37,8 +37,8 @@ namespace litTrack.Services.Validators.Implementation
             if (knjiga.GodinaIzdavanja > DateTime.Today.Year)
                 throw new UserException("Godina izdavanja ne može biti u budućnosti.");
 
-            if (knjiga.Cijena <= 0)
-                throw new UserException("Cijena mora biti veća od 0.");
+            if (knjiga.GodinaIzdavanja < 1450)
+                throw new UserException("Godina izdavanja ne može biti manja od 1450.");
 
             if (knjiga.Zanrovi is null || knjiga.Zanrovi.Count == 0)
                 throw new UserException("Potrebno je odabrati barem jedan žanr.");
@@ -65,8 +65,8 @@ namespace litTrack.Services.Validators.Implementation
             if (knjiga.GodinaIzdavanja > DateTime.Today.Year)
                 throw new UserException("Godina izdavanja ne može biti u budućnosti.");
 
-            if (knjiga.Cijena <= 0)
-                throw new UserException("Cijena mora biti veća od 0.");
+            if (knjiga.GodinaIzdavanja < 1450)
+                throw new UserException("Godina izdavanja ne može biti manja od 1450.");
 
             if (knjiga.Zanrovi != null)
             {
