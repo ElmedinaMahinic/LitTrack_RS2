@@ -13,6 +13,7 @@ namespace litTrack.Model.Requests
         public string Naziv { get; set; } = string.Empty;
 
         [MaxLength(200, ErrorMessage = "Opis može imati najviše 200 karaktera.")]
+        [MinLength(1, ErrorMessage = "Opis ne može biti prazan.")]
         public string? Opis { get; set; }
 
         public byte[]? Slika { get; set; }

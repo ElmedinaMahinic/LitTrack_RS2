@@ -19,6 +19,15 @@ builder.Services.AddTransient<IUlogaService, UlogaService>();
 builder.Services.AddTransient<ICiljnaGrupaService, CiljnaGrupaService>();
 builder.Services.AddTransient<IKnjigaService, KnjigaService>();
 builder.Services.AddTransient<IKorisnikService, KorisnikService>();
+builder.Services.AddTransient<IArhivaService, ArhivaService>();
+builder.Services.AddTransient<IOcjenaService, OcjenaService>();
+builder.Services.AddTransient<IObavijestService, ObavijestService>();
+builder.Services.AddTransient<INacinPlacanjaService, NacinPlacanjaService>();
+builder.Services.AddTransient<IPreporukaService, PreporukaService>();
+builder.Services.AddTransient<IMojaListumService, MojaListumService>();
+builder.Services.AddTransient<ILicnaPreporukaService, LicnaPreporukaService>();
+builder.Services.AddTransient<IRecenzijaService, RecenzijaService>();
+builder.Services.AddTransient<IRecenzijaOdgovorService, RecenzijaOdgovorService>();
 
 builder.Services.AddTransient<IAutorValidator, AutorValidator>();
 builder.Services.AddTransient<ICiljnaGrupaValidator, CiljnaGrupaValidator>();
@@ -26,6 +35,8 @@ builder.Services.AddTransient<IUlogaValidator, UlogaValidator>();
 builder.Services.AddTransient<IZanrValidator, ZanrValidator>();
 builder.Services.AddTransient<IKnjigaValidator, KnjigaValidator>();
 builder.Services.AddTransient<IKorisnikValidator, KorisnikValidator>();
+builder.Services.AddTransient<ILicnaPreporukaValidator, LicnaPreporukaValidator>();
+builder.Services.AddTransient<IRecenzijaValidator, RecenzijaValidator>();
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 

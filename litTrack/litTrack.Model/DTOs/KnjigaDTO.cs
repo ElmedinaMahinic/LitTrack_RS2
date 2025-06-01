@@ -20,7 +20,7 @@ namespace litTrack.Model.DTOs
 
         public decimal Cijena { get; set; }
 
-        public string AutorNaziv { get; set; } = string.Empty;
+        public string? AutorNaziv { get; set; } 
 
         public List<string> Zanrovi { get; set; } = new List<string>();
 

@@ -23,13 +23,13 @@ namespace litTrack.Services.ServicesImplementation
         private readonly ICiljnaGrupaValidator _ciljnaGrupaValidator;
         private readonly IAutorValidator _autorValidator;
         private readonly IKnjigaValidator _knjigaValidator;
-        public KnjigaService(_210078Context context, IMapper mapper, IZanrValidator validator,
+        public KnjigaService(_210078Context context, IMapper mapper, IZanrValidator zanrValidator,
             ICiljnaGrupaValidator ciljnaGrupaValidator, IKnjigaValidator knjigaValidator,
             IAutorValidator autorValidator
          )
             : base(context, mapper)
         {
-            _zanrValidator = validator;
+            _zanrValidator = zanrValidator;
             _ciljnaGrupaValidator = ciljnaGrupaValidator;
             _knjigaValidator = knjigaValidator;
             _autorValidator = autorValidator;

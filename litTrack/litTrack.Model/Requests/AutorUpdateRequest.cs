@@ -18,6 +18,7 @@ namespace litTrack.Model.Requests
         public string Prezime { get; set; } = string.Empty;
 
         [MaxLength(1000, ErrorMessage = "Biografija može imati najviše 1000 karaktera.")]
+        [MinLength(1, ErrorMessage = "Biografija ne može biti prazna.")]
         public string? Biografija { get; set; }
     }
 }

@@ -58,9 +58,11 @@ namespace litTrack.Services.ServicesImplementation
                 query = query.Where(k => k.Email.ToLower().Contains(searchObject.Email.ToLower()));
 
             if (!string.IsNullOrWhiteSpace(searchObject.KorisnickoIme))
-                query = query.Where(k =>
-                    k.KorisnickoIme.Equals(searchObject.KorisnickoIme,
-                                           StringComparison.OrdinalIgnoreCase));
+            {
+                var korisnickoImeLower = searchObject.KorisnickoIme.ToLower();
+                query = query.Where(x => x.KorisnickoIme.ToLower() == korisnickoImeLower);
+            }
+
 
             if (!string.IsNullOrWhiteSpace(searchObject.Telefon))
                 query = query.Where(k => k.Telefon != null &&
