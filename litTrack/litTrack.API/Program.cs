@@ -7,6 +7,7 @@ using litTrack.Services.Validators.Interfaces;
 using litTrack.Services.Validators.Implementation;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using litTrack.Services.NarudzbaStateMachine;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,17 @@ builder.Services.AddTransient<IMojaListumService, MojaListumService>();
 builder.Services.AddTransient<ILicnaPreporukaService, LicnaPreporukaService>();
 builder.Services.AddTransient<IRecenzijaService, RecenzijaService>();
 builder.Services.AddTransient<IRecenzijaOdgovorService, RecenzijaOdgovorService>();
+builder.Services.AddTransient<INarudzbaService, NarudzbaService>();
+builder.Services.AddTransient<IStavkaNarudzbeService, StavkaNarudzbeService>();
+
+
+builder.Services.AddTransient<BaseNarudzbaState>();
+builder.Services.AddTransient<InitialNarudzbaState>();
+builder.Services.AddTransient<KreiranaNarudzbaState>();
+builder.Services.AddTransient<PreuzetaNarudzbaState>();
+builder.Services.AddTransient<PonistenaNarudzbaState>();
+builder.Services.AddTransient<UTokuNarudzbaState>();
+builder.Services.AddTransient<ZavrsenaNarudzbaState>();
 
 builder.Services.AddTransient<IAutorValidator, AutorValidator>();
 builder.Services.AddTransient<ICiljnaGrupaValidator, CiljnaGrupaValidator>();
@@ -37,6 +49,8 @@ builder.Services.AddTransient<IKnjigaValidator, KnjigaValidator>();
 builder.Services.AddTransient<IKorisnikValidator, KorisnikValidator>();
 builder.Services.AddTransient<ILicnaPreporukaValidator, LicnaPreporukaValidator>();
 builder.Services.AddTransient<IRecenzijaValidator, RecenzijaValidator>();
+builder.Services.AddTransient<INarudzbaValidator, NarudzbaValidator>();
+builder.Services.AddTransient<IStavkaNarudzbeValidator, StavkaNarudzbeValidator>();
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 
