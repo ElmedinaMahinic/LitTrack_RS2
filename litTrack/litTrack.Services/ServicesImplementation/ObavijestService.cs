@@ -3,6 +3,7 @@ using litTrack.Model.Exceptions;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
+using litTrack.Services.Auth;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
@@ -18,10 +19,12 @@ namespace litTrack.Services.ServicesImplementation
 {
     public class ObavijestService : BaseCRUDServiceAsync<Model.DTOs.ObavijestDTO, ObavijestSearchObject, Database.Obavijest, ObavijestInsertRequest, ObavijestUpdateRequest>, IObavijestService
     {
-        public ObavijestService(_210078Context context, IMapper mapper)
+        private readonly IActiveUserServiceAsync _activeUserService;
+        public ObavijestService(_210078Context context, IMapper mapper,
+            IActiveUserServiceAsync activeUserService)
             : base(context, mapper)
         {
-
+            _activeUserService= activeUserService;
         }
 
         public override IQueryable<Database.Obavijest> AddFilter(ObavijestSearchObject searchObject, IQueryable<Database.Obavijest> query)
@@ -125,11 +128,17 @@ namespace litTrack.Services.ServicesImplementation
 
         public async Task OznaciKaoProcitanuAsync(int obavijestId, CancellationToken cancellationToken = default)
         {
+            var currentUserId = await _activeUserService.GetActiveUserIdAsync(cancellationToken);
+
             var obavijest = await Context.Obavijests
         .FirstOrDefaultAsync(o => o.ObavijestId == obavijestId && !o.IsDeleted, cancellationToken);
 
+
             if (obavijest == null)
                 throw new UserException("Obavijest nije pronađena.");
+
+            if (currentUserId == null || obavijest.KorisnikId != currentUserId)
+                throw new UserException("Nemate pravo da pristupite ovoj obavijesti.");
 
             if (!obavijest.JePogledana)
             {

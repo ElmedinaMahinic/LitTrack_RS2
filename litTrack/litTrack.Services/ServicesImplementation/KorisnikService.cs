@@ -25,10 +25,12 @@ namespace litTrack.Services.ServicesImplementation
         private readonly IKorisnikValidator _korisnikValidator;
         private readonly ILogger<KorisnikService> _logger;
         private readonly IPasswordService _passwordService;
+        private readonly IActiveUserServiceAsync _activeUserService;
 
         public KorisnikService(_210078Context context, IMapper mapper,
             IUlogaValidator ulogaValidator, IKorisnikValidator korisnikValidator,
-            ILogger<KorisnikService> logger, IPasswordService passwordService
+            ILogger<KorisnikService> logger, IPasswordService passwordService,
+            IActiveUserServiceAsync activeUserService
          )
             : base(context, mapper)
         {
@@ -36,6 +38,7 @@ namespace litTrack.Services.ServicesImplementation
             _korisnikValidator = korisnikValidator;
             _logger = logger;
             _passwordService= passwordService;
+            _activeUserService= activeUserService;
         }
 
         public override IQueryable<Korisnik> AddFilter(KorisnikSearchObject searchObject, IQueryable<Korisnik> query)
@@ -152,6 +155,15 @@ namespace litTrack.Services.ServicesImplementation
 
             await base.BeforeUpdateAsync(request, entity, cancellationToken);
 
+            var loggedUserId = await _activeUserService.GetActiveUserIdAsync(cancellationToken);
+            var loggedUserRole = await _activeUserService.GetActiveUserRoleAsync(cancellationToken);
+
+            if (loggedUserRole != "Admin" && loggedUserId != entity.KorisnikId)
+            {
+                throw new UserException("Nemate pravo da uređujete tuđi profil.");
+            }
+
+
             await _korisnikValidator.ValidateUpdateAsync(entity.KorisnikId, request, cancellationToken);
 
             bool zeliPromijenitiLozinku =
@@ -219,6 +231,20 @@ namespace litTrack.Services.ServicesImplementation
 
             return dto;
         }
+
+        public async Task<KorisnikDTO> GetInfoAsync(CancellationToken cancellationToken = default)
+        {
+            var userId = await _activeUserService.GetActiveUserIdAsync(cancellationToken)
+                ?? throw new UserException("Korisnik nije prijavljen.");
+
+            var user = await Context.Korisniks
+                .Where(x => x.KorisnikId == userId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new UserException("Korisnik nije pronađen.");
+
+            return Mapper.Map<KorisnikDTO>(user);
+        }
+
 
     }
 }

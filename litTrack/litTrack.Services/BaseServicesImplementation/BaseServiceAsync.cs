@@ -31,6 +31,11 @@ namespace litTrack.Services.BaseServicesImplementation
 
             var query = Context.Set<TDbEntity>().AsQueryable();
 
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(TDbEntity)))
+            {
+                query = query.Where(e => !EF.Property<bool>(e, "IsDeleted"));
+            }
+
             query = AddFilter(search, query);
 
             int count = await query.CountAsync(cancellationToken);
@@ -97,16 +102,15 @@ namespace litTrack.Services.BaseServicesImplementation
 
         public virtual async Task<TModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var entity = await Context.Set<TDbEntity>().FindAsync(id, cancellationToken);
+            var entity = await Context.Set<TDbEntity>().FindAsync(new object[] { id }, cancellationToken);
 
-            if (entity != null)
-            {
-                return Mapper.Map<TModel>(entity);
-            }
-            else
-            {
+            if (entity == null)
                 throw new UserException("Uneseni ID ne postoji.");
-            }
+
+            if (entity is ISoftDelete softDeleteEntity && softDeleteEntity.IsDeleted)
+                throw new UserException("Uneseni ID ne postoji.");
+
+            return Mapper.Map<TModel>(entity);
         }
     }
 }

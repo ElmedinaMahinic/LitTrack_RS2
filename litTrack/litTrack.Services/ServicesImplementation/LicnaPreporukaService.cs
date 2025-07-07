@@ -3,6 +3,7 @@ using litTrack.Model.Exceptions;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
+using litTrack.Services.Auth;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
@@ -21,13 +22,16 @@ namespace litTrack.Services.ServicesImplementation
     {
         private readonly ILicnaPreporukaValidator _licnaPreporukaValidator;
         private readonly IKnjigaValidator _knjigaValidator;
+        private readonly IActiveUserServiceAsync _activeUserService;
         public LicnaPreporukaService(_210078Context context, IMapper mapper,
-            ILicnaPreporukaValidator licnaPreporukaValidator, IKnjigaValidator knjigaValidator
+            ILicnaPreporukaValidator licnaPreporukaValidator, IKnjigaValidator knjigaValidator,
+            IActiveUserServiceAsync activeUserService
          )
             : base(context, mapper)
         {
             _licnaPreporukaValidator= licnaPreporukaValidator;
             _knjigaValidator = knjigaValidator;
+            _activeUserService= activeUserService;
         }
 
         public override IQueryable<LicnaPreporuka> AddFilter(LicnaPreporukaSearchObject searchObject, IQueryable<LicnaPreporuka> query)
@@ -226,9 +230,9 @@ namespace litTrack.Services.ServicesImplementation
             if (preporuka == null)
                 throw new UserException("Lična preporuka nije pronađena.");
 
-            // TODO: kada dodaš CurrentUserService, provjeri da je
-            // CurrentUser.Id == preporuka.KorisnikPrimalacId.
-            // Ako nije, baci UserException ("Pristup zabranjen.")
+            var currentUserId = await _activeUserService.GetActiveUserIdAsync(cancellationToken);
+            if (currentUserId == null || preporuka.KorisnikPrimalacId != currentUserId)
+                throw new UserException("Pristup zabranjen.");
 
             if (!preporuka.JePogledana)
             {

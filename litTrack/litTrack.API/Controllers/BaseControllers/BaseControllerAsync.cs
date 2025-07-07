@@ -1,12 +1,14 @@
 ﻿using litTrack.Model.Helpers;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.BaseServicesInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace litTrack.API.Controllers.BaseControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BaseControllerAsync<TModel, TSearch> : ControllerBase where TSearch : BaseSearchObject
     {
         private readonly IServiceAsync<TModel, TSearch> _service;

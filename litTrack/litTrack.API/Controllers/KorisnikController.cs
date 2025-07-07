@@ -4,6 +4,7 @@ using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace litTrack.API.Controllers
@@ -19,6 +20,7 @@ namespace litTrack.API.Controllers
             _korisnikService = korisnikService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<KorisnikDTO>> Login([FromBody] KorisnikLoginRequest request, CancellationToken cancellationToken)
         {
@@ -26,31 +28,43 @@ namespace litTrack.API.Controllers
             return Ok(dto);
         }
 
+        [Authorize]
+        [HttpGet("info")]
+        public async Task<ActionResult<KorisnikDTO>> GetInfo(CancellationToken cancellationToken = default)
+        {
+            var dto = await _korisnikService.GetInfoAsync(cancellationToken);
+            return Ok(dto);
+        }
 
+        [Authorize]
         [HttpGet]
         public override Task<PagedResult<KorisnikDTO>> GetList([FromQuery] KorisnikSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             return base.GetList(searchObject, cancellationToken);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public override Task<KorisnikDTO> GetById(int id, CancellationToken cancellationToken = default)
         {
             return base.GetById(id, cancellationToken);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public override Task<KorisnikDTO> Insert(KorisnikInsertRequest request, CancellationToken cancellationToken = default)
         {
             return base.Insert(request, cancellationToken);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public override Task<KorisnikDTO> Update(int id, KorisnikUpdateRequest request, CancellationToken cancellationToken = default)
         {
             return base.Update(id, request, cancellationToken);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public override Task Delete(int id, CancellationToken cancellationToken = default)
         {

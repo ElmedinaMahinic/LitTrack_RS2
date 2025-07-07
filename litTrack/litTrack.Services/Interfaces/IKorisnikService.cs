@@ -13,6 +13,7 @@ namespace litTrack.Services.Interfaces
     public interface IKorisnikService : ICRUDServiceAsync<KorisnikDTO, KorisnikSearchObject, KorisnikInsertRequest, KorisnikUpdateRequest>
     {
         Task<KorisnikDTO> LoginAsync(KorisnikLoginRequest request, CancellationToken cancellationToken = default);
+        Task<KorisnikDTO> GetInfoAsync(CancellationToken cancellationToken = default);
 
     }
 }

@@ -8,6 +8,9 @@ using litTrack.Services.Validators.Implementation;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using litTrack.Services.NarudzbaStateMachine;
+using Microsoft.OpenApi.Models;
+using litTrack.API.Auth;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +56,7 @@ builder.Services.AddTransient<INarudzbaValidator, NarudzbaValidator>();
 builder.Services.AddTransient<IStavkaNarudzbeValidator, StavkaNarudzbeValidator>();
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
+builder.Services.AddTransient<IActiveUserServiceAsync, ActiveUserServiceAsync>();
 
 builder.Services.AddControllers(x=>
 {
@@ -60,13 +64,41 @@ builder.Services.AddControllers(x=>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("BasicAuthentication", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "basic",
+        In = ParameterLocation.Header,
+        Description = "Basic auth preko Authorization header-a."
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "BasicAuthentication"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
 
 var connectionString = builder.Configuration.GetConnectionString("litTrackConnection");
 builder.Services.AddDbContext<_210078Context>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddMapster();
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

@@ -1,11 +1,13 @@
 ﻿using litTrack.Model.SearchObjects;
 using litTrack.Services.BaseServicesInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace litTrack.API.Controllers.BaseControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BaseCRUDControllerAsync<TModel, TSearch, TInsert, TUpdate> : BaseControllerAsync<TModel, TSearch> where TSearch : BaseSearchObject where TModel : class
     {
         protected readonly ICRUDServiceAsync<TModel, TSearch, TInsert, TUpdate> _crudService;
