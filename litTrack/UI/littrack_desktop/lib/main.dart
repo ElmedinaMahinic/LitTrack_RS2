@@ -1,125 +1,278 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:littrack_desktop/providers/auth_provider.dart';
+import 'package:littrack_desktop/providers/korisnik_provider.dart';
+import 'package:littrack_desktop/providers/utils.dart';
+import 'package:quickalert/quickalert.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => KorisnikProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'LitTrack',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF43675E)),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const LoginPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _LoginPageState extends State<LoginPage> {
+  bool _isHidden = true;
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    AuthProvider.isSignedIn = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    double formWidth = screenWidth * 0.4;
+    if (formWidth > 320) formWidth = 320;
+
+    double inputHeight = screenHeight * 0.05;
+    if (inputHeight > 48) inputHeight = 48;
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      backgroundColor: const Color(0xFFF6F4F3),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: Image.asset("assets/images/login_top.png", width: 150),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Image.asset("assets/images/login_bottom.png", width: 150),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // LOGO + TEXT
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset("assets/images/logo.png",
+                          width: 45, height: 45),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "LitTrack",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 45),
+
+                  // MAIN MIDDLE IMAGE
+                  Image.asset("assets/images/login_middle.png", width: 130),
+                  const SizedBox(height: 45),
+
+                  // LOGIN FORM
+                  Form(
+                    key: _formKey,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: formWidth),
+                      child: Column(
+                        children: [
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: screenHeight * 0.045,
+                              
+                            ),
+                            child: TextFormField(
+                              controller: _usernameController,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: "Korisničko ime",
+                                hintStyle: const TextStyle(
+                                    color: Color(0xFF344743), fontSize: 14),
+                                filled: true,
+                                fillColor: const Color(0xFFB2D9CF),
+                                prefixIcon: const Icon(Icons.person, size: 20),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Unesite korisničko ime';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: screenHeight * 0.045,
+                              
+                            ),
+                            child: TextFormField(
+                              controller: _passwordController,
+                              obscureText: _isHidden,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: "Lozinka",
+                                hintStyle: const TextStyle(
+                                    color: Color(0xFF344743), fontSize: 14),
+                                filled: true,
+                                fillColor: const Color(0xFFB2D9CF),
+                                prefixIcon: const Icon(Icons.lock, size: 20),
+                                suffixIcon: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _isHidden = !_isHidden;
+                                    });
+                                  },
+                                  child: Icon(
+                                    _isHidden
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Unesite lozinku';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            height: inputHeight,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    final korisnikProvider = KorisnikProvider();
+                                    final korisnik =
+                                        await korisnikProvider.login(
+                                      _usernameController.text,
+                                      _passwordController.text,
+                                    );
+
+                                    // Provjera da li je deaktiviran
+                                    if (korisnik.jeAktivan == false) {
+                                      await showCustomDialog(
+                                        context: context,
+                                        title: 'Račun deaktiviran',
+                                        message:
+                                            'Vaš korisnički račun je deaktiviran!',
+                                        icon: Icons.block,
+                                        iconColor: Colors.red,
+                                        buttonColor: const Color(0xFF43675E),
+                                      );
+                                      return;
+                                    }
+
+                                    // Postavi isSignedIn na true nakon uspješne prijave
+                                    AuthProvider.isSignedIn = true;
+
+                                    // Provjera uloge
+                                    if (AuthProvider.uloge != null &&
+                                        AuthProvider.uloge!.contains("Admin")) {
+                                      QuickAlert.show(
+                                        context: context,
+                                        type: QuickAlertType.success,
+                                        title: "Prijava uspješna",
+                                        text:
+                                            "Dobrodošli, ${AuthProvider.ime}!",
+                                      );
+                                    } else {
+                                      await showCustomDialog(
+                                        context: context,
+                                        title: 'Pristup odbijen',
+                                        message:
+                                            'Nemate pristup ovom interfejsu.',
+                                        icon: Icons.lock_outline,
+                                        iconColor: Colors.red,
+                                        buttonColor: const Color(0xFF43675E),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    await showCustomDialog(
+                                      context: context,
+                                      title: 'Greška',
+                                      message: e.toString(),
+                                      icon: Icons.error_outline,
+                                      iconColor: Colors.red,
+                                      buttonColor: const Color(0xFF43675E),
+                                    );
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF43675E),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                "PRIJAVA",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
