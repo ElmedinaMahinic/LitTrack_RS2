@@ -127,9 +127,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
     var response = await http.delete(uri, headers: headers);
 
-    if (!isValidResponse(response)) {
-      throw Exception("Unknown error");
-    }
+    isValidResponse(response);
   }
 
   T fromJson(data) {

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:littrack_desktop/providers/auth_provider.dart';
 import 'package:littrack_desktop/providers/korisnik_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
-import 'package:quickalert/quickalert.dart';
+import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
 
 void main() {
   runApp(
@@ -116,7 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                           ConstrainedBox(
                             constraints: BoxConstraints(
                               minHeight: screenHeight * 0.045,
-                              
                             ),
                             child: TextFormField(
                               controller: _usernameController,
@@ -146,7 +145,6 @@ class _LoginPageState extends State<LoginPage> {
                           ConstrainedBox(
                             constraints: BoxConstraints(
                               minHeight: screenHeight * 0.045,
-                              
                             ),
                             child: TextFormField(
                               controller: _passwordController,
@@ -220,12 +218,11 @@ class _LoginPageState extends State<LoginPage> {
                                     // Provjera uloge
                                     if (AuthProvider.uloge != null &&
                                         AuthProvider.uloge!.contains("Admin")) {
-                                      QuickAlert.show(
-                                        context: context,
-                                        type: QuickAlertType.success,
-                                        title: "Prijava uspješna",
-                                        text:
-                                            "Dobrodošli, ${AuthProvider.ime}!",
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AdminDashboardScreen(),
+                                        ),
                                       );
                                     } else {
                                       await showCustomDialog(
