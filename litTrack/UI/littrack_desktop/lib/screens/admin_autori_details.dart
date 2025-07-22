@@ -107,6 +107,7 @@ class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
+      floatingLabelBehavior: FloatingLabelBehavior.always,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       filled: true,
       fillColor: Colors.white,

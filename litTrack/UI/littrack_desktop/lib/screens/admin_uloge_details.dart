@@ -57,6 +57,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
               decoration: InputDecoration(
                 labelText: 'Naziv uloge',
                 hintText: 'Unesite naziv uloge',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
@@ -78,6 +79,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
               decoration: InputDecoration(
                 labelText: 'Opis uloge',
                 hintText: 'Unesite opis uloge',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,

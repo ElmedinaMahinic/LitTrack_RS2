@@ -67,17 +67,22 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
               decoration: InputDecoration(
                 labelText: 'Naziv žanra',
                 hintText: 'Unesite naziv žanra',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(errorText: "Naziv je obavezan."),
-                FormBuilderValidators.minLength(1, errorText: "Naziv ne može biti prazan."),
-                FormBuilderValidators.maxLength(50, errorText: "Naziv može imati najviše 50 karaktera."),
+                FormBuilderValidators.minLength(1,
+                    errorText: "Naziv ne može biti prazan."),
+                FormBuilderValidators.maxLength(50,
+                    errorText: "Naziv može imati najviše 50 karaktera."),
                 FormBuilderValidators.match(
                   r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
-                  errorText: "Naziv mora početi velikim slovom i sadržavati samo slova.",
+                  errorText:
+                      "Naziv mora početi velikim slovom i sadržavati samo slova.",
                 ),
               ]),
             ),
@@ -88,51 +93,71 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
               decoration: InputDecoration(
                 labelText: 'Opis žanra',
                 hintText: 'Unesite opis žanra',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
-                FormBuilderValidators.maxLength(200, errorText: "Opis može imati najviše 200 karaktera."),
-                FormBuilderValidators.minLength(1, errorText: "Opis ne može biti prazan."),
+                FormBuilderValidators.maxLength(200,
+                    errorText: "Opis može imati najviše 200 karaktera."),
+                FormBuilderValidators.minLength(1,
+                    errorText: "Opis ne može biti prazan."),
               ]),
             ),
             const SizedBox(height: 20),
-            FormBuilderField(
-              name: "Slika",
-              builder: (field) {
-                return InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: "Dodaj sliku",
-                    border: const OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    errorText: field.errorText,
-                  ),
-                  child: ListTile(
-                    leading: const Icon(Icons.image),
-                    title: const Text("Dodaj sliku"),
-                    trailing: const Icon(Icons.file_upload),
-                    onTap: _getImage,
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 15),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: 200,
-                  height: 195,
-                  child: _base64Image != null
-                      ? Image.memory(
-                          base64Decode(_base64Image!),
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset(
-                          'assets/images/placeholder.png',
-                          fit: BoxFit.cover,
-                        ),
+                Expanded(
+                  flex: 2, 
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        right: 8), 
+                    child: FormBuilderField(
+                      name: "Slika",
+                      builder: (field) {
+                        return InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: "Dodajte sliku",
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            border: const OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            errorText: field.errorText,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 12),
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.image),
+                            title: const Text("Izaberite sliku"),
+                            trailing: const Icon(Icons.file_upload),
+                            onTap: _getImage,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1, 
+                  child: Center(
+                    child: SizedBox(
+                      width: 150,
+                      height: 170,
+                      child: _base64Image != null
+                          ? Image.memory(
+                              base64Decode(_base64Image!),
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/images/placeholder.png',
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -252,4 +277,3 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
     }
   }
 }
-

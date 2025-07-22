@@ -58,6 +58,7 @@ class _AdminCiljnaGrupaDetailsScreenState
           decoration: InputDecoration(
             labelText: 'Naziv ciljne grupe',
             hintText: 'Unesite naziv ciljne grupe',
+            floatingLabelBehavior: FloatingLabelBehavior.always,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             filled: true,
             fillColor: Colors.white,
