@@ -15,6 +15,7 @@ namespace litTrack.Model.SearchObjects
         public decimal? CijenaLTE { get; set; }
 
         public int? AutorId { get; set; }
+        public string? AutorNaziv { get; set; }
 
         public int? ZanrId { get; set; }
 

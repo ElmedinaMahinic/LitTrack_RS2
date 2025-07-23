@@ -1,5 +1,6 @@
 ﻿using litTrack.Model.DTOs;
 using litTrack.Model.Exceptions;
+using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.BaseServicesImplementation;
@@ -71,6 +72,18 @@ namespace litTrack.Services.ServicesImplementation
                 query = query.Where(x => x.AutorId == searchObject.AutorId);
             }
 
+            if (!string.IsNullOrWhiteSpace(searchObject.AutorNaziv))
+            {
+                var autorNaziv = searchObject.AutorNaziv.ToLower();
+
+                query = query.Include(k => k.Autor)
+                             .Where(k =>
+                                 (k.Autor.Ime + " " + k.Autor.Prezime).ToLower().Contains(autorNaziv) ||
+                                 k.Autor.Ime.ToLower().Contains(autorNaziv) ||
+                                 k.Autor.Prezime.ToLower().Contains(autorNaziv));
+            }
+
+
 
             if (searchObject.ZanrId != null)
             {
@@ -86,6 +99,49 @@ namespace litTrack.Services.ServicesImplementation
 
 
             return query;
+        }
+
+        public override async Task<PagedResult<KnjigaDTO>> GetPagedAsync(KnjigaSearchObject search, CancellationToken cancellationToken = default)
+        {
+            var query = Context.Knjigas
+                .Include(k => k.Autor)
+                .Where(k => !k.IsDeleted);
+
+            query = AddFilter(search, query);
+
+            var count = await query.CountAsync(cancellationToken);
+
+            if (!string.IsNullOrEmpty(search?.OrderBy) &&
+                !string.IsNullOrEmpty(search?.SortDirection))
+            {
+                query = ApplySorting(query, search.OrderBy, search.SortDirection);
+            }
+
+            if (search?.Page.HasValue == true && search.PageSize.HasValue)
+            {
+                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value)
+                             .Take(search.PageSize.Value);
+            }
+
+            var list = await query.ToListAsync(cancellationToken);
+
+            var result = Mapper.Map<List<KnjigaDTO>>(list);
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                var knjiga = list[i];
+
+                result[i].AutorNaziv = knjiga.Autor != null
+                    ? $"{knjiga.Autor.Ime} {knjiga.Autor.Prezime}"
+                    : null;
+
+            }
+
+            return new PagedResult<KnjigaDTO>
+            {
+                ResultList = result,
+                Count = count
+            };
         }
 
         public override async Task<KnjigaDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
