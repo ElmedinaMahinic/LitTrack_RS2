@@ -79,6 +79,14 @@ namespace litTrack.Services.ServicesImplementation
                 query = query.Where(x => x.BrojDislajkova <= searchObject.BrojDislajkovaLTE);
             }
 
+            if (!string.IsNullOrWhiteSpace(searchObject.KorisnickoIme))
+            {
+                var korisnickoImeLower = searchObject.KorisnickoIme.ToLower();
+                query = query
+                    .Include(x => x.Korisnik)
+                    .Where(x => x.Korisnik.KorisnickoIme.ToLower().Contains(korisnickoImeLower));
+            }
+
             return query;
         }
 

@@ -17,5 +17,7 @@ namespace litTrack.Model.SearchObjects
 
         public int? BrojDislajkovaGTE { get; set; }
         public int? BrojDislajkovaLTE { get; set; }
+
+        public string? KorisnickoIme { get; set; }
     }
 }
