@@ -5,6 +5,7 @@ import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/models/autor.dart';
 import 'package:littrack_desktop/providers/autor_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
+import 'package:provider/provider.dart';
 
 class AdminAutoriDetailsScreen extends StatefulWidget {
   final Autor? autor;
@@ -18,13 +19,13 @@ class AdminAutoriDetailsScreen extends StatefulWidget {
 
 class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  late final AutorProvider _provider;
+  late AutorProvider _provider;
   late Map<String, dynamic> _initialValue;
 
   @override
   void initState() {
     super.initState();
-    _provider = AutorProvider();
+    _provider = context.read<AutorProvider>();
     _initialValue = {
       "Ime": widget.autor?.ime ?? '',
       "Prezime": widget.autor?.prezime ?? '',
@@ -73,9 +74,11 @@ class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
             const SizedBox(height: 16),
             FormBuilderTextField(
               name: 'Prezime',
-              decoration: _inputDecoration("Prezime autora", "Unesite prezime"),
+              decoration:
+                  _inputDecoration("Prezime autora", "Unesite prezime"),
               validator: FormBuilderValidators.compose([
-                FormBuilderValidators.required(errorText: "Prezime je obavezno."),
+                FormBuilderValidators.required(
+                    errorText: "Prezime je obavezno."),
                 FormBuilderValidators.minLength(1,
                     errorText: "Prezime ne može biti prazno."),
                 FormBuilderValidators.maxLength(50,
@@ -152,7 +155,20 @@ class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: _save,
+              onPressed: () {
+                showConfirmDialog(
+                  context: context,
+                  title: widget.autor == null
+                      ? "Dodavanje autora"
+                      : "Uređivanje autora",
+                  message: widget.autor == null
+                      ? "Da li ste sigurni da želite dodati ovog autora?"
+                      : "Da li ste sigurni da želite urediti ovog autora?",
+                  icon: Icons.warning,
+                  iconColor: Colors.red,
+                  onConfirm: _save,
+                );
+              },
               child: const Text(
                 "Sačuvaj",
                 style: TextStyle(

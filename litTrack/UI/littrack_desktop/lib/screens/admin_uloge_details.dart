@@ -5,6 +5,7 @@ import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/models/uloga.dart';
 import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
+import 'package:provider/provider.dart';
 
 class AdminUlogaDetailsScreen extends StatefulWidget {
   final Uloga? uloga;
@@ -17,13 +18,13 @@ class AdminUlogaDetailsScreen extends StatefulWidget {
 
 class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  late final UlogaProvider _provider;
+  late UlogaProvider _provider;
   late Map<String, dynamic> _initialValue;
 
   @override
   void initState() {
     super.initState();
-    _provider = UlogaProvider();
+    _provider = context.read<UlogaProvider>(); 
     _initialValue = {
       "Naziv": widget.uloga?.naziv ?? '',
       "Opis": widget.uloga?.opis ?? '',
@@ -133,7 +134,20 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: _save,
+              onPressed: () {
+                showConfirmDialog(
+                  context: context,
+                  title: widget.uloga == null
+                      ? "Dodavanje uloge"
+                      : "Uređivanje uloge",
+                  message: widget.uloga == null
+                      ? "Da li ste sigurni da želite dodati ovu ulogu?"
+                      : "Da li ste sigurni da želite urediti ovu ulogu?",
+                  icon: Icons.warning,
+                  iconColor: Colors.red,
+                  onConfirm: _save,
+                );
+              },
               child: const Text(
                 "Sačuvaj",
                 style: TextStyle(
@@ -176,7 +190,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
         );
       }
 
-      Navigator.pop(context, true); 
+      Navigator.pop(context, true);
     } catch (e) {
       await showCustomDialog(
         context: context,

@@ -8,6 +8,7 @@ import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/models/zanr.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/providers/zanr_provider.dart';
+import 'package:provider/provider.dart';
 
 class AdminZanrDetailsScreen extends StatefulWidget {
   final Zanr? zanr;
@@ -20,7 +21,7 @@ class AdminZanrDetailsScreen extends StatefulWidget {
 
 class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  late final ZanrProvider _provider;
+  late ZanrProvider _provider;
   late Map<String, dynamic> _initialValue;
 
   File? _image;
@@ -29,7 +30,7 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _provider = ZanrProvider();
+    _provider = context.read<ZanrProvider>();
     _base64Image = widget.zanr?.slika;
 
     _initialValue = {
@@ -68,21 +69,17 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                 labelText: 'Naziv žanra',
                 hintText: 'Unesite naziv žanra',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(errorText: "Naziv je obavezan."),
-                FormBuilderValidators.minLength(1,
-                    errorText: "Naziv ne može biti prazan."),
-                FormBuilderValidators.maxLength(50,
-                    errorText: "Naziv može imati najviše 50 karaktera."),
+                FormBuilderValidators.minLength(1, errorText: "Naziv ne može biti prazan."),
+                FormBuilderValidators.maxLength(50, errorText: "Naziv može imati najviše 50 karaktera."),
                 FormBuilderValidators.match(
                   r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
-                  errorText:
-                      "Naziv mora početi velikim slovom i sadržavati samo slova.",
+                  errorText: "Naziv mora početi velikim slovom i sadržavati samo slova.",
                 ),
               ]),
             ),
@@ -94,16 +91,13 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                 labelText: 'Opis žanra',
                 hintText: 'Unesite opis žanra',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
-                FormBuilderValidators.maxLength(200,
-                    errorText: "Opis može imati najviše 200 karaktera."),
-                FormBuilderValidators.minLength(1,
-                    errorText: "Opis ne može biti prazan."),
+                FormBuilderValidators.maxLength(200, errorText: "Opis može imati najviše 200 karaktera."),
+                FormBuilderValidators.minLength(1, errorText: "Opis ne može biti prazan."),
               ]),
             ),
             const SizedBox(height: 20),
@@ -111,10 +105,9 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2, 
+                  flex: 2,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        right: 8), 
+                    padding: const EdgeInsets.only(right: 8),
                     child: FormBuilderField(
                       name: "Slika",
                       builder: (field) {
@@ -126,8 +119,7 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                             filled: true,
                             fillColor: Colors.white,
                             errorText: field.errorText,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 12),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                           ),
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
@@ -142,7 +134,7 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                   ),
                 ),
                 Expanded(
-                  flex: 1, 
+                  flex: 1,
                   child: Center(
                     child: SizedBox(
                       width: 150,
@@ -205,7 +197,18 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: _save,
+              onPressed: () {
+                showConfirmDialog(
+                  context: context,
+                  title: widget.zanr == null ? "Dodavanje žanra" : "Uređivanje žanra",
+                  message: widget.zanr == null
+                      ? "Da li ste sigurni da želite dodati ovaj žanr?"
+                      : "Da li ste sigurni da želite urediti ovaj žanr?",
+                  icon: Icons.warning,
+                  iconColor: Colors.red,
+                  onConfirm: _save,
+                );
+              },
               child: const Text(
                 "Sačuvaj",
                 style: TextStyle(
@@ -277,3 +280,4 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
     }
   }
 }
+

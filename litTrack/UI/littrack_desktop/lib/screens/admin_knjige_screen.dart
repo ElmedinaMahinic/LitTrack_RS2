@@ -5,6 +5,7 @@ import 'package:littrack_desktop/providers/knjiga_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:provider/provider.dart';
 
 class AdminKnjigeScreen extends StatefulWidget {
   const AdminKnjigeScreen({super.key});
@@ -16,12 +17,13 @@ class AdminKnjigeScreen extends StatefulWidget {
 class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
   final TextEditingController _nazivController = TextEditingController();
   final TextEditingController _autorNazivController = TextEditingController();
-  final KnjigaProvider _provider = KnjigaProvider();
+  late KnjigaProvider _provider;
   late KnjigaDataSource _dataSource;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<KnjigaProvider>();
     _dataSource = KnjigaDataSource(provider: _provider, context: context);
     _dataSource.filterServerSide('', '');
   }

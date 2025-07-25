@@ -8,6 +8,7 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:littrack_desktop/screens/admin_recenzije_details.dart';
+import 'package:provider/provider.dart';
 
 enum PrikazTipa { recenzije, odgovori }
 
@@ -19,11 +20,9 @@ class AdminRecenzijeScreen extends StatefulWidget {
 }
 
 class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
-  final TextEditingController _korisnickoImeController =
-      TextEditingController();
-  final RecenzijaProvider _recenzijaProvider = RecenzijaProvider();
-  final RecenzijaOdgovorProvider _recenzijaOdgovorProvider =
-      RecenzijaOdgovorProvider();
+  final TextEditingController _korisnickoImeController = TextEditingController();
+  late RecenzijaProvider _recenzijaProvider;
+  late RecenzijaOdgovorProvider _recenzijaOdgovorProvider;
   late RecenzijaDataSource _dataSource;
 
   PrikazTipa _prikazTipa = PrikazTipa.recenzije;
@@ -31,6 +30,8 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
   @override
   void initState() {
     super.initState();
+    _recenzijaProvider = context.read<RecenzijaProvider>();
+    _recenzijaOdgovorProvider = context.read<RecenzijaOdgovorProvider>();
     _dataSource = RecenzijaDataSource(
       recenzijaProvider: _recenzijaProvider,
       odgovorProvider: _recenzijaOdgovorProvider,
@@ -79,8 +80,8 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 12),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   ),
                   onChanged: (value) {
                     _dataSource.filterServerSide(value, _prikazTipa);
@@ -91,8 +92,7 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3C6E71),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 ),
                 onPressed: () {
                   _korisnickoImeController.clear();
@@ -339,11 +339,9 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3C6E71),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
-              child:
-                  const Text("Detalji", style: TextStyle(color: Colors.white)),
+              child: const Text("Detalji", style: TextStyle(color: Colors.white)),
             ),
           ),
         ),

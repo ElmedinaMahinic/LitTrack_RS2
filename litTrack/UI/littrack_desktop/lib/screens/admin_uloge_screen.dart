@@ -6,6 +6,7 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:littrack_desktop/screens/admin_uloge_details.dart';
+import 'package:provider/provider.dart';
 
 class AdminUlogeScreen extends StatefulWidget {
   const AdminUlogeScreen({super.key});
@@ -16,12 +17,13 @@ class AdminUlogeScreen extends StatefulWidget {
 
 class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
   final TextEditingController _nazivController = TextEditingController();
-  final UlogaProvider _provider = UlogaProvider();
+  late UlogaProvider _provider;
   late UlogaDataSource _dataSource;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<UlogaProvider>();
     _dataSource = UlogaDataSource(provider: _provider, context: context);
     _dataSource.filterServerSide('');
   }
@@ -75,8 +77,10 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
               _dataSource.filterServerSide('');
               setState(() {});
             },
-            child: const Text("Očisti filtere",
-                style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Očisti filtere",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           const SizedBox(width: 15),
           ElevatedButton(
@@ -95,8 +99,10 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
                 _dataSource.filterServerSide(_nazivController.text);
               }
             },
-            child: const Text("Dodaj ulogu",
-                style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Dodaj ulogu",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -216,8 +222,7 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          AdminUlogaDetailsScreen(uloga: item),
+                      builder: (context) => AdminUlogaDetailsScreen(uloga: item),
                     ),
                   );
                   if (result == true) {

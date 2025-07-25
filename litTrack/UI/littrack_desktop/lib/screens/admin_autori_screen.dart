@@ -6,6 +6,8 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:littrack_desktop/screens/admin_autori_details.dart';
+import 'package:provider/provider.dart';
+
 
 class AdminAutoriScreen extends StatefulWidget {
   const AdminAutoriScreen({super.key});
@@ -16,14 +18,18 @@ class AdminAutoriScreen extends StatefulWidget {
 
 class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
   final TextEditingController _imeController = TextEditingController();
-  final AutorProvider _provider = AutorProvider();
+  late AutorProvider _provider;
   late AutorDataSource _dataSource;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<AutorProvider>();
     _dataSource = AutorDataSource(
-        provider: _provider, context: context, refreshParent: _refreshTable);
+      provider: _provider,
+      context: context,
+      refreshParent: _refreshTable,
+    );
     _dataSource.filterServerSide('');
   }
 
@@ -189,7 +195,7 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
       color: MaterialStateProperty.resolveWith<Color?>(
           (Set<MaterialState> states) {
         if (states.contains(MaterialState.hovered)) {
-          return const Color(0xFFD8EBEA); 
+          return const Color(0xFFD8EBEA);
         }
         return Colors.white;
       }),

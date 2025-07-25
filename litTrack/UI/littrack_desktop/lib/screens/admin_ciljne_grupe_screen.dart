@@ -6,6 +6,7 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:littrack_desktop/screens/admin_ciljne_grupe_details.dart';
+import 'package:provider/provider.dart';
 
 class AdminCiljneGrupeScreen extends StatefulWidget {
   const AdminCiljneGrupeScreen({super.key});
@@ -16,12 +17,13 @@ class AdminCiljneGrupeScreen extends StatefulWidget {
 
 class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
   final TextEditingController _nazivController = TextEditingController();
-  final CiljnaGrupaProvider _provider = CiljnaGrupaProvider();
+  late CiljnaGrupaProvider _provider;
   late CiljnaGrupaDataSource _dataSource;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<CiljnaGrupaProvider>();
     _dataSource = CiljnaGrupaDataSource(provider: _provider, context: context);
     _dataSource.filterServerSide('');
   }

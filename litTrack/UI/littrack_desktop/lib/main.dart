@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_desktop/providers/auth_provider.dart';
 import 'package:littrack_desktop/providers/korisnik_provider.dart';
+import 'package:littrack_desktop/providers/autor_provider.dart';
+import 'package:littrack_desktop/providers/ciljna_grupa_provider.dart';
+import 'package:littrack_desktop/providers/knjiga_provider.dart';
+import 'package:littrack_desktop/providers/recenzija_provider.dart';
+import 'package:littrack_desktop/providers/recenzija_odgovor_provider.dart';
+import 'package:littrack_desktop/providers/uloga_provider.dart';
+import 'package:littrack_desktop/providers/zanr_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
 
@@ -10,6 +17,13 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => KorisnikProvider()),
+        ChangeNotifierProvider(create: (_) => AutorProvider()),
+        ChangeNotifierProvider(create: (_) => CiljnaGrupaProvider()),
+        ChangeNotifierProvider(create: (_) => KnjigaProvider()),
+        ChangeNotifierProvider(create: (_) => RecenzijaProvider()),
+        ChangeNotifierProvider(create: (_) => RecenzijaOdgovorProvider()),
+        ChangeNotifierProvider(create: (_) => UlogaProvider()),
+        ChangeNotifierProvider(create: (_) => ZanrProvider()),
       ],
       child: const MyApp(),
     ),

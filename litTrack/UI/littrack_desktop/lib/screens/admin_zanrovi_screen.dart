@@ -6,6 +6,7 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:littrack_desktop/screens/admin_zanrovi_details.dart';
+import 'package:provider/provider.dart';
 
 class AdminZanroviScreen extends StatefulWidget {
   const AdminZanroviScreen({super.key});
@@ -16,12 +17,13 @@ class AdminZanroviScreen extends StatefulWidget {
 
 class _AdminZanroviScreenState extends State<AdminZanroviScreen> {
   final TextEditingController _nazivController = TextEditingController();
-  final ZanrProvider _provider = ZanrProvider();
+  late ZanrProvider _provider;
   late ZanrDataSource _dataSource;
 
   @override
   void initState() {
     super.initState();
+    _provider = context.read<ZanrProvider>();
     _dataSource = ZanrDataSource(provider: _provider, context: context);
     _dataSource.filterServerSide('');
   }
@@ -75,8 +77,10 @@ class _AdminZanroviScreenState extends State<AdminZanroviScreen> {
               _dataSource.filterServerSide('');
               setState(() {});
             },
-            child: const Text("Očisti filtere",
-                style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Očisti filtere",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           const SizedBox(width: 15),
           ElevatedButton(
@@ -91,13 +95,14 @@ class _AdminZanroviScreenState extends State<AdminZanroviScreen> {
                   builder: (context) => const AdminZanrDetailsScreen(),
                 ),
               );
-
               if (refresh == true) {
                 _dataSource.filterServerSide(_nazivController.text);
               }
             },
-            child:
-                const Text("Dodaj žanr", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Dodaj žanr",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -193,9 +198,9 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
       color: MaterialStateProperty.resolveWith<Color?>(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.hovered)) {
-            return const Color(0xFFD8EBEA); 
+            return const Color(0xFFD8EBEA);
           }
-          return Colors.white; 
+          return Colors.white;
         },
       ),
       cells: [

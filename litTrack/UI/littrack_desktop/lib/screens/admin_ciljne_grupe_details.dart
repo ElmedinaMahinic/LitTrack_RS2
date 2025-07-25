@@ -5,6 +5,7 @@ import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/models/ciljna_grupa.dart';
 import 'package:littrack_desktop/providers/ciljna_grupa_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
+import 'package:provider/provider.dart';
 
 class AdminCiljnaGrupaDetailsScreen extends StatefulWidget {
   final CiljnaGrupa? ciljnaGrupa;
@@ -19,13 +20,13 @@ class AdminCiljnaGrupaDetailsScreen extends StatefulWidget {
 class _AdminCiljnaGrupaDetailsScreenState
     extends State<AdminCiljnaGrupaDetailsScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  late final CiljnaGrupaProvider _provider;
+  late CiljnaGrupaProvider _provider;
   late Map<String, dynamic> _initialValue;
 
   @override
   void initState() {
     super.initState();
-    _provider = CiljnaGrupaProvider();
+    _provider = context.read<CiljnaGrupaProvider>();
     _initialValue = {
       "Naziv": widget.ciljnaGrupa?.naziv ?? '',
     };
@@ -115,7 +116,20 @@ class _AdminCiljnaGrupaDetailsScreenState
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: _save,
+              onPressed: () {
+                showConfirmDialog(
+                  context: context,
+                  title: widget.ciljnaGrupa == null
+                      ? "Dodavanje ciljne grupe"
+                      : "Uređivanje ciljne grupe",
+                  message: widget.ciljnaGrupa == null
+                      ? "Da li ste sigurni da želite dodati ovu ciljnu grupu?"
+                      : "Da li ste sigurni da želite urediti ovu ciljnu grupu?",
+                  icon: Icons.warning,
+                  iconColor: Colors.red,
+                  onConfirm: _save,
+                );
+              },
               child: const Text(
                 "Sačuvaj",
                 style: TextStyle(
@@ -158,7 +172,7 @@ class _AdminCiljnaGrupaDetailsScreenState
         );
       }
 
-      Navigator.pop(context, true); 
+      Navigator.pop(context, true);
     } catch (e) {
       await showCustomDialog(
         context: context,
