@@ -1,5 +1,6 @@
 ﻿using litTrack.Model.DTOs;
 using litTrack.Model.Exceptions;
+using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.Auth;
@@ -63,7 +64,7 @@ namespace litTrack.Services.ServicesImplementation
             if (!string.IsNullOrWhiteSpace(searchObject.KorisnickoIme))
             {
                 var korisnickoImeLower = searchObject.KorisnickoIme.ToLower();
-                query = query.Where(x => x.KorisnickoIme.ToLower() == korisnickoImeLower);
+                query = query.Where(x => x.KorisnickoIme.ToLower().Contains(korisnickoImeLower));
             }
 
 
@@ -85,6 +86,52 @@ namespace litTrack.Services.ServicesImplementation
 
             return query;
         }
+
+        public override async Task<PagedResult<KorisnikDTO>> GetPagedAsync(KorisnikSearchObject search, CancellationToken cancellationToken = default)
+        {
+            var query = Context.Korisniks
+                .Include(k => k.KorisnikUlogas)
+                    .ThenInclude(ku => ku.Uloga)
+                .Where(k => !k.IsDeleted);
+
+            query = AddFilter(search, query);
+
+            var count = await query.CountAsync(cancellationToken);
+
+            if (!string.IsNullOrEmpty(search?.OrderBy) &&
+                !string.IsNullOrEmpty(search?.SortDirection))
+            {
+                query = ApplySorting(query, search.OrderBy, search.SortDirection);
+            }
+
+            if (search?.Page.HasValue == true && search.PageSize.HasValue)
+            {
+                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value)
+                             .Take(search.PageSize.Value);
+            }
+
+            var list = await query.ToListAsync(cancellationToken);
+
+            var result = Mapper.Map<List<KorisnikDTO>>(list);
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                var korisnik = list[i];
+
+                result[i].Uloge = korisnik.KorisnikUlogas
+                    .Where(ku => !ku.IsDeleted && ku.Uloga != null && !ku.Uloga.IsDeleted)
+                    .Select(ku => ku.Uloga.Naziv)
+                    .Distinct()
+                    .ToList();
+            }
+
+            return new PagedResult<KorisnikDTO>
+            {
+                ResultList = result,
+                Count = count
+            };
+        }
+
 
         public override async Task<KorisnikDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
@@ -245,6 +292,44 @@ namespace litTrack.Services.ServicesImplementation
             return Mapper.Map<KorisnikDTO>(user);
         }
 
+
+        public async Task AktivirajAsync(int korisnikId, CancellationToken cancellationToken = default)
+        {
+            if (korisnikId <= 0)
+                throw new UserException("Neispravan ID korisnika.");
+
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(x => x.KorisnikId == korisnikId && !x.IsDeleted, cancellationToken);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik nije pronađen.");
+
+            if (korisnik.JeAktivan == true)
+                throw new UserException("Korisnik je već aktivan.");
+
+            korisnik.JeAktivan = true;
+
+            await Context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeaktivirajAsync(int korisnikId, CancellationToken cancellationToken = default)
+        {
+            if (korisnikId <= 0)
+                throw new UserException("Neispravan ID korisnika.");
+
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(x => x.KorisnikId == korisnikId && !x.IsDeleted, cancellationToken);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik nije pronađen.");
+
+            if (korisnik.JeAktivan == false)
+                throw new UserException("Korisnik je već deaktiviran.");
+
+            korisnik.JeAktivan = false;
+
+            await Context.SaveChangesAsync(cancellationToken);
+        }
 
     }
 }

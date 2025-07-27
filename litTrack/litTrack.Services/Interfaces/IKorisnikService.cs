@@ -15,5 +15,9 @@ namespace litTrack.Services.Interfaces
         Task<KorisnikDTO> LoginAsync(KorisnikLoginRequest request, CancellationToken cancellationToken = default);
         Task<KorisnikDTO> GetInfoAsync(CancellationToken cancellationToken = default);
 
+        Task AktivirajAsync(int korisnikId, CancellationToken cancellationToken = default);
+        Task DeaktivirajAsync(int korisnikId, CancellationToken cancellationToken = default);
+
+
     }
 }
