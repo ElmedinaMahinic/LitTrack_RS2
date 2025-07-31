@@ -10,6 +10,7 @@ import 'package:littrack_desktop/screens/admin_korisnici_screen.dart';
 import 'package:littrack_desktop/screens/admin_uloge_screen.dart';
 import 'package:littrack_desktop/screens/admin_ciljne_grupe_screen.dart';
 import 'package:littrack_desktop/screens/admin_recenzije_screen.dart';
+import 'package:littrack_desktop/screens/uredi_profil_screen.dart';
 
 class AdminSidebar extends StatefulWidget {
   const AdminSidebar({super.key});
@@ -131,7 +132,12 @@ class _AdminSidebarState extends State<AdminSidebar> {
                           );
                           setState(() {});
                         }),
-                        _buildMenuItem(Icons.settings, "Uredi profil", () {}),
+                        _buildMenuItem(Icons.settings, "Uredi profil", () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                const UrediKorisnikProfilScreen(),
+                          ));
+                        }),
                       ],
                     ),
                   ),

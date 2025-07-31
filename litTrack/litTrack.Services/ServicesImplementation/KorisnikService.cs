@@ -240,6 +240,12 @@ namespace litTrack.Services.ServicesImplementation
                 _logger.LogInformation("Korisnik {Username} je uspješno promijenio lozinku.", entity.KorisnickoIme);
 
             }
+
+            if (request.JeAktivan == null)
+            {
+                entity.JeAktivan = true;
+            }
+
         }
 
         public async Task<KorisnikDTO> LoginAsync(KorisnikLoginRequest request, CancellationToken cancellationToken = default)
