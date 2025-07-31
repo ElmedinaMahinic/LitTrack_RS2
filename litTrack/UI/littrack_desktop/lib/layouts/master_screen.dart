@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:littrack_desktop/providers/auth_provider.dart';
 import 'package:littrack_desktop/widgets/admin_sidebar.dart';
+import 'package:littrack_desktop/widgets/radnik_sidebar.dart';
 
 class MasterScreen extends StatefulWidget {
   final String title;
@@ -20,7 +21,10 @@ class _MasterScreenState extends State<MasterScreen> {
         children: [
           if (AuthProvider.uloge != null &&
               AuthProvider.uloge!.contains("Admin"))
-            const AdminSidebar(),
+            const AdminSidebar()
+          else if (AuthProvider.uloge != null &&
+              AuthProvider.uloge!.contains("Radnik"))
+            const RadnikSidebar(),
           Expanded(
             child: Container(
               color: const Color(0xFFF6F4F3),

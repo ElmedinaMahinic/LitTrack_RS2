@@ -11,6 +11,7 @@ import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/zanr_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
+import 'package:littrack_desktop/screens/radnik_dashboard_screen.dart';
 
 void main() {
   runApp(
@@ -226,16 +227,23 @@ class _LoginPageState extends State<LoginPage> {
                                       return;
                                     }
 
-                                    // Postavi isSignedIn na true nakon uspješne prijave
                                     AuthProvider.isSignedIn = true;
 
-                                    // Provjera uloge
+                                    // Navigacija na osnovu uloge
                                     if (AuthProvider.uloge != null &&
                                         AuthProvider.uloge!.contains("Admin")) {
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               const AdminDashboardScreen(),
+                                        ),
+                                      );
+                                    } else if (AuthProvider.uloge != null &&
+                                        AuthProvider.uloge!.contains("Radnik")) {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RadnikDashboardScreen(),
                                         ),
                                       );
                                     } else {
