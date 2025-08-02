@@ -147,13 +147,13 @@ abstract class BaseProvider<T> with ChangeNotifier {
             errorResponse['errors']['userError'] != null) {
           throw UserException(errorResponse['errors']['userError'].join(', '));
         } else {
-          throw UserException("Something bad happened, please try again");
+          throw UserException("Došlo je do greške, pokušajte ponovo.");
         }
       } catch (e) {
         if (e is UserException) {
           throw e;
         }
-        throw UserException("Something bad happened, please try again");
+        throw UserException("Greška u obradi odgovora sa servera.");
       }
     }
   }

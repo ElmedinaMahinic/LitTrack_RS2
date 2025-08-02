@@ -6,6 +6,7 @@ import 'package:littrack_desktop/providers/utils.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_desktop/screens/admin_knjige_details.dart';
 
 class AdminKnjigeScreen extends StatefulWidget {
   const AdminKnjigeScreen({super.key});
@@ -56,13 +57,16 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
                   decoration: InputDecoration(
                     labelText: 'Naziv knjige',
                     hintText: 'Unesite naziv knjige',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 12),
                   ),
                   onChanged: (value) {
-                    _dataSource.filterServerSide(_nazivController.text, _autorNazivController.text);
+                    _dataSource.filterServerSide(
+                        _nazivController.text, _autorNazivController.text);
                   },
                 ),
                 const SizedBox(height: 10),
@@ -71,13 +75,16 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
                   decoration: InputDecoration(
                     labelText: 'Autor',
                     hintText: 'Unesite ime/prezime autora',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 12),
                   ),
                   onChanged: (value) {
-                    _dataSource.filterServerSide(_nazivController.text, _autorNazivController.text);
+                    _dataSource.filterServerSide(
+                        _nazivController.text, _autorNazivController.text);
                   },
                 ),
               ],
@@ -95,7 +102,8 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
               _dataSource.filterServerSide('', '');
               setState(() {});
             },
-            child: const Text("Očisti filtere", style: TextStyle(color: Colors.white)),
+            child: const Text("Očisti filtere",
+                style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(width: 15),
           ElevatedButton(
@@ -104,9 +112,21 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             ),
             onPressed: () async {
-              // TODO: Navigacija na detalje knjige (dodaj knjigu)
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdminKnjigeDetailsScreen(),
+                ),
+              );
+              if (result == true) {
+                _dataSource.filterServerSide(
+                  _nazivController.text,
+                  _autorNazivController.text,
+                );
+              }
             },
-            child: const Text("Dodaj knjigu", style: TextStyle(color: Colors.white)),
+            child: const Text("Dodaj knjigu",
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -119,7 +139,8 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
       child: DataTableTheme(
         data: DataTableThemeData(
           headingRowColor: MaterialStateProperty.all(const Color(0xFF3C6E71)),
-          headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          headingTextStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           dataRowColor: MaterialStateProperty.all(Colors.white),
         ),
         child: AdvancedPaginatedDataTable(
@@ -159,7 +180,8 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Knjiga>> getNextPage(NextPageRequest pageRequest) async {
+  Future<RemoteDataSourceDetails<Knjiga>> getNextPage(
+      NextPageRequest pageRequest) async {
     page = (pageRequest.offset ~/ pageSize) + 1;
 
     final filter = {
@@ -168,7 +190,8 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
     };
 
     try {
-      final result = await provider.get(filter: filter, page: page, pageSize: pageSize);
+      final result =
+          await provider.get(filter: filter, page: page, pageSize: pageSize);
       data = result.resultList;
       count = result.count;
       return RemoteDataSourceDetails(count, data);
@@ -190,7 +213,27 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
 
     return DataRow(
       onSelectChanged: (selected) async {
-        // TODO: Navigacija na detalje knjige
+        if (selected == true) {
+          try {
+            final knjiga = await provider.getById(item.knjigaId!);
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminKnjigeDetailsScreen(knjiga: knjiga),
+              ),
+            );
+            if (result == true) {
+              filterServerSide(nazivFilter, autorNazivFilter);
+            }
+          } catch (e) {
+            showCustomDialog(
+              context: context,
+              title: 'Greška',
+              message: e.toString(),
+              icon: Icons.error,
+            );
+          }
+        }
       },
       color: MaterialStateProperty.resolveWith<Color?>(
         (Set<MaterialState> states) {
@@ -234,13 +277,34 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  // TODO: Navigacija na uređivanje knjige
+                  try {
+                    final knjiga = await provider.getById(item.knjigaId!);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AdminKnjigeDetailsScreen(knjiga: knjiga),
+                      ),
+                    );
+                    if (result == true) {
+                      filterServerSide(nazivFilter, autorNazivFilter);
+                    }
+                  } catch (e) {
+                    showCustomDialog(
+                      context: context,
+                      title: 'Greška',
+                      message: e.toString(),
+                      icon: Icons.error,
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3C6E71),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
-                child: const Text("Uredi", style: TextStyle(color: Colors.white)),
+                child:
+                    const Text("Uredi", style: TextStyle(color: Colors.white)),
               ),
               const SizedBox(width: 10),
               ElevatedButton(
@@ -276,9 +340,11 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3C6E71),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
-                child: const Text("Obriši", style: TextStyle(color: Colors.white)),
+                child:
+                    const Text("Obriši", style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
