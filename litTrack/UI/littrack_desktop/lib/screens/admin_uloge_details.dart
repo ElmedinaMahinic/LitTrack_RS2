@@ -13,7 +13,8 @@ class AdminUlogaDetailsScreen extends StatefulWidget {
   const AdminUlogaDetailsScreen({super.key, this.uloga});
 
   @override
-  State<AdminUlogaDetailsScreen> createState() => _AdminUlogaDetailsScreenState();
+  State<AdminUlogaDetailsScreen> createState() =>
+      _AdminUlogaDetailsScreenState();
 }
 
 class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
@@ -24,7 +25,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _provider = context.read<UlogaProvider>(); 
+    _provider = context.read<UlogaProvider>();
     _initialValue = {
       "Naziv": widget.uloga?.naziv ?? '',
       "Opis": widget.uloga?.opis ?? '',
@@ -59,17 +60,21 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
                 labelText: 'Naziv uloge',
                 hintText: 'Unesite naziv uloge',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(errorText: "Naziv je obavezan."),
-                FormBuilderValidators.minLength(1, errorText: "Naziv ne može biti prazan."),
-                FormBuilderValidators.maxLength(50, errorText: "Naziv može imati najviše 50 karaktera."),
+                FormBuilderValidators.minLength(1,
+                    errorText: "Naziv ne može biti prazan."),
+                FormBuilderValidators.maxLength(50,
+                    errorText: "Naziv može imati najviše 50 karaktera."),
                 FormBuilderValidators.match(
                   r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
-                  errorText: "Naziv mora početi velikim slovom i sadržavati samo slova.",
+                  errorText:
+                      "Naziv mora početi velikim slovom i sadržavati samo slova.",
                 ),
               ]),
             ),
@@ -81,13 +86,16 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
                 labelText: 'Opis uloge',
                 hintText: 'Unesite opis uloge',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
                 fillColor: Colors.white,
               ),
               validator: FormBuilderValidators.compose([
-                FormBuilderValidators.maxLength(200, errorText: "Opis može imati najviše 200 karaktera."),
-                FormBuilderValidators.minLength(1, errorText: "Opis ne može biti prazan."),
+                FormBuilderValidators.maxLength(200,
+                    errorText: "Opis može imati najviše 200 karaktera."),
+                FormBuilderValidators.minLength(1,
+                    errorText: "Opis ne može biti prazan."),
               ]),
             ),
           ],
@@ -143,8 +151,8 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
                   message: widget.uloga == null
                       ? "Da li ste sigurni da želite dodati ovu ulogu?"
                       : "Da li ste sigurni da želite urediti ovu ulogu?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
+                  icon: widget.uloga == null ? Icons.verified_user : Icons.edit,
+                  iconColor: const Color(0xFF3C6E71),
                   onConfirm: _save,
                 );
               },

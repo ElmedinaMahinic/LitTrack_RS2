@@ -173,7 +173,8 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                             'Telefon mora početi sa + i imati 7-15 cifara.',
                       ),
                       FormBuilderValidators.maxLength(20,
-                          errorText: 'Maksimalno 20 karaktera.'),
+                          errorText:
+                              'Telefon može imati najviše 20 karaktera.'),
                     ]),
                   ),
                 ),
@@ -386,8 +387,8 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                   context: context,
                   title: "Uređivanje profila",
                   message: "Da li ste sigurni da želite sačuvati izmjene?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
+                  icon: Icons.edit,
+                  iconColor: const Color(0xFF3C6E71),
                   onConfirm: _save,
                 );
               },

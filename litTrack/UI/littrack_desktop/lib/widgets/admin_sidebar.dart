@@ -79,7 +79,7 @@ class _AdminSidebarState extends State<AdminSidebar> {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const AdminAutoriScreen()));
                         }),
-                        _buildMenuItem(Icons.category, "Žanrovi", () {
+                        _buildMenuItem(Icons.library_books, "Žanrovi", () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
                                   const AdminZanroviScreen()));

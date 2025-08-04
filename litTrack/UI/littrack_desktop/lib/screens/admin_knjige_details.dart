@@ -359,9 +359,11 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
             showConfirmDialog(
               context: context,
               title: widget.knjiga == null ? "Dodaj knjigu" : "Uredi knjigu",
-              message: "Da li ste sigurni da želite sačuvati podatke?",
-              icon: Icons.warning,
-              iconColor: Colors.red,
+              message: widget.knjiga == null
+                  ? "Da li ste sigurni da želite dodati ovu knjigu?"
+                  : "Da li ste sigurni da želite urediti ovu knjigu?",
+              icon: widget.knjiga == null ? Icons.menu_book : Icons.edit,
+              iconColor: const Color(0xFF3C6E71),
               onConfirm: onPressed,
             );
           } else {

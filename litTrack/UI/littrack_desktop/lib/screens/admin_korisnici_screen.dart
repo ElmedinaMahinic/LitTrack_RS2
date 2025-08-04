@@ -9,6 +9,7 @@ import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/screens/korisnici_details_screen.dart';
+import 'package:littrack_desktop/screens/admin_dodaj_radnika_screen.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
@@ -134,8 +135,16 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
           ),
           const SizedBox(width: 15),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Navigacija na dodavanje radnika
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AdminDodajRadnikaScreen(),
+                ),
+              );
+              if (result == true) {
+                _refreshTable();
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3C6E71),
@@ -288,7 +297,6 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                         await provider.deaktiviraj(item.korisnikId!);
 
                         if (item.korisnikId == AuthProvider.korisnikId) {
-                          
                           AuthProvider.username = null;
                           AuthProvider.password = null;
                           AuthProvider.korisnikId = null;

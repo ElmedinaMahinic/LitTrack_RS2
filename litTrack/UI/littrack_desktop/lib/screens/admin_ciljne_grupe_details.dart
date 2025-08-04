@@ -66,11 +66,14 @@ class _AdminCiljnaGrupaDetailsScreenState
           ),
           validator: FormBuilderValidators.compose([
             FormBuilderValidators.required(errorText: "Naziv je obavezan."),
-            FormBuilderValidators.minLength(1, errorText: "Naziv ne može biti prazan."),
-            FormBuilderValidators.maxLength(50, errorText: "Naziv može imati najviše 50 karaktera."),
+            FormBuilderValidators.minLength(1,
+                errorText: "Naziv ne može biti prazan."),
+            FormBuilderValidators.maxLength(50,
+                errorText: "Naziv može imati najviše 50 karaktera."),
             FormBuilderValidators.match(
               r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
-              errorText: "Naziv mora početi velikim slovom i sadržavati samo slova.",
+              errorText:
+                  "Naziv mora početi velikim slovom i sadržavati samo slova.",
             ),
           ]),
         ),
@@ -125,8 +128,9 @@ class _AdminCiljnaGrupaDetailsScreenState
                   message: widget.ciljnaGrupa == null
                       ? "Da li ste sigurni da želite dodati ovu ciljnu grupu?"
                       : "Da li ste sigurni da želite urediti ovu ciljnu grupu?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
+                  icon:
+                      widget.ciljnaGrupa == null ? Icons.group_add : Icons.edit,
+                  iconColor: const Color(0xFF3C6E71),
                   onConfirm: _save,
                 );
               },

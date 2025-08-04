@@ -74,8 +74,7 @@ class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
             const SizedBox(height: 16),
             FormBuilderTextField(
               name: 'Prezime',
-              decoration:
-                  _inputDecoration("Prezime autora", "Unesite prezime"),
+              decoration: _inputDecoration("Prezime autora", "Unesite prezime"),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(
                     errorText: "Prezime je obavezno."),
@@ -164,8 +163,8 @@ class _AdminAutoriDetailsScreenState extends State<AdminAutoriDetailsScreen> {
                   message: widget.autor == null
                       ? "Da li ste sigurni da želite dodati ovog autora?"
                       : "Da li ste sigurni da želite urediti ovog autora?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
+                  icon: widget.autor == null ? Icons.person_add : Icons.edit,
+                  iconColor: const Color(0xFF3C6E71),
                   onConfirm: _save,
                 );
               },
