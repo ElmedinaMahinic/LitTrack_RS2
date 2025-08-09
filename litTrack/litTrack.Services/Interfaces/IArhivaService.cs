@@ -13,5 +13,7 @@ namespace litTrack.Services.Interfaces
     public interface IArhivaService : ICRUDServiceAsync<ArhivaDTO, ArhivaSearchObject, ArhivaInsertRequest, ArhivaUpdateRequest>
     {
         Task<int> GetBrojArhiviranjaAsync(int knjigaId, CancellationToken cancellationToken = default);
+        Task<string> GetNajdrazaKnjigaNazivAsync(CancellationToken cancellationToken = default);
+
     }
 }

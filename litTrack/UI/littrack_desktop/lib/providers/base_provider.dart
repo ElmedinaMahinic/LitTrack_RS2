@@ -18,61 +18,61 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }
 
   Future<SearchResult<T>> get({
-  dynamic filter,
-  int? page,
-  int? pageSize,
-  String? orderBy,
-  String? sortDirection,
-  bool? isDeleted,
-}) async {
-  var url = "$baseUrl$_endpoint";
+    dynamic filter,
+    int? page,
+    int? pageSize,
+    String? orderBy,
+    String? sortDirection,
+    bool? isDeleted,
+  }) async {
+    var url = "$baseUrl$_endpoint";
 
-  Map<String, dynamic> queryParams = {};
+    Map<String, dynamic> queryParams = {};
 
-  if (filter != null) {
-    queryParams.addAll(filter);
-  }
-
-  if (page != null) {
-    queryParams['page'] = page;
-  }
-  if (pageSize != null) {
-    queryParams['pageSize'] = pageSize;
-  }
-  if (orderBy != null) {
-    queryParams['orderBy'] = orderBy;
-  }
-  if (sortDirection != null) {
-    queryParams['sortDirection'] = sortDirection;
-  }
-  if (isDeleted != null) {
-    queryParams['isDeleted'] = isDeleted;
-  }
-
-  if (queryParams.isNotEmpty) {
-    var queryString = getQueryString(queryParams);
-    url = "$url?$queryString";
-  }
-
-  var uri = Uri.parse(url);
-  var headers = createHeaders();
-
-  var response = await http.get(uri, headers: headers);
-
-  if (isValidResponse(response)) {
-    var data = jsonDecode(response.body);
-    var result = SearchResult<T>();
-
-    result.count = data['count'];
-    for (var item in data['resultList']) {
-      result.resultList.add(fromJson(item));
+    if (filter != null) {
+      queryParams.addAll(filter);
     }
 
-    return result;
-  } else {
-    throw Exception("Unknown error");
+    if (page != null) {
+      queryParams['page'] = page;
+    }
+    if (pageSize != null) {
+      queryParams['pageSize'] = pageSize;
+    }
+    if (orderBy != null) {
+      queryParams['orderBy'] = orderBy;
+    }
+    if (sortDirection != null) {
+      queryParams['sortDirection'] = sortDirection;
+    }
+    if (isDeleted != null) {
+      queryParams['isDeleted'] = isDeleted;
+    }
+
+    if (queryParams.isNotEmpty) {
+      var queryString = getQueryString(queryParams);
+      url = "$url?$queryString";
+    }
+
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var response = await http.get(uri, headers: headers);
+
+    if (isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      var result = SearchResult<T>();
+
+      result.count = data['count'];
+      for (var item in data['resultList']) {
+        result.resultList.add(fromJson(item));
+      }
+
+      return result;
+    } else {
+      throw Exception("Unknown error");
+    }
   }
-}
 
   Future<T> getById(int id) async {
     var url = "$baseUrl$_endpoint/$id";
@@ -139,6 +139,8 @@ abstract class BaseProvider<T> with ChangeNotifier {
       return true;
     } else if (response.statusCode == 401) {
       throw UserException("Unauthorized");
+    } else if (response.statusCode == 403) {
+      throw UserException("Nemate dozvolu za pristup.");
     } else {
       try {
         final errorResponse = jsonDecode(response.body);
@@ -158,7 +160,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-   Map<String, String> createHeaders() {
+  Map<String, String> createHeaders() {
     String username = AuthProvider.username ?? "";
     String password = AuthProvider.password ?? "";
 
@@ -204,10 +206,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
     });
     return query;
   }
-
-
 }
-
 
 class UserException implements Exception {
   final String message;
@@ -217,4 +216,3 @@ class UserException implements Exception {
   @override
   String toString() => message;
 }
-

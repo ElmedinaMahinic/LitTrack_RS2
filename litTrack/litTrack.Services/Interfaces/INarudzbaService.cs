@@ -21,5 +21,8 @@ namespace litTrack.Services.Interfaces
         Task<NarudzbaDTO> PonistiAsync(int narudzbaId, CancellationToken cancellationToken = default);
 
         Task<List<string>> AllowedActionsAsync(int narudzbaId, CancellationToken cancellationToken = default);
+
+        Task<int[]> GetBrojNarudzbiPoMjesecimaAsync(string? stateFilter = null, CancellationToken cancellationToken = default);
+
     }
 }

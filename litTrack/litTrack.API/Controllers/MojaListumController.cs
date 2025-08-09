@@ -28,7 +28,7 @@ namespace litTrack.API.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Korisnik")]
+        [Authorize]
         [HttpGet]
         public override Task<PagedResult<Model.DTOs.MojaListumDTO>> GetList([FromQuery] MojaListumSearchObject searchObject, CancellationToken cancellationToken = default)
         {

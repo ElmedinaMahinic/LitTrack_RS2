@@ -28,7 +28,7 @@ namespace litTrack.API.Controllers
             return Ok(brojPreporuka);
         }
 
-        [Authorize(Roles = "Korisnik")]
+        [Authorize]
         [HttpGet]
         public override Task<PagedResult<PreporukaDTO>> GetList([FromQuery] PreporukaSearchObject searchObject, CancellationToken cancellationToken = default)
         {

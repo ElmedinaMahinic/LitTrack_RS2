@@ -227,5 +227,35 @@ namespace litTrack.Services.ServicesImplementation
             return state.AllowedActions(narudzba);
         }
 
+        public async Task<int[]> GetBrojNarudzbiPoMjesecimaAsync(string? stateFilter = null, CancellationToken cancellationToken = default)
+        {
+            var query = Context.Narudzbas
+                .Where(n => !n.IsDeleted);
+
+            if (!string.IsNullOrWhiteSpace(stateFilter))
+            {
+                query = query.Where(n => n.StateMachine == stateFilter);
+            }
+
+            var narudzbePoMjesecima = await query
+                .GroupBy(n => n.DatumNarudzbe.Month)
+                .Select(g => new
+                {
+                    Mjesec = g.Key,
+                    BrojNarudzbi = g.Count()
+                })
+                .ToListAsync(cancellationToken);
+
+            var rezultati = new int[12];
+
+            foreach (var item in narudzbePoMjesecima)
+            {
+                rezultati[item.Mjesec - 1] = item.BrojNarudzbi;
+            }
+
+            return rezultati;
+        }
+
+
     }
 }

@@ -137,5 +137,33 @@ namespace litTrack.Services.ServicesImplementation
                 .CountAsync(cancellationToken);
         }
 
+        public async Task<string> GetNajdrazaKnjigaNazivAsync(CancellationToken cancellationToken = default)
+        {
+            var najdraza = await Context.Arhivas
+                .Where(a => !a.IsDeleted)
+                .GroupBy(a => a.KnjigaId)
+                .Select(g => new
+                {
+                    KnjigaId = g.Key,
+                    BrojArhiviranja = g.Count()
+                })
+                .OrderByDescending(g => g.BrojArhiviranja)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (najdraza == null)
+                return "Nema arhiviranih knjiga";
+
+            var knjiga = await Context.Knjigas
+                .Where(k => k.KnjigaId == najdraza.KnjigaId && !k.IsDeleted)
+                .Select(k => k.Naziv)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (knjiga == null)
+                throw new UserException("Knjiga nije pronađena.");
+
+            return knjiga;
+        }
+
+
     }
 }

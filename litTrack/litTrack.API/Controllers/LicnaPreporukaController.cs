@@ -29,7 +29,7 @@ namespace litTrack.API.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Korisnik")]
+        [Authorize]
         [HttpGet]
         public override Task<PagedResult<LicnaPreporukaDTO>> GetList([FromQuery] LicnaPreporukaSearchObject searchObject, CancellationToken cancellationToken = default)
         {

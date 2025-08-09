@@ -9,8 +9,13 @@ import 'package:littrack_desktop/providers/recenzija_provider.dart';
 import 'package:littrack_desktop/providers/recenzija_odgovor_provider.dart';
 import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/zanr_provider.dart';
+import 'package:littrack_desktop/providers/arhiva_provider.dart';
+import 'package:littrack_desktop/providers/preporuka_provider.dart';
+import 'package:littrack_desktop/providers/licna_preporuka_provider.dart';
+import 'package:littrack_desktop/providers/moja_listum_provider.dart';
+import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
-import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
+import 'package:littrack_desktop/screens/admin_knjige_screen.dart';
 import 'package:littrack_desktop/screens/radnik_dashboard_screen.dart';
 
 void main() {
@@ -25,6 +30,11 @@ void main() {
         ChangeNotifierProvider(create: (_) => RecenzijaOdgovorProvider()),
         ChangeNotifierProvider(create: (_) => UlogaProvider()),
         ChangeNotifierProvider(create: (_) => ZanrProvider()),
+        ChangeNotifierProvider(create: (_) => ArhivaProvider()),
+        ChangeNotifierProvider(create: (_) => MojaListumProvider()),
+        ChangeNotifierProvider(create: (_) => PreporukaProvider()),
+        ChangeNotifierProvider(create: (_) => LicnaPreporukaProvider()),
+        ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
       ],
       child: const MyApp(),
     ),
@@ -235,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const AdminDashboardScreen(),
+                                              const AdminKnjigeScreen(),
                                         ),
                                       );
                                     } else if (AuthProvider.uloge != null &&

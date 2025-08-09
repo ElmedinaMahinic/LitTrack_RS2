@@ -3,6 +3,7 @@ using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.Interfaces;
+using litTrack.Services.ServicesImplementation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -19,6 +20,15 @@ namespace litTrack.API.Controllers
         {
             _narudzbaService= narudzbaService;
         }
+
+        [Authorize]
+        [HttpGet("BrojNarudzbiPoMjesecima")]
+        public async Task<ActionResult<int[]>> GetBrojNarudzbiPoMjesecima([FromQuery] string? stateFilter = null, CancellationToken cancellationToken = default)
+        {
+            var brojNarudzbi = await _narudzbaService.GetBrojNarudzbiPoMjesecimaAsync(stateFilter, cancellationToken);
+            return Ok(brojNarudzbi);
+        }
+
 
         [Authorize(Roles = "Radnik")]
         [HttpPut("{narudzbaId}/preuzmi")]

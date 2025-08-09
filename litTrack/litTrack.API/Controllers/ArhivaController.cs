@@ -28,7 +28,16 @@ namespace litTrack.API.Controllers
             return Ok(brojArhiviranja);
         }
 
-        [Authorize(Roles = "Korisnik")]
+        [Authorize]
+        [HttpGet("NajdrazaKnjiga")]
+        public async Task<ActionResult<string>> GetNajdrazaKnjiga(CancellationToken cancellationToken)
+        {
+            var nazivKnjige = await _arhivaService.GetNajdrazaKnjigaNazivAsync(cancellationToken);
+            return Ok(nazivKnjige);
+        }
+
+
+        [Authorize]
         [HttpGet]
         public override Task<PagedResult<Model.DTOs.ArhivaDTO>> GetList([FromQuery] ArhivaSearchObject searchObject, CancellationToken cancellationToken = default)
         {
