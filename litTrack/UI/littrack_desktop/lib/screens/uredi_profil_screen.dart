@@ -288,7 +288,7 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
           SizedBox(
             width: 220,
             height: 45,
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: () {
                 showConfirmDialog(
                   context: context,
@@ -334,34 +334,44 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                   },
                 );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
+              icon: const Icon(Icons.block, color: Colors.white, size: 20),
+              label: const Text(
                 "Deaktiviraj profil",
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                elevation: MaterialStateProperty.all(4),
+                padding: MaterialStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                shadowColor: MaterialStateProperty.all(Colors.black54),
               ),
             ),
           ),
           const Spacer(),
           SizedBox(
-            width: 120,
+            width: 140,
             height: 45,
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 18),
+              label: const Text(
                 "Odustani",
                 style: TextStyle(
                   color: Colors.white,
@@ -369,19 +379,31 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color.fromARGB(255, 150, 150, 150);
+                  }
+                  return const Color.fromARGB(255, 120, 120, 120);
+                }),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                elevation: MaterialStateProperty.all(4),
+                padding: MaterialStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                shadowColor: MaterialStateProperty.all(Colors.black54),
+              ),
             ),
           ),
           const SizedBox(width: 20),
           SizedBox(
-            width: 120,
+            width: 140,
             height: 45,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+            child: ElevatedButton.icon(
               onPressed: () {
                 showConfirmDialog(
                   context: context,
@@ -392,13 +414,32 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                   onConfirm: _save,
                 );
               },
-              child: const Text(
+              icon: const Icon(Icons.check, color: Colors.white, size: 20),
+              label: const Text(
                 "Sačuvaj",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
+              ),
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                elevation: MaterialStateProperty.all(4),
+                padding: MaterialStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                shadowColor: MaterialStateProperty.all(Colors.black54),
               ),
             ),
           ),

@@ -28,13 +28,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   bool isLoading = true;
 
   List<int> narudzbePoMjesecima = List.filled(12, 0);
-  String? selectedState;
-  final List<String> availableStates = [
-    'uToku',
-    'preuzeta',
-    'ponistena',
-    'zavrsena'
-  ];
+
+  final Map<String?, String?> stateDisplayToValue = {
+    null: null, // "Sve narudžbe"
+    'Samo kreirane': 'kreirana',
+    'Samo u toku': 'uToku',
+    'Samo preuzete': 'preuzeta',
+    'Samo poništene': 'ponistena',
+    'Samo završene': 'zavrsena',
+  };
+
+  String? selectedDisplayState;
+
+  List<String?> get availableDisplayStates => stateDisplayToValue.keys.toList();
 
   @override
   void initState() {
@@ -62,8 +68,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       final preporuke = await preporukaProvider.get();
       final licnePreporuke = await licnaPreporukaProvider.get();
       final najdraza = await arhivaProvider.getNajdrazaKnjigaNaziv();
-      final narudzbe = await narudzbaProvider.getBrojNarudzbiPoMjesecima(
-        stateFilter: selectedState,
+
+      final String? backendSelectedState = selectedDisplayState != null
+          ? stateDisplayToValue[selectedDisplayState!]
+          : null;
+
+      final narudzbePoMjesecimaData =
+          await narudzbaProvider.getBrojNarudzbiPoMjesecima(
+        stateFilter: backendSelectedState,
       );
 
       setState(() {
@@ -73,7 +85,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         brojRecenzija = recenzije.count + odgovori.count;
         brojPreporuka = preporuke.count + licnePreporuke.count;
         najdrazaKnjigaNaziv = najdraza;
-        narudzbePoMjesecima = narudzbe;
+        narudzbePoMjesecima = narudzbePoMjesecimaData;
         isLoading = false;
       });
     } catch (e) {
@@ -119,59 +131,83 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ],
                     ),
                     const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Filtriraj narudžbe po stanju: ",
-                          style: TextStyle(
-                            fontSize: 16.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        DropdownButton<String>(
-                          value: selectedState,
-                          hint: const Text("Sve"),
-                          items: availableStates.map((String state) {
-                            return DropdownMenuItem<String>(
-                              value: state,
-                              child: Text(state),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedState = value;
-                              isLoading = true;
-                            });
-                            loadData();
-                          },
-                        ),
-                        const SizedBox(width: 20),
-                        if (selectedState != null)
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedState = null;
-                                isLoading = true;
-                              });
-                              loadData();
-                            },
-                            child: const Text(
-                              "Ukloni filter",
-                              style: TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                    _buildFilterSection(),
                     const SizedBox(height: 25),
                     _buildLineChart(),
                   ],
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildFilterSection() {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 100),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F9F9),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromARGB(68, 0, 0, 0),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Prikazane narudžbe:",
+            style: TextStyle(
+              fontSize: 16.5,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF3C6E71),
+            ),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String?>(
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xFFF9F9F9),
+              prefixIcon: const Icon(
+                Icons.filter_list,
+                color: Color(0xFF3C6E71),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            dropdownColor: const Color(0xFFF9F9F9),
+            style: const TextStyle(
+              color: Color(0xFF3C6E71),
+              fontWeight: FontWeight.w600,
+            ),
+            value: selectedDisplayState,
+            hint: const Text(
+              "Sve narudžbe",
+              style: TextStyle(color: Colors.black54),
+            ),
+            items: availableDisplayStates.map((displayValue) {
+              return DropdownMenuItem<String?>(
+                value: displayValue,
+                child: Text(displayValue ?? "Sve narudžbe"),
+              );
+            }).toList(),
+            onChanged: (value) async {
+              setState(() {
+                selectedDisplayState = value;
+                isLoading = true;
+              });
+              await loadData();
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -247,7 +283,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             padding: const EdgeInsets.all(16),
             child: LineChart(
               LineChartData(
-                backgroundColor: backgroundColor,
+                backgroundColor: const Color.fromARGB(255, 230, 236, 234),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     axisNameWidget: const Padding(
@@ -363,6 +399,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ),
                     ),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     barWidth: 3,
                     color: chartLineColor,
                     dotData: const FlDotData(show: true),
@@ -438,10 +475,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return Container(
       width: 240,
-      constraints: const BoxConstraints(minHeight: 120),
+      constraints: const BoxConstraints(minHeight: 110),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
+        color: const Color(0xFFD5E0DB),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: const Color(0xFF3C6E71), width: 1.5),
         boxShadow: const [
           BoxShadow(
             color: Color.fromARGB(68, 0, 0, 0),
@@ -450,7 +489,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -471,7 +510,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             title,
             style: const TextStyle(
               fontSize: 15,
-              color: Colors.black87,
+              color: Color(0xFF3C6E71),
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

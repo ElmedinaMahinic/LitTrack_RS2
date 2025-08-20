@@ -15,7 +15,7 @@ import 'package:littrack_desktop/providers/licna_preporuka_provider.dart';
 import 'package:littrack_desktop/providers/moja_listum_provider.dart';
 import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
-import 'package:littrack_desktop/screens/admin_knjige_screen.dart';
+import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
 import 'package:littrack_desktop/screens/radnik_dashboard_screen.dart';
 
 void main() {
@@ -245,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const AdminKnjigeScreen(),
+                                              const AdminDashboardScreen(),
                                         ),
                                       );
                                     } else if (AuthProvider.uloge != null &&

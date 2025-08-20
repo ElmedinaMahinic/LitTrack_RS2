@@ -350,10 +350,17 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
   }
 
   Widget _buildButton(String text, Color color, VoidCallback onPressed) {
+    IconData? icon;
+    if (text == "Sačuvaj") {
+      icon = Icons.check;
+    } else if (text == "Odustani") {
+      icon = Icons.arrow_back_ios_new;
+    }
+
     return SizedBox(
-      width: 120,
+      width: 140,
       height: 45,
-      child: ElevatedButton(
+      child: ElevatedButton.icon(
         onPressed: () {
           if (text == "Sačuvaj") {
             showConfirmDialog(
@@ -370,15 +377,36 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
             onPressed();
           }
         },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: Text(
+        icon: Icon(icon, color: Colors.white, size: 18),
+        label: Text(
           text,
           style: const TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.hovered)) {
+              if (color == const Color(0xFF3C6E71)) {
+                return const Color(0xFF51968F);
+              } else if (color == const Color.fromARGB(255, 120, 120, 120)) {
+                return const Color.fromARGB(255, 150, 150, 150);
+              }
+            }
+            return color;
+          }),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          elevation: MaterialStateProperty.all(4),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16),
+          ),
+          shadowColor: MaterialStateProperty.all(Colors.black54),
         ),
       ),
     );

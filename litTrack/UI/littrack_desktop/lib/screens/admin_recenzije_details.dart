@@ -74,56 +74,106 @@ class _AdminRecenzijeDetailsScreenState
   }
 
   Widget _buildInfoSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildInfoRow("Korisničko ime:", korisnickoIme),
-        _buildInfoRow("Datum dodavanja:",
-            DateFormat('dd.MM.yyyy. HH:mm').format(datum.toLocal())),
-        _buildInfoRow("Broj lajkova:", brojLajkova.toString()),
-        _buildInfoRow("Broj dislajkova:", brojDislajkova.toString()),
-      ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRow(
+              "Korisničko ime:", korisnickoIme, Icons.account_circle_outlined),
+          _buildInfoRow(
+              "Datum dodavanja:",
+              DateFormat('dd.MM.yyyy. HH:mm').format(datum.toLocal()),
+              Icons.calendar_today_outlined),
+          _buildInfoRow("Broj lajkova:", brojLajkova.toString(),
+              Icons.thumb_up_alt_outlined),
+          _buildInfoRow("Broj dislajkova:", brojDislajkova.toString(),
+              Icons.thumb_down_alt_outlined),
+        ],
+      ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, IconData icon,
+      {Color? iconColor}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 20),
+          const SizedBox(width: 10),
           SizedBox(
             width: 180,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+                color: Color(0xFF3C6E71),
+              ),
             ),
           ),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 16),)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16.5,
+                color: Color(0xFF3C6E71),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildKomentarBox() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Komentar:",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(12),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          child: Text(komentar),
-        ),
-      ],
+        ],
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Komentar:",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              color: Color(0xFF3C6E71),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            komentar,
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 
@@ -132,43 +182,75 @@ class _AdminRecenzijeDetailsScreenState
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SizedBox(
-          width: 120,
+          width: 140,
           height: 45,
-          child: ElevatedButton(
+          child: ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text(
+            icon: const Icon(Icons.arrow_back_ios_new,
+                color: Colors.white, size: 18),
+            label: const Text(
               "Nazad",
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return Colors.grey.shade600;
+                }
+                return Colors.grey;
+              }),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              elevation: MaterialStateProperty.all(4),
+              padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              shadowColor: MaterialStateProperty.all(Colors.black54),
             ),
           ),
         ),
         const SizedBox(width: 20),
         SizedBox(
-          width: 120,
+          width: 140,
           height: 45,
-          child: ElevatedButton(
+          child: ElevatedButton.icon(
             onPressed: _delete,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3C6E71),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text(
+            icon:
+                const Icon(Icons.delete_outline, color: Colors.white, size: 20),
+            label: const Text(
               "Obriši",
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color(0xFF51968F);
+                }
+                return const Color(0xFF3C6E71);
+              }),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              elevation: MaterialStateProperty.all(4),
+              padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              shadowColor: MaterialStateProperty.all(Colors.black54),
             ),
           ),
         ),

@@ -20,7 +20,8 @@ class AdminRecenzijeScreen extends StatefulWidget {
 }
 
 class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
-  final TextEditingController _korisnickoImeController = TextEditingController();
+  final TextEditingController _korisnickoImeController =
+      TextEditingController();
   late RecenzijaProvider _recenzijaProvider;
   late RecenzijaOdgovorProvider _recenzijaOdgovorProvider;
   late RecenzijaDataSource _dataSource;
@@ -80,8 +81,10 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
                   ),
                   onChanged: (value) {
                     _dataSource.filterServerSide(value, _prikazTipa);
@@ -90,51 +93,152 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
               ),
               const SizedBox(width: 15),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3C6E71),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                ),
                 onPressed: () {
                   _korisnickoImeController.clear();
                   _dataSource.filterServerSide('', _prikazTipa);
+                  setState(() {});
                 },
-                child: const Text("Očisti filtere",
-                    style: TextStyle(color: Colors.white)),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      return const Color(0xFF51968F);
+                    }
+                    return const Color(0xFF3C6E71);
+                  }),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.clear, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      "Očisti filtere",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Tooltip(
+                message:
+                    'Filtrirajte recenzije po korisničkom imenu i tipu prikaza.',
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 128, 136, 132),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 96, 102, 102),
+                    width: 1,
+                  ),
+                ),
+                textStyle: const TextStyle(
+                  color: Color.fromARGB(255, 246, 246, 246),
+                  fontSize: 14.5,
+                ),
+                child: const Icon(
+                  Icons.info_outline,
+                  color: Colors.grey,
+                  size: 20,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 15),
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Radio<PrikazTipa>(
-                value: PrikazTipa.recenzije,
-                groupValue: _prikazTipa,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _prikazTipa = value;
-                      _dataSource.filterServerSide(
-                          _korisnickoImeController.text, _prikazTipa);
-                    });
-                  }
+              // Dugme za recenzije
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _prikazTipa = PrikazTipa.recenzije;
+                    _dataSource.filterServerSide(
+                        _korisnickoImeController.text, _prikazTipa);
+                  });
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _prikazTipa == PrikazTipa.recenzije
+                      ? const Color(0xFF3C6E71)
+                      : Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Recenzije',
+                  style: TextStyle(
+                    color: _prikazTipa == PrikazTipa.recenzije
+                        ? Colors.white
+                        : Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
               ),
-              const Text("Prikaži recenzije"),
-              const SizedBox(width: 20),
-              Radio<PrikazTipa>(
-                value: PrikazTipa.odgovori,
-                groupValue: _prikazTipa,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _prikazTipa = value;
-                      _dataSource.filterServerSide(
-                          _korisnickoImeController.text, _prikazTipa);
-                    });
-                  }
+
+              const SizedBox(width: 10),
+
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _prikazTipa = PrikazTipa.odgovori;
+                    _dataSource.filterServerSide(
+                        _korisnickoImeController.text, _prikazTipa);
+                  });
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _prikazTipa == PrikazTipa.odgovori
+                      ? const Color(0xFF3C6E71)
+                      : Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Odgovori',
+                  style: TextStyle(
+                    color: _prikazTipa == PrikazTipa.odgovori
+                        ? Colors.white
+                        : Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
               ),
-              const Text("Prikaži odgovore"),
+
+              const SizedBox(width: 12),
+
+              Tooltip(
+                message:
+                    'Izaberite da prikažete korisničke recenzije ili odgovore na njih.',
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 128, 136, 132),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: const Color.fromARGB(255, 96, 102, 102), width: 1),
+                ),
+                textStyle: const TextStyle(
+                  color: Color.fromARGB(255, 246, 246, 246),
+                  fontSize: 14.5,
+                ),
+                child: const Icon(
+                  Icons.info_outline,
+                  color: Colors.grey,
+                  size: 20,
+                ),
+              ),
             ],
           ),
         ],
@@ -147,9 +251,10 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: MaterialStateProperty.all(const Color(0xFF3C6E71)),
+          headingRowColor: MaterialStateProperty.all(
+              const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
-            color: Colors.white,
+            color: Color(0xFF3C6E71),
             fontWeight: FontWeight.bold,
           ),
           dataRowColor: MaterialStateProperty.all(Colors.white),
@@ -160,11 +265,11 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
           source: _dataSource,
           rowsPerPage: 10,
           columns: const [
-            DataColumn(label: Text("Korisničko ime")),
-            DataColumn(label: Text("Komentar")),
-            DataColumn(label: Text("Broj lajkova")),
-            DataColumn(label: Text("Broj dislajkova")),
-            DataColumn(label: Text("Opcije")),
+            DataColumn(label: Text("KORISNIČKO IME")),
+            DataColumn(label: Text("KOMENTAR")),
+            DataColumn(label: Text("BROJ LAJKOVA")),
+            DataColumn(label: Text("BROJ DISLAJKOVA")),
+            DataColumn(label: Text("OPCIJE")),
           ],
         ),
       ),
@@ -321,28 +426,53 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
           ),
         ),
         DataCell(
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AdminRecenzijeDetailsScreen(
-                      recenzija: item is Recenzija ? item : null,
-                      odgovor: item is RecenzijaOdgovor ? item : null,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminRecenzijeDetailsScreen(
+                        recenzija: item is Recenzija ? item : null,
+                        odgovor: item is RecenzijaOdgovor ? item : null,
+                      ),
                     ),
+                  ).then((value) {
+                    if (value == true) refreshParent();
+                  });
+                },
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      return const Color(0xFF51968F);
+                    }
+                    return const Color(0xFF3C6E71);
+                  }),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
                   ),
-                ).then((value) {
-                  if (value == true) refreshParent();
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  elevation: MaterialStateProperty.all(0),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.white, size: 20),
+                    SizedBox(width: 6),
+                    Text(
+                      "Detalji",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
-              child: const Text("Detalji", style: TextStyle(color: Colors.white)),
-            ),
+            ],
           ),
         ),
       ],

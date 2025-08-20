@@ -54,38 +54,54 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
               decoration: InputDecoration(
                 labelText: 'Naziv ciljne grupe',
                 hintText: 'Unesite naziv ciljne grupe',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
               ),
               onChanged: (value) {
                 _dataSource.filterServerSide(value);
               },
             ),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 20),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3C6E71),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            ),
             onPressed: () {
               _nazivController.clear();
               _dataSource.filterServerSide('');
               setState(() {});
             },
-            child: const Text("Očisti filtere",
-                style: TextStyle(color: Colors.white)),
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color(0xFF51968F);
+                }
+                return const Color(0xFF3C6E71);
+              }),
+              padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              ),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.clear, color: Colors.white),
+                SizedBox(width: 8),
+                Text("Očisti filtere", style: TextStyle(color: Colors.white)),
+              ],
+            ),
           ),
           const SizedBox(width: 15),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3C6E71),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            ),
+          ElevatedButton.icon(
             onPressed: () async {
               final result = await Navigator.push(
                 context,
@@ -97,8 +113,47 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
                 _dataSource.filterServerSide(_nazivController.text);
               }
             },
-            child: const Text("Dodaj ciljnu grupu",
-                style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: const Text(
+              "Dodaj ciljnu grupu",
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color(0xFF51968F);
+                }
+                return const Color(0xFF3C6E71);
+              }),
+              padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              ),
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Tooltip(
+            message: 'Filtrirajte ciljne grupe po nazivu.',
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 128, 136, 132),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color.fromARGB(255, 96, 102, 102),
+                width: 1,
+              ),
+            ),
+            textStyle: const TextStyle(
+              color: Color.fromARGB(255, 246, 246, 246),
+              fontSize: 14.5,
+            ),
+            child: const Icon(
+              Icons.info_outline,
+              color: Colors.grey,
+              size: 20,
+            ),
           ),
         ],
       ),
@@ -110,9 +165,10 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: MaterialStateProperty.all(const Color(0xFF3C6E71)),
+          headingRowColor: MaterialStateProperty.all(
+              const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
-            color: Colors.white,
+            color: Color(0xFF3C6E71),
             fontWeight: FontWeight.bold,
           ),
           dataRowColor: MaterialStateProperty.all(Colors.white),
@@ -123,8 +179,8 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
           source: _dataSource,
           rowsPerPage: 10,
           columns: const [
-            DataColumn(label: Text("Naziv")),
-            DataColumn(label: Text("Opcije")),
+            DataColumn(label: Text("NAZIV")),
+            DataColumn(label: Text("OPCIJE")),
           ],
         ),
       ),
@@ -235,13 +291,31 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                     filterServerSide(nazivFilter);
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3C6E71),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      return const Color(0xFF51968F);
+                    }
+                    return const Color(0xFF3C6E71);
+                  }),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-                child:
-                    const Text("Uredi", style: TextStyle(color: Colors.white)),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.edit, color: Colors.white, size: 20),
+                    SizedBox(width: 6),
+                    Text("Uredi", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
               ),
               const SizedBox(width: 10),
               ElevatedButton(
@@ -276,17 +350,35 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                     },
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3C6E71),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      return const Color(0xFF51968F);
+                    }
+                    return const Color(0xFF3C6E71);
+                  }),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-                child:
-                    const Text("Obriši", style: TextStyle(color: Colors.white)),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.white, size: 20),
+                    SizedBox(width: 6),
+                    Text("Obriši", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
               ),
             ],
           ),
-        ),
+        )
       ],
     );
   }

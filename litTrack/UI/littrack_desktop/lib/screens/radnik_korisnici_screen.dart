@@ -18,7 +18,8 @@ class RadnikKorisniciScreen extends StatefulWidget {
 }
 
 class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
-  final TextEditingController _korisnickoImeController = TextEditingController();
+  final TextEditingController _korisnickoImeController =
+      TextEditingController();
   Uloga? _selectedUloga;
 
   late KorisnikProvider _korisnikProvider;
@@ -91,7 +92,7 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
               onChanged: (_) => _refreshTable(),
             ),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 20),
           Expanded(
             flex: 2,
             child: DropdownButtonFormField<Uloga>(
@@ -115,19 +116,56 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
               },
             ),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 20),
           ElevatedButton(
             onPressed: () {
               _korisnickoImeController.clear();
               setState(() => _selectedUloga = null);
               _refreshTable();
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3C6E71),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color(0xFF51968F);
+                }
+                return const Color(0xFF3C6E71);
+              }),
+              padding: MaterialStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16)),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              )),
             ),
-            child: const Text("Očisti filtere",
-                style: TextStyle(color: Colors.white)),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.clear, color: Colors.white),
+                SizedBox(width: 8),
+                Text("Očisti filtere", style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Tooltip(
+            message: 'Filtrirajte korisnike po korisničkom imenu i/ili ulozi.',
+            decoration: BoxDecoration(
+              color:const Color.fromARGB(255, 128, 136, 132),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color.fromARGB(255, 96, 102, 102),
+                width: 1,
+              ),
+            ),
+            textStyle: const TextStyle(
+              color: Color.fromARGB(255, 246, 246, 246),
+              fontSize: 14.5,
+            ),
+            child: const Icon(
+              Icons.info_outline,
+              color: Colors.grey,
+              size: 20,
+            ),
           ),
         ],
       ),
@@ -135,29 +173,36 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
   }
 
   Widget _buildTable() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DataTableTheme(
-        data: DataTableThemeData(
-          headingRowColor: MaterialStateProperty.all(const Color(0xFF3C6E71)),
-          headingTextStyle:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  return Padding(
+    padding: const EdgeInsets.all(8),
+    child: DataTableTheme(
+      data: DataTableThemeData(
+        headingRowColor: MaterialStateProperty.all(
+          const Color.fromARGB(255, 213, 224, 219),
         ),
-        child: AdvancedPaginatedDataTable(
-          showCheckboxColumn: false,
-          addEmptyRows: false,
-          source: _dataSource,
-          rowsPerPage: 10,
-          columns: const [
-            DataColumn(label: Text("Uloge")),
-            DataColumn(label: Text("Korisničko ime")),
-            DataColumn(label: Text("Email")),
-            DataColumn(label: Text("Opcije")),
-          ],
+        headingTextStyle: const TextStyle(
+          color: Color(0xFF3C6E71),
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
         ),
+        dataTextStyle: const TextStyle(fontSize: 15),
       ),
-    );
-  }
+      child: AdvancedPaginatedDataTable(
+        showCheckboxColumn: false,
+        addEmptyRows: false,
+        source: _dataSource,
+        rowsPerPage: 10,
+        columns: const [
+          DataColumn(label: Text("ULOGE")),
+          DataColumn(label: Text("KORISNIČKO IME")),
+          DataColumn(label: Text("EMAIL")),
+          DataColumn(label: Text("OPCIJE")),
+        ],
+      ),
+    ),
+  );
+}
+
 }
 
 class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
@@ -219,6 +264,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
     final ulogeText = item.uloge?.join(', ') ?? '';
 
     return DataRow(
+      color: MaterialStateProperty.all(Colors.white),
       onSelectChanged: (selected) async {
         final result = await Navigator.push(
           context,
@@ -232,27 +278,33 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
         DataCell(
           Tooltip(
             message: "Klikni za prikaz detalja",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(ulogeText),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 150),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(ulogeText,
+                  softWrap: true, overflow: TextOverflow.ellipsis),
             ),
           ),
         ),
         DataCell(
           Tooltip(
             message: "Klikni za prikaz detalja",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(item.korisnickoIme ?? ''),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 150),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(item.korisnickoIme ?? '',
+                  softWrap: true, overflow: TextOverflow.ellipsis),
             ),
           ),
         ),
         DataCell(
           Tooltip(
             message: "Klikni za prikaz detalja",
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(item.email ?? ''),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 200),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(item.email ?? '',
+                  softWrap: true, overflow: TextOverflow.ellipsis),
             ),
           ),
         ),
@@ -269,13 +321,30 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                 );
                 if (result == true) refreshParent();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
+                padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 9)),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
-              child:
-                  const Text("Detalji", style: TextStyle(color: Colors.white)),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.info_outline, color: Colors.white, size: 20),
+                  SizedBox(width: 6),
+                  Text("Detalji", style: TextStyle(color: Colors.white)),
+                ],
+              ),
             ),
           ],
         )),
