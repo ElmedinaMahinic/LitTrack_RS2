@@ -14,6 +14,7 @@ class Narudzba {
   String? imePrezime;
   String? nacinPlacanja;
   int? brojStavki;
+  int? ukupanBrojKnjiga;
 
   Narudzba(
     this.narudzbaId,
@@ -26,6 +27,7 @@ class Narudzba {
     this.imePrezime,
     this.nacinPlacanja,
     this.brojStavki,
+    this.ukupanBrojKnjiga,
   );
 
   factory Narudzba.fromJson(Map<String, dynamic> json) => _$NarudzbaFromJson(json);

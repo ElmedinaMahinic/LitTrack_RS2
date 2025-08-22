@@ -17,6 +17,7 @@ Narudzba _$NarudzbaFromJson(Map<String, dynamic> json) => Narudzba(
       json['imePrezime'] as String?,
       json['nacinPlacanja'] as String?,
       (json['brojStavki'] as num?)?.toInt(),
+      (json['ukupanBrojKnjiga'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$NarudzbaToJson(Narudzba instance) => <String, dynamic>{
@@ -30,4 +31,5 @@ Map<String, dynamic> _$NarudzbaToJson(Narudzba instance) => <String, dynamic>{
       'imePrezime': instance.imePrezime,
       'nacinPlacanja': instance.nacinPlacanja,
       'brojStavki': instance.brojStavki,
+      'ukupanBrojKnjiga': instance.ukupanBrojKnjiga,
     };

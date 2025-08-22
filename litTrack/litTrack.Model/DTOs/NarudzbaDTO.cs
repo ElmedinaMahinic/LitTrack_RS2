@@ -25,5 +25,7 @@ namespace litTrack.Model.DTOs
         public string? NacinPlacanja { get; set; }   
 
         public int? BrojStavki { get; set; }
+
+        public int? UkupanBrojKnjiga { get; set; }
     }
 }

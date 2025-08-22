@@ -115,6 +115,8 @@ namespace litTrack.Services.ServicesImplementation
                     result[i].NacinPlacanja = narudzba.NacinPlacanja.Naziv;
 
                 result[i].BrojStavki = narudzba.StavkaNarudzbes?.Count ?? 0;
+
+                result[i].UkupanBrojKnjiga = narudzba.StavkaNarudzbes?.Sum(s => s.Kolicina) ?? 0;
             }
 
             return new PagedResult<NarudzbaDTO>
@@ -144,6 +146,8 @@ namespace litTrack.Services.ServicesImplementation
                 dto.NacinPlacanja = narudzba.NacinPlacanja.Naziv;
 
             dto.BrojStavki = narudzba.StavkaNarudzbes?.Count ?? 0;
+
+            dto.UkupanBrojKnjiga = narudzba.StavkaNarudzbes?.Sum(s => s.Kolicina) ?? 0;
 
             return dto;
         }
