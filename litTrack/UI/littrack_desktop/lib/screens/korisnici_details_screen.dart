@@ -82,7 +82,7 @@ class KorisniciDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, color: iconColor ?? zelenaBoja, size: 20),
           const SizedBox(width: 10),
@@ -102,7 +102,7 @@ class KorisniciDetailsScreen extends StatelessWidget {
               value,
               style: const TextStyle(
                 fontSize: 16.5,
-                color: zelenaBoja,
+                color: Colors.black,
               ),
             ),
           ),

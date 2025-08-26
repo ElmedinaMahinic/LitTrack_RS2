@@ -5,6 +5,7 @@ import 'package:littrack_desktop/models/narudzba.dart';
 import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_desktop/screens/radnik_narudzbe_details.dart';
 
 class RadnikNarudzbeScreen extends StatefulWidget {
   const RadnikNarudzbeScreen({super.key});
@@ -455,7 +456,19 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       hoverColor: Colors.grey.withOpacity(0.1),
-      onTap: () {},
+      onTap: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                RadnikNarudzbeDetailsScreen(narudzba: narudzba),
+          ),
+        );
+
+        if (refresh == true) {
+          _fetchNarudzbe(page: _currentPage);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(

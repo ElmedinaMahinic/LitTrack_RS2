@@ -33,7 +33,68 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
       if (e is UserException) {
         rethrow;
       }
-      throw UserException("Greška prilikom dohvatanja broja narudžbi: ${e.toString()}");
+      throw UserException(
+          "Greška prilikom dohvatanja broja narudžbi: ${e.toString()}");
+    }
+  }
+
+  Future<void> preuzmi(int narudzbaId) async {
+    var url = "${BaseProvider.baseUrl}Narudzba/$narudzbaId/preuzmi";
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    try {
+      var response = await http.put(uri, headers: headers);
+
+      if (!isValidResponse(response)) {
+        throw UserException("Greška prilikom preuzimanja narudžbe.");
+      }
+    } catch (e) {
+      if (e is UserException) {
+        rethrow;
+      }
+      throw UserException(
+          "Greška prilikom preuzimanja narudžbe: ${e.toString()}");
+    }
+  }
+
+  Future<void> uToku(int narudzbaId) async {
+    var url = "${BaseProvider.baseUrl}Narudzba/$narudzbaId/uToku";
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    try {
+      var response = await http.put(uri, headers: headers);
+
+      if (!isValidResponse(response)) {
+        throw UserException("Greška prilikom postavljanja narudžbe u tok.");
+      }
+    } catch (e) {
+      if (e is UserException) {
+        rethrow;
+      }
+      throw UserException(
+          "Greška prilikom postavljanja narudžbe u tok: ${e.toString()}");
+    }
+  }
+
+  Future<void> zavrsi(int narudzbaId) async {
+    var url = "${BaseProvider.baseUrl}Narudzba/$narudzbaId/zavrsi";
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    try {
+      var response = await http.put(uri, headers: headers);
+
+      if (!isValidResponse(response)) {
+        throw UserException("Greška prilikom završetka narudžbe.");
+      }
+    } catch (e) {
+      if (e is UserException) {
+        rethrow;
+      }
+      throw UserException(
+          "Greška prilikom završetka narudžbe: ${e.toString()}");
     }
   }
 }

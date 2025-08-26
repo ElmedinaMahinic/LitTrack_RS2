@@ -110,7 +110,7 @@ class _AdminRecenzijeDetailsScreenState
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 20),
           const SizedBox(width: 10),
@@ -130,7 +130,7 @@ class _AdminRecenzijeDetailsScreenState
               value,
               style: const TextStyle(
                 fontSize: 16.5,
-                color: Color(0xFF3C6E71),
+                color: Colors.black,
               ),
             ),
           ),
