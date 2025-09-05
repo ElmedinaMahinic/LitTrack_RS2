@@ -15,6 +15,7 @@ import 'package:littrack_desktop/providers/licna_preporuka_provider.dart';
 import 'package:littrack_desktop/providers/moja_listum_provider.dart';
 import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/stavka_narudzbe_provider.dart';
+import 'package:littrack_desktop/providers/obavijest_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
 import 'package:littrack_desktop/screens/radnik_dashboard_screen.dart';
@@ -37,6 +38,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => LicnaPreporukaProvider()),
         ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
         ChangeNotifierProvider(create: (_) => StavkaNarudzbeProvider()),
+        ChangeNotifierProvider(create: (_) => ObavijestProvider()),
       ],
       child: const MyApp(),
     ),

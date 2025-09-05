@@ -441,11 +441,11 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
     Icon getStateIcon(String? stateMachine) {
       switch (stateMachine) {
         case 'preuzeta':
-          return const Icon(Icons.download_done, color: Colors.green);
+          return const Icon(Icons.checklist, color: Colors.blueGrey);
         case 'zavrsena':
-          return const Icon(Icons.check_circle, color: Colors.blue);
+          return const Icon(Icons.check_circle, color: Colors.green);
         case 'uToku':
-          return const Icon(Icons.autorenew, color: Colors.orange);
+          return const Icon(Icons.local_shipping, color: Colors.orange);
         case 'ponistena':
           return const Icon(Icons.cancel, color: Colors.red);
         default:
