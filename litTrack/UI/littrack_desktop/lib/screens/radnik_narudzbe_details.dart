@@ -155,60 +155,57 @@ class _RadnikNarudzbeDetailsScreenState
   }
 
   Widget _buildStavkeSection() {
-  if (isLoadingStavke) {
-    return const Center(child: CircularProgressIndicator());
-  }
-  if (stavke.isEmpty) {
-    return const Text("Nema stavki za ovu narudžbu.");
-  }
+    if (isLoadingStavke) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (stavke.isEmpty) {
+      return const Text("Nema stavki za ovu narudžbu.");
+    }
 
-  return Column(
-    children: stavke.asMap().entries.map((entry) {
-      int index = entry.key;
-      StavkaNarudzbe stavka = entry.value;
+    return Column(
+      children: stavke.asMap().entries.map((entry) {
+        int index = entry.key;
+        StavkaNarudzbe stavka = entry.value;
 
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.only(bottom: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Naslov stavke
-            Text(
-              "Stavka ${index + 1}",
-              style: const TextStyle(
-                fontSize: 18, 
-                fontWeight: FontWeight.w600, 
-                color:  Color(0xFF3C6E71),
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-            ),
-            const Divider(height: 20, thickness: 1),
-            _buildInfoRow(
-                "Naziv knjige:", stavka.nazivKnjige ?? "-", Icons.book),
-            _buildInfoRow(
-                "Cijena:",
-                "${stavka.cijena.toStringAsFixed(2)} KM",
-                Icons.attach_money),
-            _buildInfoRow(
-                "Količina:", stavka.kolicina.toString(), Icons.format_list_numbered),
-          ],
-        ),
-      );
-    }).toList(),
-  );
-}
-
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Naslov stavke
+              Text(
+                "Stavka ${index + 1}",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF3C6E71),
+                ),
+              ),
+              const Divider(height: 20, thickness: 1),
+              _buildInfoRow(
+                  "Naziv knjige:", stavka.nazivKnjige ?? "-", Icons.book),
+              _buildInfoRow("Cijena:", "${stavka.cijena.toStringAsFixed(2)} KM",
+                  Icons.attach_money),
+              _buildInfoRow("Količina:", stavka.kolicina.toString(),
+                  Icons.format_list_numbered),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
 
   Widget _buildInfoSection() {
     return Container(
@@ -235,8 +232,7 @@ class _RadnikNarudzbeDetailsScreenState
           _buildInfoRow("Ukupna cijena:",
               "${ukupnaCijena.toStringAsFixed(2)} KM", Icons.attach_money),
           _buildInfoRow("Status:", status, Icons.info_outline),
-          _buildInfoRow(
-              "Naručilac:", imePrezime, Icons.person_outline),
+          _buildInfoRow("Naručilac:", imePrezime, Icons.person_outline),
           _buildInfoRow(
               "Način plaćanja:", nacinPlacanja, Icons.payment_outlined),
           _buildInfoRow("Broj stavki:", brojStavki.toString(),

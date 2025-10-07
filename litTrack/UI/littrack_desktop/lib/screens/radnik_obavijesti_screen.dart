@@ -6,8 +6,10 @@ import 'package:littrack_desktop/providers/auth_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:littrack_desktop/screens/radnik_obavijesti_details.dart';
 
 class RadnikObavijestiScreen extends StatefulWidget {
+
   const RadnikObavijestiScreen({super.key});
 
   @override
@@ -338,7 +340,20 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       hoverColor: Colors.grey.withOpacity(0.1),
-      onTap: () {},
+      onTap: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RadnikObavijestiDetailsScreen(
+              obavijest: obavijest,
+            ),
+          ),
+        );
+
+        if (refresh == true) {
+          await _fetchObavijesti(page: _currentPage);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
@@ -358,7 +373,9 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
             Row(
               children: [
                 Tooltip(
-                  message: obavijest.jePogledana ? "Stara obavijest" : "Nova obavijest",
+                  message: obavijest.jePogledana
+                      ? "Stara obavijest"
+                      : "Nova obavijest",
                   child: obavijest.jePogledana
                       ? const Icon(
                           Icons.circle,
