@@ -1,12 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/providers/korisnik_provider.dart';
 import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
+
 
 class AdminDodajRadnikaScreen extends StatefulWidget {
   const AdminDodajRadnikaScreen({super.key});
@@ -231,7 +235,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                     final novaLozinka = generateRandomPassword(10);
                     setState(() {
                       _generisanaLozinka = novaLozinka;
-                      _lozinkaController.text = novaLozinka;
+                      _lozinkaController.text = "Lozinka uspješno generisana!";
                     });
                   },
                 ),
@@ -264,25 +268,9 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return const Color.fromARGB(255, 150, 150, 150);
-                  }
-                  return const Color.fromARGB(255, 120, 120, 120);
-                }),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
-              ),
+              style: _buttonStyle(
+                  const Color.fromARGB(255, 120, 120, 120),
+                  const Color.fromARGB(255, 150, 150, 150)),
             ),
           ),
           const SizedBox(width: 20),
@@ -309,29 +297,28 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return const Color(0xFF51968F);
-                  }
-                  return const Color(0xFF3C6E71);
-                }),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
-              ),
+              style: _buttonStyle(const Color(0xFF3C6E71), const Color(0xFF51968F)),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  ButtonStyle _buttonStyle(Color normal, Color hover) {
+    return ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.hovered)) return hover;
+        return normal;
+      }),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      elevation: MaterialStateProperty.all(4),
+      padding: MaterialStateProperty.all(
+        const EdgeInsets.symmetric(horizontal: 16),
+      ),
+      shadowColor: MaterialStateProperty.all(Colors.black54),
     );
   }
 
@@ -372,6 +359,16 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         icon: Icons.check_circle,
         iconColor: Colors.green,
       );
+
+      await showConfirmDialog(
+        context: context,
+        title: "Generisanje PDF-a",
+        message: "Želite li generisati PDF sa podacima o radniku?",
+        icon: Icons.picture_as_pdf,
+        iconColor: Colors.redAccent,
+        onConfirm: () => createPdfFile(request),
+      );
+
       Navigator.pop(context, true);
     } catch (e) {
       await showCustomDialog(
@@ -383,4 +380,70 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
       );
     }
   }
+
+  Future<void> createPdfFile(Map<String, dynamic> request) async {
+    final pdf = pw.Document();
+
+    final logoData = await rootBundle.load('assets/images/logo.png');
+    final logoImage = pw.MemoryImage(logoData.buffer.asUint8List());
+
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Padding(
+          padding: const pw.EdgeInsets.all(30),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Image(logoImage, width: 80, height: 80),
+                  pw.Text(
+                    "Podaci o radniku",
+                    style: pw.TextStyle(
+                      fontSize: 24,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 30),
+              _pdfLine("Ime", request['ime']),
+              _pdfLine("Prezime", request['prezime']),
+              _pdfLine("Email", request['email']),
+              _pdfLine("Korisnicko ime", request['korisnickoIme']),
+              _pdfLine("Lozinka", request['lozinka']),
+              pw.SizedBox(height: 30),
+              pw.Text(
+                "Molimo sacuvajte ove podatke na sigurnom mjestu.",
+                style: const pw.TextStyle(fontSize: 14),
+              ),
+              pw.Text(
+                "Lozinka je privremena i preporucuje se promjena pri prvom logovanju.",
+                style: const pw.TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdf.save(),
+    );
+  }
+
+  pw.Widget _pdfLine(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Row(
+        children: [
+          pw.Text("$label: ",
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
+          pw.Text(value, style: const pw.TextStyle(fontSize: 14)),
+        ],
+      ),
+    );
+  }
 }
+
