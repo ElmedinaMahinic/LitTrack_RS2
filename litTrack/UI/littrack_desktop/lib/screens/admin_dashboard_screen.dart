@@ -480,7 +480,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       await showConfirmDialog(
         context: context,
         title: "Generisanje PDF-a",
-        message: "Želite li generisati PDF sa podacima o narudžbama?",
+        message: "Želite li generisati PDF sa statističkim podacima korisnika?",
         icon: Icons.picture_as_pdf,
         iconColor: Colors.redAccent,
         onConfirm: () async {
