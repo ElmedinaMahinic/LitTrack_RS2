@@ -10,6 +10,9 @@ import 'package:littrack_desktop/providers/recenzija_odgovor_provider.dart';
 import 'package:littrack_desktop/providers/recenzija_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -134,6 +137,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     _buildFilterSection(),
                     const SizedBox(height: 25),
                     _buildLineChart(),
+                    const SizedBox(height: 25),
+                    _buildSaveReportButton(),
                   ],
                 ),
               ),
@@ -351,7 +356,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       child: Text(
                         'Mjesec',
                         style: TextStyle(
-                         color: Color(0xFFF9F9F9),
+                          color: Color(0xFFF9F9F9),
                           fontSize: 10,
                         ),
                       ),
@@ -433,6 +438,146 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
+  Widget _buildSaveReportButton() {
+    return SizedBox(
+      width: 180,
+      height: 45,
+      child: ElevatedButton.icon(
+        onPressed: _saveReport,
+        icon: const Icon(Icons.picture_as_pdf, color: Colors.white, size: 20),
+        label: const Text(
+          "Sačuvaj izvještaj",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.hovered)) {
+              return const Color(0xFF51968F);
+            }
+            return const Color(0xFF3C6E71);
+          }),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          elevation: MaterialStateProperty.all(4),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16),
+          ),
+          shadowColor: MaterialStateProperty.all(Colors.black54),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveReport() async {
+    try {
+      await showConfirmDialog(
+        context: context,
+        title: "Generisanje PDF-a",
+        message: "Želite li generisati PDF sa podacima o narudžbama?",
+        icon: Icons.picture_as_pdf,
+        iconColor: Colors.redAccent,
+        onConfirm: () async {
+          try {
+            final filePath = await generatePdf();
+
+            await showCustomDialog(
+              context: context,
+              title: "Uspjeh",
+              message: "Izvještaj uspješno sačuvan.\nLokacija: $filePath",
+              icon: Icons.check_circle_outline,
+              iconColor: Colors.green,
+            );
+          } catch (e) {
+            await showCustomDialog(
+              context: context,
+              title: "Greška",
+              message: "Došlo je do greške pri generisanju PDF-a:\n$e",
+              icon: Icons.error,
+              iconColor: Colors.red,
+            );
+          }
+        },
+      );
+    } catch (e) {
+      await showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
+    }
+  }
+
+  Future<String> generatePdf() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        build: (context) => [
+          pw.Text(
+            'Statistika korisnika',
+            style: pw.TextStyle(
+              fontSize: 20,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+          pw.SizedBox(height: 20),
+          pw.Text('Broj procitanih knjiga: $procitaneKnjige'),
+          pw.Text('Broj arhiviranih knjiga: $arhiviraneKnjige'),
+          pw.Text('Broj recenzija: $brojRecenzija'),
+          pw.Text('Broj preporuka: $brojPreporuka'),
+          pw.Text('Broj knjiga za buduce citanje: $knjigeZaBuduceCitanje'),
+          pw.Text('Najdraza knjiga: $najdrazaKnjigaNaziv'),
+          pw.SizedBox(height: 20),
+          pw.Text(
+            'Prikazane narudzbe: ${selectedDisplayState ?? "Sve narudzbe"}',
+          ),
+          pw.SizedBox(height: 15),
+          pw.Text('Narudzbe po mjesecima:'),
+          pw.SizedBox(height: 10),
+          pw.TableHelper.fromTextArray(
+            headers: ['Mjesec', 'Broj narudzbi'],
+            data: List.generate(
+              narudzbePoMjesecima.length,
+              (index) =>
+                  ['${index + 1}. mjesec', '${narudzbePoMjesecima[index]}'],
+            ),
+            headerStyle: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+            ),
+            cellAlignment: pw.Alignment.centerLeft,
+            cellPadding: const pw.EdgeInsets.all(5),
+          ),
+          pw.SizedBox(height: 10),
+          pw.Text(
+            'Ukupan broj narudzbi: ${narudzbePoMjesecima.fold<int>(0, (sum, item) => sum + item)}',
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final dir =  await getApplicationDocumentsDirectory();
+    final vrijeme = DateTime.now();
+    final formattedDate =
+        '${vrijeme.year}-${vrijeme.month.toString().padLeft(2, '0')}-${vrijeme.day.toString().padLeft(2, '0')}';
+    final path = '${dir.path}/Izvjestaj-Dana-$formattedDate.pdf';
+
+    final file = File(path);
+    await file.writeAsBytes(await pdf.save());
+    return path;
+  }
+
   String getProcitaneKnjigeText(int count) {
     if (count == 1) return "Pročitana knjiga";
     if (count >= 2 && count <= 4) return "Pročitane knjige";
@@ -479,8 +624,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFFD5E0DB),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-            color: const Color(0xFF3C6E71), width: 1.5),
+        border: Border.all(color: const Color(0xFF3C6E71), width: 1.5),
         boxShadow: const [
           BoxShadow(
             color: Color.fromARGB(68, 0, 0, 0),
