@@ -53,9 +53,8 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       AuthProvider.uloge = korisnik.uloge;
 
       if (korisnik.uloge == null ||
-          !(korisnik.uloge!.contains("Admin") ||
-              korisnik.uloge!.contains("Radnik"))) {
-        throw UserException("Pristup dozvoljen samo adminu i radnicima.");
+          !(korisnik.uloge!.contains("Korisnik") )) {
+        throw UserException("Pristup dozvoljen samo korisnicima.");
       }
 
       return korisnik;
