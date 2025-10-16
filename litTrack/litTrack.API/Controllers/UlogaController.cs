@@ -18,7 +18,7 @@ namespace litTrack.API.Controllers
         {
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         public override Task<PagedResult<Model.DTOs.UlogaDTO>> GetList([FromQuery] UlogaSearchObject searchObject, CancellationToken cancellationToken = default)
         {

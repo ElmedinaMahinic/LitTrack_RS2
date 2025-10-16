@@ -16,6 +16,7 @@ import 'package:littrack_mobile/providers/narudzba_provider.dart';
 import 'package:littrack_mobile/providers/stavka_narudzbe_provider.dart';
 import 'package:littrack_mobile/providers/obavijest_provider.dart';
 import 'package:littrack_mobile/screens/login_screen.dart';
+import 'package:littrack_mobile/screens/registracija_screen_1.dart';
 
 void main() {
   runApp(
@@ -147,7 +148,11 @@ class StartPage extends StatelessWidget {
                     height: 45,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: navigacija na registracija screen
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegistracijaScreen1()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFB2D9CF),

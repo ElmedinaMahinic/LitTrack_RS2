@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
+import 'package:littrack_mobile/screens/registracija_screen_1.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -117,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 25),
                   Image.asset("assets/images/login_middle_mobile.png",
-                      width: 160),
-                  const SizedBox(height: 35),
+                      width: 220),
+                  const SizedBox(height: 25),
                   Form(
                     key: _formKey,
                     child: Padding(
@@ -129,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           ConstrainedBox(
                             constraints: BoxConstraints(
-                              minHeight: screenHeight * 0.04,
+                              minHeight: screenHeight * 0.03,
                             ),
                             child: TextFormField(
                               controller: _usernameController,
@@ -154,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 16),
                           ConstrainedBox(
                             constraints: BoxConstraints(
-                              minHeight: screenHeight * 0.04,
+                              minHeight: screenHeight * 0.03,
                             ),
                             child: TextFormField(
                               controller: _passwordController,
@@ -211,6 +212,39 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Nemate račun? ",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RegistracijaScreen1(),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Registrujte se!",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0xFF3C6E71),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 60),
                         ],
                       ),
                     ),
