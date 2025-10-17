@@ -3,6 +3,7 @@ import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:littrack_mobile/screens/registracija_screen_1.dart';
+import 'package:littrack_mobile/layouts/master_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,13 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (AuthProvider.uloge != null &&
             AuthProvider.uloge!.contains("Korisnik")) {
-          await showCustomDialog(
-            context: context,
-            title: "Uspjeh",
-            message: "Prijava uspješna!",
-            icon: Icons.check_circle_outline,
-            iconColor: Colors.green,
-            buttonColor: const Color(0xFF43675E),
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const MasterScreen(),
+            ),
           );
         } else {
           await showCustomDialog(

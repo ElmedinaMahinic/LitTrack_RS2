@@ -57,6 +57,8 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
 
   InputDecoration _decoration(String label, String hint) {
     return InputDecoration(
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       labelText: label,
       hintText: hint,
       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -205,10 +207,15 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                             controller: _passwordController,
                             obscureText: _isHidden,
                             decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 12),
                               labelText: "Lozinka",
                               hintText: "Unesite lozinku",
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
+                              filled: true,
+                              fillColor: Colors.white,
                               suffixIcon: IconButton(
                                 icon: Icon(_isHidden
                                     ? Icons.visibility_off
@@ -235,10 +242,15 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                             controller: _confirmPasswordController,
                             obscureText: _isHiddenConfirm,
                             decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 12),
                               labelText: "Potvrdi lozinku",
                               hintText: "Ponovo unesite lozinku",
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
+                              filled: true,
+                              fillColor: Colors.white,
                               suffixIcon: IconButton(
                                 icon: Icon(_isHiddenConfirm
                                     ? Icons.visibility_off
@@ -371,12 +383,19 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
 
     try {
       await _korisnikProvider.insert(request);
+
       await showCustomDialog(
         context: context,
         title: "Uspjeh",
-        message: "Račun je uspješno kreiran.",
+        message: "Račun je uspješno kreiran. Prijavite se.",
         icon: Icons.check_circle,
         iconColor: Colors.green,
+      );
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
       );
     } catch (e) {
       await showCustomDialog(
