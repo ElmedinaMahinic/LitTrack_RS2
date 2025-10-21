@@ -98,7 +98,7 @@ namespace litTrack.Services.ServicesImplementation
 
             if (ocjene.Count == 0)
             {
-                throw new UserException("Nema ocjena za datu knjigu!");
+                return 0;
             }
 
             return ocjene.Average(x => x.Vrijednost);

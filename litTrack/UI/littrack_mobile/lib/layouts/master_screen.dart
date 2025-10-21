@@ -78,7 +78,11 @@ class _MasterScreenState extends State<MasterScreen> {
                     Builder(
                       builder: (context) {
                         return IconButton(
-                          icon: const Icon(Icons.menu, color: Colors.black, size: 40,),
+                          icon: const Icon(
+                            Icons.menu,
+                            color: Colors.black,
+                            size: 35,
+                          ),
                           onPressed: () {
                             Scaffold.of(context).openDrawer();
                           },
@@ -89,8 +93,8 @@ class _MasterScreenState extends State<MasterScreen> {
                       children: [
                         Image.asset(
                           "assets/images/logo.png",
-                          height: 50,
-                          width: 50,
+                          height: 45,
+                          width: 45,
                         ),
                         const SizedBox(width: 8),
                         const Text(
@@ -104,8 +108,11 @@ class _MasterScreenState extends State<MasterScreen> {
                       ],
                     ),
                     IconButton(
-                      icon:
-                          const Icon(Icons.shopping_cart, color: Colors.black, size: 40,),
+                      icon: const Icon(
+                        Icons.shopping_cart,
+                        color: Colors.black,
+                        size: 35,
+                      ),
                       onPressed: () {},
                     ),
                   ],
@@ -121,14 +128,19 @@ class _MasterScreenState extends State<MasterScreen> {
             children: [
               const DrawerHeader(
                 decoration: BoxDecoration(
-                  color:  Color(0xFFEAE7E6),
+                  color: Color(0xFFEAE7E6),
                 ),
-                child: Text(
-                  "Meni",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                margin: EdgeInsets.zero,
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Meni",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
@@ -183,7 +195,7 @@ class _MasterScreenState extends State<MasterScreen> {
                     message: 'Da li ste sigurni da želite da se odjavite?',
                     icon: Icons.logout,
                     iconColor: Colors.red,
-                    onConfirm: () {
+                    onConfirm: () async {
                       AuthProvider.username = null;
                       AuthProvider.password = null;
                       AuthProvider.korisnikId = null;
@@ -194,6 +206,14 @@ class _MasterScreenState extends State<MasterScreen> {
                       AuthProvider.uloge = null;
                       AuthProvider.isSignedIn = false;
 
+                      await showCustomDialog(
+                        context: context,
+                        title: "Odjava uspješna",
+                        message: "Uspješno ste se odjavili.",
+                        icon: Icons.check_circle,
+                        iconColor: Colors.green,
+                      );
+
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => const MyApp(),
@@ -201,6 +221,7 @@ class _MasterScreenState extends State<MasterScreen> {
                       );
                     },
                   );
+
                   setState(() {});
                 },
               ),
@@ -215,9 +236,9 @@ class _MasterScreenState extends State<MasterScreen> {
           backgroundColor: const Color(0xFF3C6E71),
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white70,
-          selectedFontSize: 15,   
-          unselectedFontSize: 14,  
-          iconSize: 30, 
+          selectedFontSize: 15,
+          unselectedFontSize: 14,
+          iconSize: 30,
           items: const [
             BottomNavigationBarItem(
               label: 'Moja lista',

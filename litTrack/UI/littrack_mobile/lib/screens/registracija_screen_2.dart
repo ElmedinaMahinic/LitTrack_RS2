@@ -212,6 +212,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   vertical: 12, horizontal: 12),
                               labelText: "Lozinka",
                               hintText: "Unesite lozinku",
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               filled: true,
@@ -247,6 +248,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   vertical: 12, horizontal: 12),
                               labelText: "Potvrdi lozinku",
                               hintText: "Ponovo unesite lozinku",
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               filled: true,
