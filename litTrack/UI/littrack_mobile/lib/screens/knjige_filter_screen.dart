@@ -162,7 +162,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
             child: Column(
               children: [
                 _buildHeader(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else if (_knjige.isEmpty)
@@ -181,7 +181,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                   Column(
                     children: [
                       _buildGrid(),
-                      if (_totalCount > _pageSize) _buildPagination(),
+                      if (_totalCount > _pageSize) _buildPaging(),
                     ],
                   ),
               ],
@@ -214,94 +214,105 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
     );
   }
 
- Widget _buildGrid() {
-  return GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: _knjige.length,
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      childAspectRatio: 0.78,
-    ),
-    itemBuilder: (context, index) {
-      final knjiga = _knjige[index];
-      final prosjek = _prosjekOcjena[knjiga.knjigaId] ?? 0;
+  Widget _buildGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _knjige.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.82,
+      ),
+      itemBuilder: (context, index) {
+        final knjiga = _knjige[index];
+        final prosjek = _prosjekOcjena[knjiga.knjigaId] ?? 0;
 
-      return GestureDetector(
-        onTap: () {
-          // Navigacija na knjiga_details_screen
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12.withOpacity(0.1),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildImage(knjiga.slika),
-              const SizedBox(height: 10),
-              Text(
-                knjiga.naziv,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+        return GestureDetector(
+          onTap: () {
+            // Navigacija na knjiga_details_screen
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                knjiga.autorNaziv ?? "",
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "${knjiga.cijena} KM",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                  Row(
+              ],
+            ),
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildImage(knjiga.slika),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.star,
-                          color: Colors.pinkAccent, size: 18),
-                      const SizedBox(width: 4),
                       Text(
-                        prosjek > 0 ? prosjek.toStringAsFixed(1) : "-",
+                        knjiga.naziv,
                         style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        knjiga.autorNaziv ?? "",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${knjiga.cijena} KM",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.pinkAccent,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                prosjek > 0 ? prosjek.toStringAsFixed(1) : "-",
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   Widget _buildImage(String? slikaBase64) {
     Widget imageWidget;
@@ -309,15 +320,15 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
     if (slikaBase64 == null || slikaBase64.isEmpty) {
       imageWidget = Image.asset(
         "assets/images/placeholder.png",
-        height: 115,
-        width: 104,
+        height: 120,
+        width: 108,
         fit: BoxFit.cover,
       );
     } else {
       try {
         imageWidget = SizedBox(
-          height: 100,
-          width: 90,
+          height: 120,
+          width: 108,
           child: imageFromString(slikaBase64),
         );
       } catch (_) {
@@ -333,7 +344,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
     );
   }
 
-  Widget _buildPagination() {
+  Widget _buildPaging() {
     int totalPages = (_totalCount / _pageSize).ceil();
 
     return Padding(

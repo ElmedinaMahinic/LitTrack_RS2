@@ -5,6 +5,7 @@ import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:littrack_mobile/main.dart';
+import 'package:littrack_mobile/screens/uredi_profil_screen.dart';
 
 class KorisnickiProfilScreen extends StatefulWidget {
   const KorisnickiProfilScreen({super.key});
@@ -34,6 +35,8 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
   }
 
   Future<void> _loadKorisnik() async {
+    setState(() => _isLoading = true);
+
     try {
       final korisnik = await _provider.getById(AuthProvider.korisnikId!);
       setState(() {
@@ -43,9 +46,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
           'prezime': korisnik.prezime ?? '',
           'email': korisnik.email ?? '',
           'telefon': korisnik.telefon ?? '',
-          'datumRegistracije': korisnik.datumRegistracije != null
-              ? korisnik.datumRegistracije.toString()
-              : '',
+          'datumRegistracije': korisnik.datumRegistracije?.toString() ?? '',
         };
       });
     } catch (e) {
@@ -58,9 +59,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
       );
       Navigator.pop(context);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
@@ -194,8 +193,16 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
           width: 220,
           height: 48,
           child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: navigacija na UrediKorisnikProfilScreen
+            onPressed: () async {
+              final refresh = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const UrediProfilScreen()),
+              );
+
+              if (refresh == true) {
+                await _loadKorisnik();
+              }
             },
             icon: const Icon(Icons.edit, color: Colors.white),
             label: const Text(
