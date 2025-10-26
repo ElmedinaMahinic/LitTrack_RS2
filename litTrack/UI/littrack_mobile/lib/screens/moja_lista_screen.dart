@@ -5,6 +5,7 @@ import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/screens/moja_lista_knjige_screen.dart';
 
 class MojaListaScreen extends StatefulWidget {
   const MojaListaScreen({super.key});
@@ -177,22 +178,22 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: Color(0xFF3C6E71),
               ),
             ),
             GestureDetector(
               onTap: () {
-                // Navigacija na screen koji prima jeProcitana
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => SveKnjigeScreen(jeProcitana: jeProcitana),
-                //   ),
-                // );
+                 Navigator.push(
+                   context,
+                   MaterialPageRoute(
+                     builder: (context) => MojaListaKnjigeScreen(jeProcitana: jeProcitana),
+                   ),
+                 );
               },
               child: const Text(
-                "Više...",
+                "Vidi sve >>",
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Color(0xFF3C6E71),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -203,7 +204,18 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         if (isLoading)
           const Center(child: CircularProgressIndicator())
         else if (knjige.isEmpty)
-          const Text("Nema knjiga za prikaz.")
+          Center(
+            child: Text(
+              jeProcitana
+                  ? "Nemate pročitanih knjiga."
+                  : "Nemate knjiga za čitanje.",
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF3C6E71),
+              ),
+            ),
+          )
         else
           GridView.builder(
             shrinkWrap: true,

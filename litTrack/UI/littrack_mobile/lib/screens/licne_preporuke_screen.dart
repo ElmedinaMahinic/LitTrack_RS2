@@ -5,6 +5,7 @@ import 'package:littrack_mobile/providers/licna_preporuka_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/screens/licne_preporuke_details_screen.dart';
 
 class LicnePreporukeScreen extends StatefulWidget {
   const LicnePreporukeScreen({super.key});
@@ -80,14 +81,16 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             if (_loading)
               const Center(child: CircularProgressIndicator())
             else if (_preporuke.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Text(
-                  "Nema dostupnih preporuka.",
-                  style: TextStyle(
+                  _prikaziPoslane
+                      ? "Nemate poslanih preporuka."
+                      : "Nemate primljenih preporuka.",
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black54,
+                    color: Color(0xFF3C6E71),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -125,7 +128,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             child: Text(
               "Poslane",
               style: TextStyle(
-                color: _prikaziPoslane ? Colors.white : Colors.black,
+                color: _prikaziPoslane ? Colors.white : Colors.grey[700],
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -149,7 +152,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             child: Text(
               "Primljene",
               style: TextStyle(
-                color: !_prikaziPoslane ? Colors.white : Colors.black,
+                color: !_prikaziPoslane ? Colors.white : Colors.grey[700],
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -186,8 +189,18 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
 
   Widget _buildPreporukaCard(LicnaPreporuka preporuka) {
     return InkWell(
-      onTap: () {
-        // TODO: Navigacija na details screen
+      onTap: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                LicnePreporukeDetailsScreen(licnaPreporuka: preporuka),
+          ),
+        );
+
+        if (refresh == true) {
+          _fetchPreporuke(page: _currentPage);
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
@@ -208,7 +221,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
           children: [
             Row(
               children: [
-                if (!preporuka.jePogledana)
+                if (!_prikaziPoslane && !preporuka.jePogledana)
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

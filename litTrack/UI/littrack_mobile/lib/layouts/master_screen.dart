@@ -139,91 +139,101 @@ class _MasterScreenState extends State<MasterScreen> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Color(0xFF3C6E71),
                     ),
                   ),
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.archive, color: Colors.black),
-                title: const Text("Arhiva"),
-                onTap: () => _navigateDrawer(5),
-              ),
-              ListTile(
-                leading: const Icon(Icons.library_books, color: Colors.black),
-                title: const Text("Žanrovi"),
-                onTap: () => _navigateDrawer(6),
-              ),
-              ListTile(
-                leading: const Icon(Icons.person, color: Colors.black),
-                title: const Text("Autori"),
-                onTap: () => _navigateDrawer(7),
-              ),
-              ListTile(
-                leading: const Icon(Icons.groups, color: Colors.black),
-                title: const Text("Ciljne grupe"),
-                onTap: () => _navigateDrawer(8),
-              ),
-              ListTile(
-                leading: const Icon(Icons.favorite, color: Colors.black),
-                title: const Text("Preporuke i favoriti"),
-                onTap: () => _navigateDrawer(9),
-              ),
-              ListTile(
-                leading: const Icon(Icons.mail, color: Colors.black),
-                title: const Text("Lične preporuke"),
-                onTap: () => _navigateDrawer(10),
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart, color: Colors.black),
-                title: const Text("Moje narudžbe"),
-                onTap: () => _navigateDrawer(11),
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications, color: Colors.black),
-                title: const Text("Obavijesti"),
-                onTap: () => _navigateDrawer(12),
-              ),
-              const Divider(color: Colors.black),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.black),
-                title: const Text("Odjava"),
-                onTap: () {
-                  showConfirmDialog(
-                    context: context,
-                    title: 'Odjava',
-                    message: 'Da li ste sigurni da želite da se odjavite?',
-                    icon: Icons.logout,
-                    iconColor: Colors.red,
-                    onConfirm: () async {
-                      AuthProvider.username = null;
-                      AuthProvider.password = null;
-                      AuthProvider.korisnikId = null;
-                      AuthProvider.ime = null;
-                      AuthProvider.prezime = null;
-                      AuthProvider.email = null;
-                      AuthProvider.telefon = null;
-                      AuthProvider.uloge = null;
-                      AuthProvider.isSignedIn = false;
+              ListTileTheme(
+                textColor: const Color(0xFF3C6E71),
+                iconColor: const Color(0xFF3C6E71),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.archive),
+                      title: const Text("Arhiva"),
+                      onTap: () => _navigateDrawer(5),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.library_books),
+                      title: const Text("Žanrovi"),
+                      onTap: () => _navigateDrawer(6),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text("Autori"),
+                      onTap: () => _navigateDrawer(7),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.groups),
+                      title: const Text("Ciljne grupe"),
+                      onTap: () => _navigateDrawer(8),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.favorite),
+                      title: const Text("Najpopularnije knjige"),
+                      onTap: () => _navigateDrawer(9),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.mail),
+                      title: const Text("Lične preporuke"),
+                      onTap: () => _navigateDrawer(10),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.shopping_cart),
+                      title: const Text("Moje narudžbe"),
+                      onTap: () => _navigateDrawer(11),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.notifications),
+                      title: const Text("Obavijesti"),
+                      onTap: () => _navigateDrawer(12),
+                    ),
+                    const Divider(color: Color(0xFF3C6E71)),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.logout, color: Color(0xFF3C6E71)),
+                      title: const Text("Odjava"),
+                      onTap: () {
+                        showConfirmDialog(
+                          context: context,
+                          title: 'Odjava',
+                          message:
+                              'Da li ste sigurni da želite da se odjavite?',
+                          icon: Icons.logout,
+                          iconColor: Colors.red,
+                          onConfirm: () async {
+                            AuthProvider.username = null;
+                            AuthProvider.password = null;
+                            AuthProvider.korisnikId = null;
+                            AuthProvider.ime = null;
+                            AuthProvider.prezime = null;
+                            AuthProvider.email = null;
+                            AuthProvider.telefon = null;
+                            AuthProvider.uloge = null;
+                            AuthProvider.isSignedIn = false;
 
-                      await showCustomDialog(
-                        context: context,
-                        title: "Odjava uspješna",
-                        message: "Uspješno ste se odjavili.",
-                        icon: Icons.check_circle,
-                        iconColor: Colors.green,
-                      );
+                            await showCustomDialog(
+                              context: context,
+                              title: "Odjava uspješna",
+                              message: "Uspješno ste se odjavili.",
+                              icon: Icons.check_circle,
+                              iconColor: Colors.green,
+                            );
 
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const MyApp(),
-                        ),
-                      );
-                    },
-                  );
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const MyApp(),
+                              ),
+                            );
+                          },
+                        );
 
-                  setState(() {});
-                },
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

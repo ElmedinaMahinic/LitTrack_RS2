@@ -237,7 +237,10 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
             const SizedBox(height: 15),
             FormBuilderCheckbox(
               name: 'promijeniLozinku',
-              title: const Text('Promijeni lozinku'),
+              title: const Text(
+                'Promijeni lozinku',
+                style: TextStyle(fontSize: 15),
+              ),
               onChanged: (val) {
                 setState(() {
                   _promijeniLozinku = val ?? false;

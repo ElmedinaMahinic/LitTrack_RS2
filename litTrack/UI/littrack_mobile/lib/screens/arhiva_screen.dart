@@ -68,12 +68,12 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
             const Text(
               "Arhiviraj knjigu i imaj svoje favorite na jednom mjestu!",
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.black,
+                fontSize: 16,
+                color: Color(0xFF3C6E71),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 21),
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else if (_knjige.isEmpty)
@@ -82,7 +82,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                   padding: EdgeInsets.all(20),
                   child: Text(
                     "Niste arhivirali nijednu knjigu.",
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    style: TextStyle(fontSize: 16, color: Color(0xFF3C6E71)),
                   ),
                 ),
               )
@@ -167,7 +167,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                     knjiga.autorNaziv ?? "-",
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: Colors.black54,
                     ),
                   ),
                 ],
@@ -183,8 +183,8 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
     if (slikaBase64 == null || slikaBase64.isEmpty) {
       return Image.asset(
         "assets/images/placeholder.png",
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         fit: BoxFit.cover,
       );
     }
@@ -193,8 +193,8 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: SizedBox(
-          width: 50,
-          height: 50,
+          width: 60,
+          height: 60,
           child: imageFromString(slikaBase64),
         ),
       );
