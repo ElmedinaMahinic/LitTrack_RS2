@@ -3,7 +3,9 @@ import 'package:littrack_mobile/models/arhiva.dart';
 import 'package:littrack_mobile/providers/arhiva_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
+import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 
 class ArhivaScreen extends StatefulWidget {
   const ArhivaScreen({super.key});
@@ -14,6 +16,7 @@ class ArhivaScreen extends StatefulWidget {
 
 class _ArhivaScreenState extends State<ArhivaScreen> {
   late ArhivaProvider _provider;
+  late KnjigaProvider _knjigaProvider;
   List<Arhiva> _knjige = [];
   int _currentPage = 1;
   final int _pageSize = 6;
@@ -24,6 +27,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
   void initState() {
     super.initState();
     _provider = context.read<ArhivaProvider>();
+    _knjigaProvider = context.read<KnjigaProvider>();
     _fetchData();
   }
 
@@ -130,8 +134,28 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
 
   Widget _buildKnjigaCard(Arhiva knjiga, int index) {
     return GestureDetector(
-      onTap: () {
-        // TODO: Navigacija na detalje knjige
+      onTap: () async {
+        try {
+          final knjigaDetalji = await _knjigaProvider.getById(knjiga.knjigaId);
+
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => KnjigaDetailsScreen(knjiga: knjigaDetalji),
+            ),
+          );
+
+          if (result == true) {
+            _fetchData(page: _currentPage);
+          }
+        } catch (e) {
+          showCustomDialog(
+            context: context,
+            title: "Greška",
+            message: e.toString(),
+            icon: Icons.error,
+          );
+        }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),

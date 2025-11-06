@@ -4,6 +4,7 @@ import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 
 class HomepageScreen extends StatefulWidget {
   const HomepageScreen({super.key});
@@ -165,8 +166,30 @@ class _HomepageScreenState extends State<HomepageScreen> {
         final prosjek = _prosjekOcjena[knjiga.knjigaId] ?? 0;
 
         return GestureDetector(
-          onTap: () {
-            // Navigacija na knjiga_details_screen
+          onTap: () async {
+            try {
+              final knjigaDetalji =
+                  await _knjigaProvider.getById(knjiga.knjigaId!);
+
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      KnjigaDetailsScreen(knjiga: knjigaDetalji),
+                ),
+              );
+
+              if (result == true) {
+                _fetchData();
+              }
+            } catch (e) {
+              showCustomDialog(
+                context: context,
+                title: "Greška",
+                message: e.toString(),
+                icon: Icons.error,
+              );
+            }
           },
           child: Container(
             decoration: BoxDecoration(

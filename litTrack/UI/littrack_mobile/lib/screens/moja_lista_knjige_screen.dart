@@ -3,8 +3,10 @@ import 'package:littrack_mobile/models/moja_listum.dart';
 import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
+import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 
 class MojaListaKnjigeScreen extends StatefulWidget {
   final bool jeProcitana;
@@ -18,6 +20,7 @@ class MojaListaKnjigeScreen extends StatefulWidget {
 class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
   late MojaListumProvider _mojaListaProvider;
   late OcjenaProvider _ocjenaProvider;
+  late KnjigaProvider _knjigaProvider;
 
   List<MojaListum> _knjige = [];
   final Map<int, double> _prosjekOcjena = {};
@@ -31,6 +34,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
     super.initState();
     _mojaListaProvider = context.read<MojaListumProvider>();
     _ocjenaProvider = context.read<OcjenaProvider>();
+    _knjigaProvider = context.read<KnjigaProvider>();
     _fetchData();
   }
 
@@ -58,7 +62,8 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
 
       for (var knjiga in result.resultList) {
         try {
-          final prosjek = await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
+          final prosjek =
+              await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
           setState(() {
             _prosjekOcjena[knjiga.knjigaId] = prosjek;
           });
@@ -181,9 +186,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
       ),
       child: Center(
         child: Text(
-          widget.jeProcitana
-              ? "Pročitane knjige"
-              : "Knjige koje želim čitati",
+          widget.jeProcitana ? "Pročitane knjige" : "Knjige koje želim čitati",
           style: const TextStyle(
             color: Colors.white,
             fontSize: 19,
@@ -211,8 +214,31 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         final prosjek = _prosjekOcjena[knjiga.knjigaId] ?? 0;
 
         return GestureDetector(
-          onTap: () {
-            // Navigacija na knjiga_details_screen
+          onTap: () async {
+            try {
+              final knjigaDetalji =
+                  await _knjigaProvider.getById(knjiga.knjigaId);
+
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      KnjigaDetailsScreen(knjiga: knjigaDetalji),
+                ),
+              );
+
+              if (result == true) {
+                _fetchData(); 
+              }
+            } catch (e) {
+              showCustomDialog(
+                context: context,
+                title: 'Greška',
+                message: e.toString(),
+                icon: Icons.error,
+                iconColor: Colors.red,
+              );
+            }
           },
           child: Container(
             decoration: BoxDecoration(
@@ -274,9 +300,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                prosjek > 0
-                                    ? prosjek.toStringAsFixed(1)
-                                    : "-",
+                                prosjek > 0 ? prosjek.toStringAsFixed(1) : "-",
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,

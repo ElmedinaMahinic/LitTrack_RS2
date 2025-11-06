@@ -3,9 +3,11 @@ import 'package:littrack_mobile/models/moja_listum.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
+import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/screens/moja_lista_knjige_screen.dart';
+import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 
 class MojaListaScreen extends StatefulWidget {
   const MojaListaScreen({super.key});
@@ -17,6 +19,7 @@ class MojaListaScreen extends StatefulWidget {
 class _MojaListaScreenState extends State<MojaListaScreen> {
   late MojaListumProvider _mojaListaProvider;
   late OcjenaProvider _ocjenaProvider;
+  late KnjigaProvider _knjigaProvider;
 
   List<MojaListum> _procitaneKnjige = [];
   List<MojaListum> _zelimProcitati = [];
@@ -30,6 +33,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
     super.initState();
     _mojaListaProvider = context.read<MojaListumProvider>();
     _ocjenaProvider = context.read<OcjenaProvider>();
+    _knjigaProvider = context.read<KnjigaProvider>();
     _fetchData();
   }
 
@@ -183,12 +187,13 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
             ),
             GestureDetector(
               onTap: () {
-                 Navigator.push(
-                   context,
-                   MaterialPageRoute(
-                     builder: (context) => MojaListaKnjigeScreen(jeProcitana: jeProcitana),
-                   ),
-                 );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MojaListaKnjigeScreen(jeProcitana: jeProcitana),
+                  ),
+                );
               },
               child: const Text(
                 "Vidi sve >>",
@@ -232,7 +237,32 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
               final prosjek = _prosjekOcjena[knjiga.knjigaId] ?? 0;
 
               return GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  try {
+                    final knjigaDetalji =
+                        await _knjigaProvider.getById(knjiga.knjigaId);
+
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            KnjigaDetailsScreen(knjiga: knjigaDetalji),
+                      ),
+                    );
+
+                    if (result == true) {
+                      _fetchData(); 
+                    }
+                  } catch (e) {
+                    showCustomDialog(
+                      context: context,
+                      title: 'Greška',
+                      message: e.toString(),
+                      icon: Icons.error,
+                      iconColor: Colors.red,
+                    );
+                  }
+                },
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
