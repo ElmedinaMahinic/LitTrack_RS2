@@ -131,17 +131,26 @@ class _MasterScreenState extends State<MasterScreen> {
                   color: Color(0xFFEAE7E6),
                 ),
                 margin: EdgeInsets.zero,
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Meni",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.dashboard,
+                      size: 48,
                       color: Color(0xFF3C6E71),
                     ),
-                  ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Meni",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF3C6E71),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
               ListTileTheme(
@@ -220,6 +229,8 @@ class _MasterScreenState extends State<MasterScreen> {
                               icon: Icons.check_circle,
                               iconColor: Colors.green,
                             );
+
+                            if (!mounted) return;
 
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(

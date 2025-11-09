@@ -33,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text,
         );
 
+        if (!mounted) return;
+
         if (korisnik.jeAktivan == false) {
           await showCustomDialog(
             context: context,
@@ -55,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         } else {
+          if (!mounted) return;
           await showCustomDialog(
             context: context,
             title: "Pristup odbijen",
@@ -65,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } catch (e) {
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Greška",
@@ -194,12 +198,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 45,
                             child: ElevatedButton(
                               onPressed: _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF43675E),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return const Color(0xFF33585B);
+                                  }
+                                  return const Color(0xFF43675E);
+                                }),
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.white),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                 ),
+                                shadowColor: MaterialStateProperty.all(
+                                    Colors.black.withOpacity(0.15)),
+                                elevation: MaterialStateProperty.all(6),
                               ),
                               child: const Text(
                                 "PRIJAVA",

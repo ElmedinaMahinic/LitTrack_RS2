@@ -43,6 +43,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
   }
 
   Future<void> _fetchProcitane() async {
+    if (!mounted) return;
     setState(() => _isLoadingProcitane = true);
     try {
       final filter = <String, dynamic>{
@@ -55,6 +56,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
       };
 
       final result = await _mojaListaProvider.get(filter: filter);
+      if (!mounted) return;
       setState(() {
         _procitaneKnjige = result.resultList;
       });
@@ -63,6 +65,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
+          if (!mounted) return;
           setState(() {
             _prosjekOcjena[knjiga.knjigaId] = prosjek;
           });
@@ -71,6 +74,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -79,11 +83,14 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _isLoadingProcitane = false);
+      if (mounted) {
+        setState(() => _isLoadingProcitane = false);
+      }
     }
   }
 
   Future<void> _fetchNeprocitane() async {
+    if (!mounted) return;
     setState(() => _isLoadingNeprocitane = true);
     try {
       final filter = <String, dynamic>{
@@ -96,6 +103,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
       };
 
       final result = await _mojaListaProvider.get(filter: filter);
+      if (!mounted) return;
       setState(() {
         _zelimProcitati = result.resultList;
       });
@@ -104,6 +112,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
+          if (!mounted) return;
           setState(() {
             _prosjekOcjena[knjiga.knjigaId] = prosjek;
           });
@@ -112,6 +121,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -120,7 +130,9 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _isLoadingNeprocitane = false);
+      if (mounted) {
+        setState(() => _isLoadingNeprocitane = false);
+      }
     }
   }
 
@@ -151,6 +163,13 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,15 +229,27 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
           const Center(child: CircularProgressIndicator())
         else if (knjige.isEmpty)
           Center(
-            child: Text(
-              jeProcitana
-                  ? "Nemate pročitanih knjiga."
-                  : "Nemate knjiga za čitanje.",
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF3C6E71),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.menu_book,
+                  color: Color(0xFF3C6E71),
+                  size: 50,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  jeProcitana
+                      ? "Nemate pročitanih knjiga."
+                      : "Nemate knjiga za čitanje.",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF3C6E71),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           )
         else
@@ -230,7 +261,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: 0.82,
+              childAspectRatio: 0.84,
             ),
             itemBuilder: (context, index) {
               final knjiga = knjige[index];
@@ -241,6 +272,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                   try {
                     final knjigaDetalji =
                         await _knjigaProvider.getById(knjiga.knjigaId);
+                    if (!mounted) return;
 
                     final result = await Navigator.push(
                       context,
@@ -249,11 +281,13 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                             KnjigaDetailsScreen(knjiga: knjigaDetalji),
                       ),
                     );
+                    if (!mounted) return;
 
                     if (result == true) {
-                      _fetchData(); 
+                      _fetchData();
                     }
                   } catch (e) {
+                    if (!mounted) return;
                     showCustomDialog(
                       context: context,
                       title: 'Greška',
@@ -290,7 +324,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                               knjiga.nazivKnjige ?? "",
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: 15,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,

@@ -54,6 +54,7 @@ class _LicnePreporukeDetailsScreenState
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -150,6 +151,13 @@ class _LicnePreporukeDetailsScreenState
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Center(
         child: Text(

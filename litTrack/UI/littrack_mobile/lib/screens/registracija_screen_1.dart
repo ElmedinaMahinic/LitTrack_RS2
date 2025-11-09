@@ -81,12 +81,24 @@ class _RegistracijaScreen1State extends State<RegistracijaScreen1> {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF43675E),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return const Color(0xFF33585B);
+                          }
+                          return const Color(0xFF43675E);
+                        }),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
+                        shadowColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.15)),
+                        elevation: MaterialStateProperty.all(6),
                       ),
                       child: const Text(
                         "NASTAVI",

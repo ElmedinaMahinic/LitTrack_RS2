@@ -33,6 +33,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
   }
 
   Future<void> _fetchPreporuke({int page = 1}) async {
+    if (!mounted) return;
     setState(() => _loading = true);
 
     final filter = <String, dynamic>{
@@ -48,12 +49,14 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
 
     try {
       final result = await _provider.get(filter: filter);
+      if (!mounted) return;
       setState(() {
         _preporuke = result.resultList;
         _totalCount = result.count;
         _currentPage = page;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -62,7 +65,9 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -81,18 +86,30 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             if (_loading)
               const Center(child: CircularProgressIndicator())
             else if (_preporuke.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  _prikaziPoslane
-                      ? "Nemate poslanih preporuka."
-                      : "Nemate primljenih preporuka.",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF3C6E71),
-                  ),
-                  textAlign: TextAlign.center,
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.mail,
+                      color: Color(0xFF3C6E71),
+                      size: 50,
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        _prikaziPoslane
+                            ? "Nemate poslanih preporuka."
+                            : "Nemate primljenih preporuka.",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF3C6E71),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               )
             else
@@ -124,6 +141,8 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
+              elevation: _prikaziPoslane ? 7 : 2,
+              shadowColor: Colors.black.withOpacity(0.25),
             ),
             child: Text(
               "Poslane",
@@ -148,6 +167,8 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
+              elevation: !_prikaziPoslane ? 7 : 3,
+              shadowColor: Colors.black.withOpacity(0.25),
             ),
             child: Text(
               "Primljene",
@@ -169,6 +190,13 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,6 +225,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                 LicnePreporukeDetailsScreen(licnaPreporuka: preporuka),
           ),
         );
+        if (!mounted) return;
 
         if (refresh == true) {
           _fetchPreporuke(page: _currentPage);
@@ -299,6 +328,13 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             onPressed: _currentPage > 1
                 ? () => _fetchPreporuke(page: _currentPage - 1)
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
@@ -308,6 +344,13 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             onPressed: _currentPage < totalPages
                 ? () => _fetchPreporuke(page: _currentPage + 1)
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Sljedeća"),
           ),
         ],

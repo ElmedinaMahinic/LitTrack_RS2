@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:littrack_mobile/models/knjiga.dart';
 import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 
 class HomepageScreen extends StatefulWidget {
@@ -25,6 +25,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
   int _totalCount = 0;
   bool _isLoading = true;
 
+  String? _orderBy;
+  String _sortDirection = 'asc';
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +37,15 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   Future<void> _fetchData() async {
-    final filter = {'Naziv': _searchController.text};
+    final filter = {
+      'Naziv': _searchController.text,
+      if (_orderBy != null) ...{
+        'orderBy': _orderBy,
+        'sortDirection': _sortDirection,
+      },
+    };
+
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
@@ -43,6 +54,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
         page: _currentPage,
         pageSize: _pageSize,
       );
+      if (!mounted) return;
+
       setState(() {
         _knjige = result.resultList;
         _totalCount = result.count;
@@ -52,6 +65,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId!);
+          if (!mounted) return;
           setState(() {
             _prosjekOcjena[knjiga.knjigaId!] = prosjek;
           });
@@ -60,6 +74,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: "Greška",
@@ -67,13 +82,91 @@ class _HomepageScreenState extends State<HomepageScreen> {
         icon: Icons.error,
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   void _clearSearch() {
     _searchController.clear();
     _currentPage = 1;
+    _orderBy = null;
+    _sortDirection = 'asc';
+    _fetchData();
+  }
+
+  void _showSortMenu(BuildContext context, Offset offset) async {
+    final selected = await showMenu<String>(
+      context: context,
+      color: const Color(0xFFF6F4F3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      position: RelativeRect.fromLTRB(offset.dx, offset.dy, 0, 0),
+      items: [
+        const PopupMenuItem<String>(
+          enabled: false,
+          child: Text(
+            "Sortirajte",
+            style: TextStyle(
+              color: Color(0xFF3C6E71),
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: "abecedno",
+          child: Text("Abecedno", style: TextStyle(color: Color(0xFF3C6E71))),
+        ),
+        const PopupMenuItem<String>(
+          value: "cijena_asc",
+          child: Text("Cijena (najniža)",
+              style: TextStyle(color: Color(0xFF3C6E71))),
+        ),
+        const PopupMenuItem<String>(
+          value: "cijena_desc",
+          child: Text("Cijena (najviša)",
+              style: TextStyle(color: Color(0xFF3C6E71))),
+        ),
+        const PopupMenuDivider(),
+        const PopupMenuItem<String>(
+          value: "zatvori",
+          child: Center(
+            child: Text(
+              "Zatvori",
+              style: TextStyle(
+                color: Color(0xFF3C6E71),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
+      elevation: 8,
+    );
+
+    if (selected == null || selected == "zatvori") return;
+
+    setState(() {
+      switch (selected) {
+        case "abecedno":
+          _orderBy = "Naziv";
+          _sortDirection = "asc";
+          break;
+        case "cijena_asc":
+          _orderBy = "Cijena";
+          _sortDirection = "asc";
+          break;
+        case "cijena_desc":
+          _orderBy = "Cijena";
+          _sortDirection = "desc";
+          break;
+      }
+    });
+
     _fetchData();
   }
 
@@ -91,7 +184,30 @@ class _HomepageScreenState extends State<HomepageScreen> {
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else if (_knjige.isEmpty)
-              const Center(child: Text("Nema knjiga za prikaz."))
+              const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.menu_book_outlined,
+                      color: Color(0xFF3C6E71),
+                      size: 50,
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        "Nema knjiga za prikaz.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF3C6E71),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             else
               Column(
                 children: [
@@ -112,6 +228,13 @@ class _HomepageScreenState extends State<HomepageScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Center(
         child: Text(
@@ -128,25 +251,46 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   Widget _buildSearchBox() {
-    return TextField(
-      controller: _searchController,
-      decoration: InputDecoration(
-        hintText: "Pretraži po nazivu...",
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: _clearSearch,
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: "Pretraži po nazivu...",
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear, color: Colors.grey),
+                onPressed: _clearSearch,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            ),
+            style: const TextStyle(color: Colors.grey),
+            onChanged: (value) {
+              _currentPage = 1;
+              _fetchData();
+            },
+          ),
         ),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      ),
-      onChanged: (value) {
-        _currentPage = 1;
-        _fetchData();
-      },
+        const SizedBox(width: 10),
+        GestureDetector(
+          onTapDown: (details) =>
+              _showSortMenu(context, details.globalPosition),
+          child: const Icon(Icons.filter_list, color: Colors.grey, size: 28),
+        ),
+      ],
     );
   }
 
@@ -159,7 +303,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.82,
+        childAspectRatio: 0.84,
       ),
       itemBuilder: (context, index) {
         final knjiga = _knjige[index];
@@ -171,6 +315,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
               final knjigaDetalji =
                   await _knjigaProvider.getById(knjiga.knjigaId!);
 
+              if (!mounted) return;
+
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -178,11 +324,11 @@ class _HomepageScreenState extends State<HomepageScreen> {
                       KnjigaDetailsScreen(knjiga: knjigaDetalji),
                 ),
               );
+              if (!mounted) return;
 
-              if (result == true) {
-                _fetchData();
-              }
+              if (result == true) _fetchData();
             } catch (e) {
+              if (!mounted) return;
               showCustomDialog(
                 context: context,
                 title: "Greška",
@@ -197,7 +343,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.15),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -217,19 +363,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
                       Text(
                         knjiga.naziv,
                         style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
+                            fontWeight: FontWeight.w600, fontSize: 15),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         knjiga.autorNaziv ?? "",
                         style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                        ),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54),
                       ),
                       const SizedBox(height: 6),
                       Row(
@@ -238,24 +381,17 @@ class _HomepageScreenState extends State<HomepageScreen> {
                           Text(
                             "${knjiga.cijena} KM",
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
+                                fontWeight: FontWeight.bold, fontSize: 13),
                           ),
                           Row(
                             children: [
-                              const Icon(
-                                Icons.star,
-                                color: Colors.pinkAccent,
-                                size: 18,
-                              ),
+                              const Icon(Icons.star,
+                                  color: Colors.pinkAccent, size: 18),
                               const SizedBox(width: 4),
                               Text(
                                 prosjek > 0 ? prosjek.toStringAsFixed(1) : "-",
                                 style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                    fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -295,10 +431,8 @@ class _HomepageScreenState extends State<HomepageScreen> {
     }
 
     return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: imageWidget,
-      ),
+      child:
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: imageWidget),
     );
   }
 
@@ -313,12 +447,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
           ElevatedButton(
             onPressed: _currentPage > 1
                 ? () {
-                    setState(() {
-                      _currentPage--;
-                    });
+                    setState(() => _currentPage--);
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
             child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
@@ -327,12 +465,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
           ElevatedButton(
             onPressed: _currentPage < totalPages
                 ? () {
-                    setState(() {
-                      _currentPage++;
-                    });
+                    setState(() => _currentPage++);
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
             child: const Text("Sljedeća"),
           ),
         ],

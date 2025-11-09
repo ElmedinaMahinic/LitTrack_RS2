@@ -38,6 +38,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
   }
 
   Future<void> _fetchData() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     Map<String, dynamic> filter = {};
@@ -57,6 +58,8 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
         pageSize: _pageSize,
       );
 
+      if (!mounted) return;
+
       setState(() {
         _knjige = result.resultList;
         _totalCount = result.count;
@@ -66,6 +69,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId!);
+          if (!mounted) return;
           setState(() {
             _prosjekOcjena[knjiga.knjigaId!] = prosjek;
           });
@@ -74,6 +78,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: "Greška",
@@ -81,7 +86,9 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
         icon: Icons.error,
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -167,15 +174,28 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else if (_knjige.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      "Nema knjiga za prikaz.",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      ),
+                  const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.menu_book_outlined,
+                          color: Color(0xFF3C6E71),
+                          size: 50,
+                        ),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Text(
+                            "Nema knjiga za prikaz.",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF3C6E71),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 else
@@ -200,6 +220,13 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Center(
         child: Text(
@@ -224,7 +251,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.82,
+        childAspectRatio: 0.84,
       ),
       itemBuilder: (context, index) {
         final knjiga = _knjige[index];
@@ -235,6 +262,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
             try {
               final knjigaDetalji =
                   await _knjigaProvider.getById(knjiga.knjigaId!);
+              if (!mounted) return;
 
               final result = await Navigator.push(
                 context,
@@ -244,10 +272,13 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                 ),
               );
 
+              if (!mounted) return;
+
               if (result == true) {
-                _fetchData(); 
+                _fetchData();
               }
             } catch (e) {
+              if (!mounted) return;
               showCustomDialog(
                 context: context,
                 title: "Greška",
@@ -283,7 +314,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                         knjiga.naziv,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 15,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -384,6 +415,13 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
@@ -398,6 +436,13 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Sljedeća"),
           ),
         ],

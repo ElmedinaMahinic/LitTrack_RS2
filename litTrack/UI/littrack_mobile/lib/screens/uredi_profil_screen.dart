@@ -43,6 +43,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         'promijeniLozinku': false,
       };
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: 'Greška',
@@ -50,11 +51,14 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+      if (!mounted) return;
       Navigator.pop(context);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -155,6 +159,13 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Center(
         child: Text(
@@ -326,6 +337,20 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
   }
 
   Widget _buildActionButtons() {
+    final buttonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return const Color(0xFF33585B);
+        }
+        return const Color(0xFF3C6E71);
+      }),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      ),
+      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+      elevation: MaterialStateProperty.all(6),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Column(
@@ -349,15 +374,12 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
               label: const Text(
                 "Sačuvaj",
                 style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600),
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
+              style: buttonStyle,
             ),
           ),
           const SizedBox(height: 12),
@@ -376,6 +398,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                   onConfirm: () async {
                     try {
                       await _provider.deaktiviraj(AuthProvider.korisnikId!);
+                      if (!mounted) return;
 
                       await showCustomDialog(
                         context: context,
@@ -395,10 +418,13 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                       AuthProvider.uloge = null;
                       AuthProvider.isSignedIn = false;
 
+                      if (!mounted) return;
+
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => const MyApp()),
                       );
                     } catch (e) {
+                      if (!mounted) return;
                       showCustomDialog(
                         context: context,
                         title: "Greška",
@@ -414,15 +440,12 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
               label: const Text(
                 "Deaktiviraj profil",
                 style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600),
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3C6E71),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
+              style: buttonStyle,
             ),
           ),
         ],
@@ -457,6 +480,8 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         AuthProvider.password = formValues['lozinka'];
       }
 
+      if (!mounted) return;
+
       await showCustomDialog(
         context: context,
         title: "Uspjeh",
@@ -465,8 +490,11 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         iconColor: Colors.green,
       );
 
+      if (!mounted) return;
+
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",

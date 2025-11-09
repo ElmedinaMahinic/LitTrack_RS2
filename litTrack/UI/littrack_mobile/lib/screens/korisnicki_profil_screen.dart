@@ -35,10 +35,12 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
   }
 
   Future<void> _loadKorisnik() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final korisnik = await _provider.getById(AuthProvider.korisnikId!);
+      if (!mounted) return;
       setState(() {
         _korisnikPodaci = {
           'korisnickoIme': korisnik.korisnickoIme ?? '',
@@ -50,6 +52,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         };
       });
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: 'Greška',
@@ -57,9 +60,12 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+      if (!mounted) return;
       Navigator.pop(context);
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -90,6 +96,13 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Center(
         child: Text(
@@ -187,6 +200,20 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
   }
 
   Widget _buildActionButtons() {
+    final buttonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.pressed)) {
+          return const Color(0xFF33585B);
+        }
+        return const Color(0xFF3C6E71);
+      }),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      ),
+      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+      elevation: MaterialStateProperty.all(6),
+    );
+
     return Column(
       children: [
         SizedBox(
@@ -197,8 +224,10 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
               final refresh = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const UrediProfilScreen()),
+                  builder: (context) => const UrediProfilScreen(),
+                ),
               );
+              if (!mounted) return;
 
               if (refresh == true) {
                 await _loadKorisnik();
@@ -213,13 +242,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(const Color(0xFF3C6E71)),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
+            style: buttonStyle,
           ),
         ),
         const SizedBox(height: 18),
@@ -245,6 +268,8 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
                   AuthProvider.uloge = null;
                   AuthProvider.isSignedIn = false;
 
+                  if (!mounted) return;
+
                   await showCustomDialog(
                     context: context,
                     title: "Odjava uspješna",
@@ -252,6 +277,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
                     icon: Icons.check_circle,
                     iconColor: Colors.green,
                   );
+                  if (!mounted) return;
 
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const MyApp()),
@@ -268,13 +294,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(const Color(0xFF3C6E71)),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
+            style: buttonStyle,
           ),
         ),
       ],

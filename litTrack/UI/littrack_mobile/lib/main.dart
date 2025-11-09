@@ -128,12 +128,24 @@ class StartPage extends StatelessWidget {
                               builder: (context) => const LoginScreen()),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF43675E),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return const Color(0xFF33585B);
+                          }
+                          return const Color(0xFF43675E);
+                        }),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
+                        shadowColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.15)),
+                        elevation: MaterialStateProperty.all(6),
                       ),
                       child: const Text(
                         "PRIJAVA",
@@ -153,15 +165,28 @@ class StartPage extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const RegistracijaScreen1()),
+                              builder: (context) =>
+                                  const RegistracijaScreen1()),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFB2D9CF),
-                        foregroundColor: Colors.black87,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return const Color.fromARGB(255, 142, 179, 168);
+                          }
+                          return const Color(0xFFB2D9CF);
+                        }),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black87),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
+                        shadowColor: MaterialStateProperty.all(
+                            Colors.black.withOpacity(0.15)),
+                        elevation: MaterialStateProperty.all(6),
                       ),
                       child: const Text(
                         "REGISTRACIJA",

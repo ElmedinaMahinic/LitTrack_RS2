@@ -39,6 +39,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
   }
 
   Future<void> _fetchData() async {
+    if (!mounted) return;
     setState(() => _loading = true);
 
     final filter = <String, dynamic>{
@@ -54,6 +55,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         page: _currentPage,
         pageSize: _pageSize,
       );
+      if (!mounted) return;
 
       setState(() {
         _knjige = result.resultList;
@@ -64,6 +66,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
+          if (!mounted) return;    
           setState(() {
             _prosjekOcjena[knjiga.knjigaId] = prosjek;
           });
@@ -72,6 +75,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -80,7 +84,9 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -151,17 +157,30 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                 if (_loading)
                   const Center(child: CircularProgressIndicator())
                 else if (_knjige.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40),
-                    child: Text(
-                      widget.jeProcitana
-                          ? "Nemate pročitanih knjiga."
-                          : "Nemate knjiga za čitanje.",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3C6E71),
-                      ),
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.menu_book_outlined,
+                          color: Color(0xFF3C6E71),
+                          size: 50,
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            widget.jeProcitana
+                                ? "Nemate pročitanih knjiga."
+                                : "Nemate knjiga za čitanje.",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF3C6E71),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 else ...[
@@ -183,6 +202,13 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Center(
         child: Text(
@@ -207,7 +233,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.82,
+        childAspectRatio: 0.84,
       ),
       itemBuilder: (context, index) {
         final knjiga = _knjige[index];
@@ -216,8 +242,9 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         return GestureDetector(
           onTap: () async {
             try {
-              final knjigaDetalji =
-                  await _knjigaProvider.getById(knjiga.knjigaId);
+              final knjigaDetalji = await _knjigaProvider.getById(knjiga.knjigaId);
+              
+              if (!mounted) return;    
 
               final result = await Navigator.push(
                 context,
@@ -226,11 +253,13 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                       KnjigaDetailsScreen(knjiga: knjigaDetalji),
                 ),
               );
+              if (!mounted) return;
 
               if (result == true) {
-                _fetchData(); 
+                _fetchData();
               }
             } catch (e) {
+              if (!mounted) return;
               showCustomDialog(
                 context: context,
                 title: 'Greška',
@@ -267,7 +296,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                         knjiga.nazivKnjige ?? "",
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 15,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -366,6 +395,13 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
@@ -378,6 +414,13 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Sljedeća"),
           ),
         ],

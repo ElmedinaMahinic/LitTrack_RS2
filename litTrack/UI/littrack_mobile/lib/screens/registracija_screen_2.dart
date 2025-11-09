@@ -40,10 +40,12 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
       final result = await _ulogaProvider.get();
       final korisnikUloga =
           result.resultList.firstWhere((x) => x.naziv == "Korisnik");
+      if (!mounted) return;
       setState(() {
         _korisnikUlogaId = korisnikUloga.ulogaId;
       });
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: 'Greška',
@@ -51,6 +53,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+      if (!mounted) return;
       Navigator.pop(context);
     }
   }
@@ -169,7 +172,9 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   errorText: "Maksimalno 30 karaktera."),
                             ]),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
+                          const Divider(thickness: 1, color: Colors.grey),
+                          const SizedBox(height: 16),
                           FormBuilderTextField(
                             name: "email",
                             decoration:
@@ -202,7 +207,9 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                       "Telefon može imati najviše 20 karaktera."),
                             ]),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
+                          const Divider(thickness: 1, color: Colors.grey),
+                          const SizedBox(height: 16),
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _isHidden,
@@ -212,7 +219,8 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   vertical: 12, horizontal: 12),
                               labelText: "Lozinka",
                               hintText: "Unesite lozinku",
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               filled: true,
@@ -248,7 +256,8 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   vertical: 12, horizontal: 12),
                               labelText: "Potvrdi lozinku",
                               hintText: "Ponovo unesite lozinku",
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               filled: true,
@@ -304,22 +313,24 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                 backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
                                         (states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return const Color(0xFF51968F);
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return const Color(0xFF2E5A58);
                                   }
                                   return const Color(0xFF3C6E71);
                                 }),
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.white),
                                 shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                elevation: MaterialStateProperty.all(4),
+                                elevation: MaterialStateProperty.all(6),
+                                shadowColor: MaterialStateProperty.all(
+                                    Colors.black.withOpacity(0.15)),
                                 padding: MaterialStateProperty.all(
                                   const EdgeInsets.symmetric(horizontal: 16),
                                 ),
-                                shadowColor:
-                                    MaterialStateProperty.all(Colors.black54),
                               ),
                             ),
                           ),
@@ -385,6 +396,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
 
     try {
       await _korisnikProvider.insert(request);
+      if (!mounted) return;
 
       await showCustomDialog(
         context: context,
@@ -393,6 +405,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
         icon: Icons.check_circle,
         iconColor: Colors.green,
       );
+      if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -400,6 +413,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",

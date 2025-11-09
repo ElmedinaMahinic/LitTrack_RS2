@@ -23,7 +23,6 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   @override
   void initState() {
     super.initState();
-
     naziv = widget.knjiga.naziv;
     autor = widget.knjiga.autorNaziv ?? "/";
     opis = widget.knjiga.opis;
@@ -39,43 +38,81 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       backgroundColor: const Color(0xFFF6F4F3),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFF6F4F3),
         automaticallyImplyLeading: false,
+        centerTitle: false,
         toolbarHeight: kToolbarHeight + 25,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, size: 35, color: Colors.black),
-              onPressed: () => Navigator.pop(context, true),
-            ),
-            Row(
+        backgroundColor: const Color(0xFFF6F4F3),
+        title: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/images/logo.png", height: 45, width: 45),
-                const SizedBox(width: 8),
-                const Text(
-                  "LitTrack",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 28),
+                IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                    size: 35,
+                  ),
+                  onPressed: () => Navigator.pop(context, true),
+                ),
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/images/logo.png",
+                      height: 45,
+                      width: 45,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "LitTrack",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 28,
+                      ),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.shopping_cart,
+                    color: Colors.black,
+                    size: 35,
+                  ),
+                  onPressed: () {},
                 ),
               ],
             ),
-            const Icon(Icons.menu_book, size: 35, color: Colors.black),
-          ],
+          ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _buildHeaderInfo(),
-                const SizedBox(height: 16),
-                _buildTags(),
-              ],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildHeaderInfo(),
+                  const SizedBox(height: 24),
+                  _buildTags(),
+                ],
+              ),
             ),
           ),
         ),
@@ -85,21 +122,32 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
   Widget _buildHeaderInfo() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildImage(slika),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(naziv,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              Text(autor,
-                  style: const TextStyle(fontSize: 15, color: Colors.black87)),
-              Text("$godina.",
-                  style: const TextStyle(fontSize: 13, color: Colors.black54)),
+              Text(
+                naziv,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                autor,
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                "$godina.",
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
+              ),
             ],
           ),
         ),
@@ -109,29 +157,76 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
   Widget _buildTags() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ciljneGrupe
-              .map(
-                (g) => Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(20),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ciljneGrupe
+                .map(
+                  (g) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      g,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF3C6E71),
+                      ),
+                    ),
                   ),
-                  child: Text(g),
-                ),
-              )
-              .toList(),
+                )
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: 18),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            zanrovi.join(",  "),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF3C6E71),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "O knjizi:",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade600,
+            ),
+          ),
         ),
         const SizedBox(height: 8),
-        Text(zanrovi.join(", "), style: const TextStyle(fontSize: 14)),
-        const SizedBox(height: 8),
-        Text(opis, style: const TextStyle(fontSize: 14)),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            opis,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+        ),
       ],
     );
   }
@@ -142,8 +237,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
         borderRadius: BorderRadius.circular(8),
         child: Image.asset(
           "assets/images/placeholder.png",
-          height: 140,
-          width: 120,
+          height: 160,
+          width: 130,
           fit: BoxFit.cover,
         ),
       );
@@ -153,8 +248,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: SizedBox(
-          height: 140,
-          width: 120,
+          height: 160,
+          width: 130,
           child: imageFromString(slikaBase64),
         ),
       );

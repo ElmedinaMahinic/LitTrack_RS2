@@ -28,6 +28,7 @@ class _AutoriScreenState extends State<AutoriScreen> {
   }
 
   Future<void> _fetchData() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final filter = <String, dynamic>{
@@ -38,11 +39,13 @@ class _AutoriScreenState extends State<AutoriScreen> {
       };
 
       final result = await _provider.get(filter: filter);
+      if (!mounted) return;
       setState(() {
         _autori = result.resultList;
         _totalCount = result.count;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: "Greška",
@@ -50,7 +53,9 @@ class _AutoriScreenState extends State<AutoriScreen> {
         icon: Icons.error,
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -67,16 +72,28 @@ class _AutoriScreenState extends State<AutoriScreen> {
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else if (_autori.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  "Nema dostupnih autora.",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black54,
-                  ),
-                  textAlign: TextAlign.center,
+              const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      color: Color(0xFF3C6E71),
+                      size: 50,
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        "Nema dostupnih autora.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF3C6E71),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               )
             else
@@ -106,6 +123,13 @@ class _AutoriScreenState extends State<AutoriScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -192,6 +216,13 @@ class _AutoriScreenState extends State<AutoriScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
@@ -206,6 +237,13 @@ class _AutoriScreenState extends State<AutoriScreen> {
                     _fetchData();
                   }
                 : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withOpacity(0.15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text("Sljedeća"),
           ),
         ],
