@@ -18,6 +18,7 @@ namespace litTrack.Services.Interfaces
         Task AktivirajAsync(int korisnikId, CancellationToken cancellationToken = default);
         Task DeaktivirajAsync(int korisnikId, CancellationToken cancellationToken = default);
 
+        Task<int> GetKorisnikIdByUsernameAsync(string username, CancellationToken cancellationToken = default);
 
     }
 }

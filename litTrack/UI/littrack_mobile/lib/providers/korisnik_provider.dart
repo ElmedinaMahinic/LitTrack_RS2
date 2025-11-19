@@ -81,4 +81,27 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
           "Greška prilikom deaktivacije korisnika: ${e.toString()}");
     }
   }
+
+  Future<int> getKorisnikIdByUsername(String username) async {
+    var url =
+        "${BaseProvider.baseUrl}Korisnik/GetKorisnikIdByUsername?username=$username";
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    try {
+      var response = await http.get(uri, headers: headers);
+
+      if (!isValidResponse(response)) {
+        throw UserException("Greška prilikom provjere korisničkog imena.");
+      }
+
+      final body = response.body.trim();
+      final id = int.tryParse(body) ?? 0;
+      return id;
+    } catch (e) {
+      if (e is UserException) rethrow;
+      throw UserException(
+          "Greška prilikom provjere korisničkog imena: ${e.toString()}");
+    }
+  }
 }

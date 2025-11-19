@@ -337,5 +337,31 @@ namespace litTrack.Services.ServicesImplementation
             await Context.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task<int> GetKorisnikIdByUsernameAsync(string username, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new UserException("Korisničko ime ne može biti prazno.");
+
+            var korisnik = await Context.Korisniks
+                .Include(k => k.KorisnikUlogas)
+                    .ThenInclude(ku => ku.Uloga)
+                .FirstOrDefaultAsync(k => !k.IsDeleted && k.KorisnickoIme.ToLower() == username.ToLower(), cancellationToken);
+
+            if (korisnik == null)
+                return 0;
+
+            var uloge = korisnik.KorisnikUlogas
+                .Where(ku => !ku.IsDeleted && ku.Uloga != null && !ku.Uloga.IsDeleted)
+                .Select(ku => ku.Uloga.Naziv)
+                .ToList();
+
+            if (!uloge.Any(u => u.ToLower() == "korisnik"))
+                throw new UserException("Ličnu preporuku možete poslati samo korisniku.");
+
+            return korisnik.KorisnikId;
+        }
+
+
+
     }
 }

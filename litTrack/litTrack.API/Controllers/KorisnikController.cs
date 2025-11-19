@@ -20,6 +20,15 @@ namespace litTrack.API.Controllers
             _korisnikService = korisnikService;
         }
 
+        [Authorize(Roles = "Korisnik")]
+        [HttpGet("GetKorisnikIdByUsername")]
+        public async Task<ActionResult<int>> GetKorisnikIdByUsernameAsync([FromQuery] string username, CancellationToken cancellationToken)
+        {
+            var korisnikId = await _korisnikService.GetKorisnikIdByUsernameAsync(username, cancellationToken);
+            return Ok(korisnikId); 
+        }
+
+
         [Authorize]  
         [HttpPut("Aktiviraj/{korisnikId}")]
         public async Task<ActionResult> AktivirajAsync(int korisnikId, CancellationToken cancellationToken)
