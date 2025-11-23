@@ -145,5 +145,44 @@ namespace litTrack.Services.ServicesImplementation
             entity.JeProcitana = true;
             await Context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<int> GetBrojRazlicitihZanrovaAsync(int korisnikId, CancellationToken cancellationToken = default)
+        {
+            var procitaneKnjige = await Context.MojaLista
+                .Include(x => x.Knjiga)
+                    .ThenInclude(k => k.KnjigaZanrs)
+                        .ThenInclude(kz => kz.Zanr)
+                .Where(x => x.KorisnikId == korisnikId && x.JeProcitana && !x.IsDeleted)
+                .Select(x => x.Knjiga)
+                .ToListAsync(cancellationToken);
+
+            var distinctZanrovi = new HashSet<int>();
+
+            foreach (var knjiga in procitaneKnjige)
+            {
+                foreach (var kz in knjiga.KnjigaZanrs.Where(kz => !kz.IsDeleted && !kz.Zanr.IsDeleted))
+                {
+                    distinctZanrovi.Add(kz.ZanrId);
+                }
+            }
+
+            return distinctZanrovi.Count;
+        }
+
+        public async Task<int> GetBrojRazlicitihAutoraAsync(int korisnikId, CancellationToken cancellationToken = default)
+        {
+            var procitaneKnjige = await Context.MojaLista
+                .Include(x => x.Knjiga)
+                .Where(x => x.KorisnikId == korisnikId && x.JeProcitana && !x.IsDeleted)
+                .Select(x => x.Knjiga)
+                .ToListAsync(cancellationToken);
+
+            return procitaneKnjige
+                .Select(x => x.AutorId)
+                .Distinct()
+                .Count();
+        }
+
+
     }
 }

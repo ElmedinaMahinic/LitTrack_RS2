@@ -13,5 +13,7 @@ namespace litTrack.Services.Interfaces
     public interface IMojaListumService : ICRUDServiceAsync<MojaListumDTO, MojaListumSearchObject, MojaListumInsertRequest, MojaListumUpdateRequest>
     {
         Task OznaciKaoProcitanuAsync(int mojaListaId, CancellationToken cancellationToken = default);
+        Task<int> GetBrojRazlicitihZanrovaAsync(int korisnikId, CancellationToken cancellationToken = default);
+        Task<int> GetBrojRazlicitihAutoraAsync(int korisnikId, CancellationToken cancellationToken = default);
     }
 }

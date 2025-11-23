@@ -73,7 +73,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                     Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                        "Nema dodanih knjiga u listu preporuka.",
+                        "Nema dodanih knjiga u listi preporuka.",
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xFF3C6E71),

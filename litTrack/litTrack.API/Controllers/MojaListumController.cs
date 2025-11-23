@@ -21,6 +21,23 @@ namespace litTrack.API.Controllers
         }
 
         [Authorize(Roles = "Korisnik")]
+        [HttpGet("BrojZanrova/{korisnikId}")]
+        public async Task<ActionResult<int>> GetBrojRazlicitihZanrovaAsync(int korisnikId, CancellationToken cancellationToken)
+        {
+            var brojZanrova = await _mojaListumService.GetBrojRazlicitihZanrovaAsync(korisnikId, cancellationToken);
+            return Ok(brojZanrova);
+        }
+
+        [Authorize(Roles = "Korisnik")]
+        [HttpGet("BrojAutora/{korisnikId}")]
+        public async Task<ActionResult<int>> GetBrojRazlicitihAutoraAsync(int korisnikId, CancellationToken cancellationToken)
+        {
+            var brojAutora = await _mojaListumService.GetBrojRazlicitihAutoraAsync(korisnikId, cancellationToken);
+            return Ok(brojAutora);
+        }
+
+
+        [Authorize(Roles = "Korisnik")]
         [HttpPut("OznaciKaoProcitanu/{mojaListaId}")]
         public async Task<ActionResult> OznaciKaoProcitanuAsync(int mojaListaId, CancellationToken cancellationToken)
         {
