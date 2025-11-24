@@ -97,7 +97,7 @@ class _RegistracijaScreen1State extends State<RegistracijaScreen1> {
                           ),
                         ),
                         shadowColor: MaterialStateProperty.all(
-                            Colors.black.withOpacity(0.15)),
+                            Colors.black.withOpacity(0.3)),
                         elevation: MaterialStateProperty.all(6),
                       ),
                       child: const Text(

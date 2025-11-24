@@ -100,6 +100,8 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         centerTitle: false,
         toolbarHeight: kToolbarHeight + 25,
         backgroundColor: const Color(0xFFF6F4F3),
+        surfaceTintColor: Colors.transparent,
+        forceMaterialTransparency: false,
         title: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),
@@ -204,9 +206,9 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -275,9 +277,9 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12.withOpacity(0.1),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
+                  color: Colors.black12.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -397,7 +399,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -416,7 +418,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -16,7 +16,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
   late CiljnaGrupaProvider _provider;
   List<CiljnaGrupa> _ciljneGrupe = [];
   int _currentPage = 1;
-  final int _pageSize = 5;
+  final int _pageSize = 10;
   int _totalCount = 0;
   bool _isLoading = true;
 
@@ -125,9 +125,9 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -166,9 +166,9 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -218,7 +218,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -239,7 +239,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

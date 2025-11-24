@@ -119,17 +119,35 @@ class _HomepageScreenState extends State<HomepageScreen> {
         const PopupMenuDivider(),
         const PopupMenuItem<String>(
           value: "abecedno",
-          child: Text("Abecedno", style: TextStyle(color: Color(0xFF3C6E71))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Abecedno", style: TextStyle(color: Color(0xFF3C6E71))),
+              Icon(Icons.sort_by_alpha, size: 15, color: Color(0xFF3C6E71)),
+            ],
+          ),
         ),
         const PopupMenuItem<String>(
           value: "cijena_asc",
-          child: Text("Cijena (najniža)",
-              style: TextStyle(color: Color(0xFF3C6E71))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Cijena (najniža)",
+                  style: TextStyle(color: Color(0xFF3C6E71))),
+              Icon(Icons.arrow_downward, size: 15, color: Color(0xFF3C6E71)),
+            ],
+          ),
         ),
         const PopupMenuItem<String>(
           value: "cijena_desc",
-          child: Text("Cijena (najviša)",
-              style: TextStyle(color: Color(0xFF3C6E71))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Cijena (najviša)",
+                  style: TextStyle(color: Color(0xFF3C6E71))),
+              Icon(Icons.arrow_upward, size: 15, color: Color(0xFF3C6E71)),
+            ],
+          ),
         ),
         const PopupMenuDivider(),
         const PopupMenuItem<String>(
@@ -230,9 +248,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -343,9 +361,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -453,7 +471,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
@@ -471,7 +489,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),

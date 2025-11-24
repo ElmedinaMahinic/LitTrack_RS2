@@ -20,7 +20,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
   late KnjigaProvider _knjigaProvider;
   List<Arhiva> _knjige = [];
   int _currentPage = 1;
-  final int _pageSize = 6;
+  final int _pageSize = 10;
   int _totalCount = 0;
   bool _isLoading = true;
 
@@ -162,9 +162,9 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -247,9 +247,9 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -324,7 +324,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -340,7 +340,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

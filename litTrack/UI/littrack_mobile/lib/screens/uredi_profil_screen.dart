@@ -72,6 +72,8 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         centerTitle: false,
         toolbarHeight: kToolbarHeight + 25,
         backgroundColor: const Color(0xFFF6F4F3),
+        surfaceTintColor: Colors.transparent,
+        forceMaterialTransparency: false,
         title: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),
@@ -161,9 +163,9 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -347,7 +349,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
       shape: MaterialStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
       elevation: MaterialStateProperty.all(6),
     );
 

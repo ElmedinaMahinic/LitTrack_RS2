@@ -21,7 +21,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
   bool _prikaziSve = false;
 
   int _currentPage = 1;
-  final int _pageSize = 6;
+  final int _pageSize = 10;
   int _totalCount = 0;
 
   @override
@@ -131,8 +131,8 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
               _fetchObavijesti(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              elevation: _prikaziSve ? 7 : 2,
-              shadowColor: Colors.black.withOpacity(0.25),
+              elevation: _prikaziSve ? 8 : 3,
+              shadowColor: Colors.black.withOpacity(0.3),
               backgroundColor:
                   _prikaziSve ? Colors.pinkAccent : Colors.grey[300],
               shape: RoundedRectangleBorder(
@@ -157,8 +157,8 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
               _fetchObavijesti(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              elevation: !_prikaziSve ? 7 : 2,
-              shadowColor: Colors.black.withOpacity(0.25),
+              elevation: !_prikaziSve ? 8 : 3,
+              shadowColor: Colors.black.withOpacity(0.3),
               backgroundColor:
                   !_prikaziSve ? Colors.pinkAccent : Colors.grey[300],
               shape: RoundedRectangleBorder(
@@ -188,9 +188,9 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -222,9 +222,9 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.25),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -305,7 +305,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -321,7 +321,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

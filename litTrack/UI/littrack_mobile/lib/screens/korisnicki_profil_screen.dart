@@ -98,9 +98,9 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -159,7 +159,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -210,7 +210,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
       shape: MaterialStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
       elevation: MaterialStateProperty.all(6),
     );
 

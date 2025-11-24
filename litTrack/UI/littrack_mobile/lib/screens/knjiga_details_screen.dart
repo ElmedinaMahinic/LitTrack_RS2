@@ -318,17 +318,29 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
         if (!_jeProcitana)
           const PopupMenuItem<String>(
             value: "oznaci",
-            child: Text(
-              "Označi kao pročitanu",
-              style: TextStyle(color: Color(0xFF3C6E71)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Označi kao pročitanu",
+                  style: TextStyle(color: Color(0xFF3C6E71)),
+                ),
+                Icon(Icons.check, size: 18, color: Color(0xFF3C6E71)),
+              ],
             ),
           ),
         if (!_jeProcitana)
           const PopupMenuItem<String>(
             value: "ukloni",
-            child: Text(
-              "Ukloni iz liste",
-              style: TextStyle(color: Color(0xFF3C6E71)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Ukloni iz liste",
+                  style: TextStyle(color: Color(0xFF3C6E71)),
+                ),
+                Icon(Icons.delete, size: 18, color: Color(0xFF3C6E71)),
+              ],
             ),
           ),
         const PopupMenuDivider(),
@@ -701,7 +713,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   _buildDescriptionContainer(),
                   const SizedBox(height: 25),
                   const Divider(thickness: 0.6, color: Colors.grey),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 24),
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -713,7 +725,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Wrap(
                     alignment: WrapAlignment.center,
                     spacing: 12,
@@ -723,9 +735,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                       _buildButtonCitanje(),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 26),
                   _buildOcjenaRow(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 23),
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -737,12 +749,12 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildButtonRecenzije(),
                   const SizedBox(height: 25),
                   if (_jeProcitana) ...[
                     _buildOcijeni(),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 26),
                   ],
                   const Divider(thickness: 0.6, color: Colors.grey),
                   const SizedBox(height: 25),
@@ -763,9 +775,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 15),
                   _buildCijena(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 22),
                   _buildButtonKorpa(),
                 ],
               ),
@@ -810,52 +822,71 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
   Widget _buildTags() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 8,
-          runSpacing: 8,
-          children: ciljneGrupe
-              .map(
-                (g) => Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: ciljneGrupe.map(
+                (g) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 13, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 7,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Text(
-                    g,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF3C6E71),
+                      child: Text(
+                        g,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF3C6E71),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )
-              .toList(),
+                  );
+                },
+              ).toList(),
+            ),
+          ),
         ),
         const SizedBox(height: 18),
-        Wrap(
-          alignment: WrapAlignment.center,
-          children: [
-            Text(
-              zanrovi.join(",  "),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF3C6E71),
-              ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: zanrovi.map(
+                (z) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Text(
+                      z,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF3C6E71),
+                      ),
+                    ),
+                  );
+                },
+              ).toList(),
             ),
-          ],
+          ),
         ),
       ],
     );
@@ -912,7 +943,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
           shadowColor: MaterialStateProperty.all(
-            Colors.black.withOpacity(0.15),
+            Colors.black.withOpacity(0.3),
           ),
           elevation: MaterialStateProperty.all(6),
         ),
@@ -992,8 +1023,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor:
-              MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
           elevation: MaterialStateProperty.all(6),
         ),
         child: isLoading
@@ -1105,8 +1135,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor:
-              MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
           elevation: MaterialStateProperty.all(6),
         ),
         child: const Text(
@@ -1163,10 +1192,27 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   Widget _buildCijena() {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        "${cijena.toStringAsFixed(2)} KM",
-        style: const TextStyle(
-            fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(
+              text: "Cijena: ",
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.normal,
+                color: Colors.black,
+              ),
+            ),
+            TextSpan(
+              text: "${cijena.toStringAsFixed(2)} KM",
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1203,7 +1249,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
               ),
               shadowColor: MaterialStateProperty.all(
-                Colors.black.withOpacity(0.15),
+                Colors.black.withOpacity(0.3),
               ),
               elevation: MaterialStateProperty.all(6),
             ),
@@ -1310,7 +1356,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
               ),
               shadowColor:
-                  MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+                  MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
               elevation: MaterialStateProperty.all(6),
             ),
             child: Row(
@@ -1458,7 +1504,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
               ),
               shadowColor:
-                  MaterialStateProperty.all(Colors.black.withOpacity(0.15)),
+                  MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
               elevation: MaterialStateProperty.all(6),
             ),
             child: const Text(

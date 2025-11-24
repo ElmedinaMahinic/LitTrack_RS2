@@ -20,7 +20,7 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
   bool _showSve = false;
 
   int _currentPage = 1;
-  final int _pageSize = 6;
+  final int _pageSize = 10;
   int _totalCount = 0;
 
   final Map<String, String?> stateDisplayToValue = {
@@ -138,9 +138,9 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -182,8 +182,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: !_showSve ? 7 : 2,
-                  shadowColor: Colors.black.withOpacity(0.25),
+                  elevation: !_showSve ? 8 : 3,
+                  shadowColor: Colors.black.withOpacity(0.3),
                 ),
                 child: Text(
                   "Aktivne",
@@ -210,8 +210,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: _showSve ? 7 : 2,
-                  shadowColor: Colors.black.withOpacity(0.25),
+                  elevation: _showSve ? 8 : 3,
+                  shadowColor: Colors.black.withOpacity(0.3),
                 ),
                 child: Text(
                   "Sve",
@@ -293,8 +293,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -338,7 +338,7 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -354,7 +354,7 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

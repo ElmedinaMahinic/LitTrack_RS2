@@ -327,7 +327,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                 ),
                                 elevation: MaterialStateProperty.all(6),
                                 shadowColor: MaterialStateProperty.all(
-                                    Colors.black.withOpacity(0.15)),
+                                    Colors.black.withOpacity(0.3)),
                                 padding: MaterialStateProperty.all(
                                   const EdgeInsets.symmetric(horizontal: 16),
                                 ),

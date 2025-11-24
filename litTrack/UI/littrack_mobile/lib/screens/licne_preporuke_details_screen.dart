@@ -75,6 +75,8 @@ class _LicnePreporukeDetailsScreenState
         centerTitle: false,
         toolbarHeight: kToolbarHeight + 25,
         backgroundColor: const Color(0xFFF6F4F3),
+        surfaceTintColor: Colors.transparent,
+        forceMaterialTransparency: false,
         title: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),
@@ -153,9 +155,9 @@ class _LicnePreporukeDetailsScreenState
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -316,11 +318,7 @@ class _LicnePreporukeDetailsScreenState
             ),
           ),
           const Divider(height: 20, thickness: 1),
-          ...knjige.map((knjiga) => GestureDetector(
-                onTap: () {
-                  // TODO: implementiraj navigaciju na details screen za knjigu
-                },
-                child: Padding(
+          ...knjige.map((knjiga) =>  Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Text(
                     knjiga,
@@ -331,7 +329,7 @@ class _LicnePreporukeDetailsScreenState
                     ),
                   ),
                 ),
-              )),
+              ),
         ],
       ),
     );

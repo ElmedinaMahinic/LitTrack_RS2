@@ -16,7 +16,7 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
   late ZanrProvider _provider;
   List<Zanr> _zanrovi = [];
   int _currentPage = 1;
-  final int _pageSize = 5;
+  final int _pageSize = 10;
   int _totalCount = 0;
   bool _isLoading = true;
 
@@ -127,9 +127,9 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -168,9 +168,9 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -245,7 +245,7 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -266,7 +266,7 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.15),
+              shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
