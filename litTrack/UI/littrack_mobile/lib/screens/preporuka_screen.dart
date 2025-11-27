@@ -3,7 +3,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:littrack_mobile/providers/preporuka_cart_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
+import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/screens/preporuka_user_screen.dart';
+import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
+import 'package:provider/provider.dart';
 
 class PreporukaScreen extends StatefulWidget {
   const PreporukaScreen({super.key});
@@ -14,6 +17,7 @@ class PreporukaScreen extends StatefulWidget {
 
 class _PreporukaScreenState extends State<PreporukaScreen> {
   PreporukaCartProvider? _cartProvider;
+  late KnjigaProvider _knjigaProvider;
   List<Map<String, dynamic>> _knjige = [];
   bool _isLoading = true;
 
@@ -22,6 +26,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
     super.initState();
     if (AuthProvider.korisnikId != null) {
       _cartProvider = PreporukaCartProvider(AuthProvider.korisnikId!);
+      _knjigaProvider = context.read<KnjigaProvider>();
       _fetchData();
     }
   }
@@ -32,13 +37,24 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
     if (!mounted) return;
     setState(() => _isLoading = true);
 
-    final data = await _cartProvider!.getPreporukaList();
+    try {
+      final data = await _cartProvider!.getPreporukaList();
 
-    if (!mounted) return;
-    setState(() {
-      _knjige = data.values.map((e) => Map<String, dynamic>.from(e)).toList();
-      _isLoading = false;
-    });
+      if (!mounted) return;
+      setState(() {
+        _knjige = data.values.map((e) => Map<String, dynamic>.from(e)).toList();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -181,7 +197,8 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
         ],
       ),
       child: Slidable(
-        startActionPane: ActionPane(
+        key: ValueKey(knjiga['id']),
+        endActionPane: ActionPane(
           motion: const BehindMotion(),
           children: [
             SlidableAction(
@@ -208,39 +225,70 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
             ),
           ],
         ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 120,
-              height: 100,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                child: FittedBox(
-                  fit: BoxFit.fill,
-                  child: knjiga['slika'] != null && knjiga['slika'] is String
-                      ? imageFromString(knjiga['slika'])
-                      : Image.asset(
-                          "assets/images/placeholder.png",
-                          fit: BoxFit.fill,
-                        ),
+        child: GestureDetector(
+          onTap: () async {
+            try {
+              final knjigaDetalji = await _knjigaProvider.getById(knjiga['id']);
+
+              if (!mounted) return;
+
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      KnjigaDetailsScreen(knjiga: knjigaDetalji),
                 ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  knjiga['naziv'] ?? "-",
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    overflow: TextOverflow.ellipsis,
+              );
+
+              if (!mounted) return;
+
+              if (result == true) {
+                await _fetchData();
+              }
+            } catch (e) {
+              if (!mounted) return;
+              showCustomDialog(
+                context: context,
+                title: "Greška",
+                message: e.toString(),
+                icon: Icons.error,
+              );
+            }
+          },
+          child: Row(
+            children: [
+              SizedBox(
+                width: 120,
+                height: 100,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: knjiga['slika'] != null && knjiga['slika'] is String
+                        ? imageFromString(knjiga['slika'])
+                        : Image.asset(
+                            "assets/images/placeholder.png",
+                            fit: BoxFit.fill,
+                          ),
                   ),
-                  maxLines: 2,
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    knjiga['naziv'] ?? "-",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

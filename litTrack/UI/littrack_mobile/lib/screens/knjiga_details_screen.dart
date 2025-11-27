@@ -711,6 +711,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   _buildTags(),
                   const SizedBox(height: 20),
                   _buildDescriptionContainer(),
+                  const SizedBox(height: 24),
+                  _buildOcjenaRow(),
                   const SizedBox(height: 25),
                   const Divider(thickness: 0.6, color: Colors.grey),
                   const SizedBox(height: 24),
@@ -736,8 +738,6 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 26),
-                  _buildOcjenaRow(),
-                  const SizedBox(height: 23),
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -775,7 +775,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 17),
                   _buildCijena(),
                   const SizedBox(height: 22),
                   _buildButtonKorpa(),
@@ -935,6 +935,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
             if (_isLoadingArhivirana) return Colors.grey;
 
+            if (_jeArhivirana) {
+              return const Color(0xFF3C6E71);
+            }
+
             return states.contains(MaterialState.pressed)
                 ? const Color(0xFF33585B)
                 : const Color(0xFF3C6E71);
@@ -943,9 +947,11 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
           shadowColor: MaterialStateProperty.all(
-            Colors.black.withOpacity(0.3),
+            Colors.black.withOpacity(_jeArhivirana ? 0.4 : 0.3),
           ),
-          elevation: MaterialStateProperty.all(6),
+          elevation: MaterialStateProperty.all(
+            _jeArhivirana ? 8 : 6,
+          ),
         ),
         child: _isLoadingArhivirana
             ? const SizedBox(
@@ -1016,6 +1022,11 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
             if (isLoading) return Colors.grey;
+
+            if (_jeProcitana) {
+              return const Color(0xFF3C6E71);
+            }
+
             return states.contains(MaterialState.pressed)
                 ? const Color(0xFF33585B)
                 : const Color(0xFF3C6E71);
@@ -1023,8 +1034,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-          elevation: MaterialStateProperty.all(6),
+          shadowColor: MaterialStateProperty.all(
+            Colors.black.withOpacity(_jeProcitana ? 0.4 : 0.3),
+          ),
+          elevation: MaterialStateProperty.all(_jeProcitana ? 8 : 6),
         ),
         child: isLoading
             ? const SizedBox(

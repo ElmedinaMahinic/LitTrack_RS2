@@ -127,7 +127,7 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                     Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                        "Niste arhivirali nijednu knjigu.",
+                        "Nema arhiviranih knjiga.",
                         style:
                             TextStyle(fontSize: 16, color: Color(0xFF3C6E71)),
                         textAlign: TextAlign.center,
@@ -199,7 +199,8 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
               showConfirmDialog(
                 context: context,
                 title: "Brisanje knjige",
-                message: "Da li ste sigurni?",
+                message:
+                    "Da li ste sigurni da želite ukloniti knjigu iz arhive?",
                 icon: Icons.delete,
                 iconColor: Colors.red,
                 onConfirm: () => _deleteFromArchive(knjiga),

@@ -51,7 +51,7 @@ namespace litTrack.API.Controllers
             return await _narudzbaService.PonistiAsync(narudzbaId, cancellationToken);
         }
 
-        [Authorize(Roles = "Radnik")]
+        [Authorize(Roles = "Korisnik")]
         [HttpPut("{narudzbaId}/zavrsi")]
         public async Task<Model.DTOs.NarudzbaDTO> Zavrsi(int narudzbaId, CancellationToken cancellationToken = default)
         {

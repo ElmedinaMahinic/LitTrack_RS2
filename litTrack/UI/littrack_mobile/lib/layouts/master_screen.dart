@@ -68,6 +68,8 @@ class _MasterScreenState extends State<MasterScreen> {
             centerTitle: false,
             toolbarHeight: kToolbarHeight + 25,
             backgroundColor: const Color(0xFFF6F4F3),
+            surfaceTintColor: Colors.transparent,
+            forceMaterialTransparency: false,
             title: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),

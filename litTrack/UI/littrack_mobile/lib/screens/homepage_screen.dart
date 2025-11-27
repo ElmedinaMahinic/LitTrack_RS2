@@ -108,7 +108,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         const PopupMenuItem<String>(
           enabled: false,
           child: Text(
-            "Sortirajte",
+            "Sortiranje",
             style: TextStyle(
               color: Color(0xFF3C6E71),
               fontWeight: FontWeight.bold,

@@ -147,7 +147,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
             const SizedBox(height: 20),
             _buildSection("Pročitane knjige", _procitaneKnjige, true,
                 _isLoadingProcitane),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             _buildSection("Knjige koje želim pročitati", _zelimProcitati, false,
                 _isLoadingNeprocitane),
           ],
@@ -232,6 +232,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const SizedBox(height: 12),
                 const Icon(
                   Icons.menu_book,
                   color: Color(0xFF3C6E71),

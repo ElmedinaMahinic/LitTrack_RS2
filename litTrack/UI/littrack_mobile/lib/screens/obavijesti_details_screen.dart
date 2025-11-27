@@ -1,57 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:littrack_mobile/models/licna_preporuka.dart';
-import 'package:littrack_mobile/providers/licna_preporuka_provider.dart';
+import 'package:littrack_mobile/models/obavijest.dart';
+import 'package:littrack_mobile/providers/obavijest_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:littrack_mobile/providers/auth_provider.dart';
 
-class LicnePreporukeDetailsScreen extends StatefulWidget {
-  final LicnaPreporuka licnaPreporuka;
+class ObavijestiDetailsScreen extends StatefulWidget {
+  final Obavijest obavijest;
 
-  const LicnePreporukeDetailsScreen({
+  const ObavijestiDetailsScreen({
     super.key,
-    required this.licnaPreporuka,
+    required this.obavijest,
   });
 
   @override
-  State<LicnePreporukeDetailsScreen> createState() =>
-      _LicnePreporukeDetailsScreenState();
+  State<ObavijestiDetailsScreen> createState() =>
+      _ObavijestiDetailsScreenState();
 }
 
-class _LicnePreporukeDetailsScreenState
-    extends State<LicnePreporukeDetailsScreen> {
-  late final String posiljalac;
+class _ObavijestiDetailsScreenState extends State<ObavijestiDetailsScreen> {
   late final String primalac;
   late final String naslov;
-  late final String poruka;
-  late final DateTime datumPreporuke;
-  late final List<String> knjige;
+  late final String sadrzaj;
+  late final DateTime datumObavijesti;
 
-  late LicnaPreporukaProvider _licnaPreporukaProvider;
+  late ObavijestProvider _obavijestProvider;
 
   @override
   void initState() {
     super.initState();
+    primalac = widget.obavijest.imePrezime ?? "/";
+    naslov = widget.obavijest.naslov;
+    sadrzaj = widget.obavijest.sadrzaj;
+    datumObavijesti = widget.obavijest.datumObavijesti;
 
-    posiljalac = widget.licnaPreporuka.posiljalacKorisnickoIme ?? "/";
-    primalac = widget.licnaPreporuka.primalacKorisnickoIme ?? "/";
-    naslov = widget.licnaPreporuka.naslov ?? "/";
-    poruka = widget.licnaPreporuka.poruka ?? "/";
-    datumPreporuke = widget.licnaPreporuka.datumPreporuke;
-    knjige = widget.licnaPreporuka.knjige;
-
-    _licnaPreporukaProvider = context.read<LicnaPreporukaProvider>();
-    _oznaciKaoPogledanu();
+    _obavijestProvider = context.read<ObavijestProvider>();
+    _oznaciKaoProcitanu();
   }
 
-  Future<void> _oznaciKaoPogledanu() async {
+  Future<void> _oznaciKaoProcitanu() async {
     try {
-      if (widget.licnaPreporuka.korisnikPrimalacId == AuthProvider.korisnikId) {
-        if (widget.licnaPreporuka.licnaPreporukaId != null) {
-          await _licnaPreporukaProvider
-              .oznaciKaoPogledanu(widget.licnaPreporuka.licnaPreporukaId!);
-        }
+      if (widget.obavijest.obavijestId != null) {
+        await _obavijestProvider
+            .oznaciKaoProcitanu(widget.obavijest.obavijestId!);
       }
     } catch (e) {
       if (!mounted) return;
@@ -133,11 +124,7 @@ class _LicnePreporukeDetailsScreenState
                 const SizedBox(height: 24),
                 _buildInfoSection(),
                 const SizedBox(height: 20),
-                _buildPorukaBox(),
-                if (knjige.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  _buildKnjigeBox(),
-                ],
+                _buildSadrzajBox(),
               ],
             ),
           ),
@@ -163,7 +150,7 @@ class _LicnePreporukeDetailsScreenState
       ),
       child: const Center(
         child: Text(
-          "Detalji preporuke",
+          "Detalji obavijesti",
           style: TextStyle(
             color: Colors.white,
             fontSize: 19,
@@ -192,12 +179,11 @@ class _LicnePreporukeDetailsScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow("Pošiljalac:", posiljalac, Icons.person_outline),
-          _buildInfoRow("Primalac:", primalac, Icons.person_outline),
+          _buildInfoRow("Primalac:", primalac, Icons.account_circle_outlined),
           _buildInfoRow("Naslov:", naslov, Icons.title),
           _buildInfoRow(
-            "Datum preporuke:",
-            DateFormat('dd.MM.yyyy. HH:mm').format(datumPreporuke.toLocal()),
+            "Datum obavijesti:",
+            DateFormat('dd.MM.yyyy. HH:mm').format(datumObavijesti.toLocal()),
             Icons.calendar_today_outlined,
           ),
         ],
@@ -244,7 +230,7 @@ class _LicnePreporukeDetailsScreenState
     );
   }
 
-  Widget _buildPorukaBox() {
+  Widget _buildSadrzajBox() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(16),
@@ -265,7 +251,7 @@ class _LicnePreporukeDetailsScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Poruka",
+            "Sadržaj",
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 18,
@@ -274,62 +260,13 @@ class _LicnePreporukeDetailsScreenState
           ),
           const Divider(height: 20, thickness: 1),
           Text(
-            poruka,
+            sadrzaj,
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
               height: 1.5,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildKnjigeBox() {
-    final naslovTekst =
-        knjige.length == 1 ? "Preporučena knjiga" : "Preporučene knjige";
-
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(16),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            naslovTekst,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-              color: Color(0xFF3C6E71),
-            ),
-          ),
-          const Divider(height: 20, thickness: 1),
-          ...knjige.map((knjiga) =>  Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(
-                    knjiga,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
         ],
       ),
     );

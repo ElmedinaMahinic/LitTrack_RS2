@@ -4,6 +4,7 @@ import 'package:littrack_mobile/models/obavijest.dart';
 import 'package:littrack_mobile/providers/obavijest_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
+import 'package:littrack_mobile/screens/obavijesti_details_screen.dart';
 import 'package:provider/provider.dart';
 
 class ObavijestiScreen extends StatefulWidget {
@@ -213,7 +214,20 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
 
   Widget _buildObavijestCard(Obavijest obavijest) {
     return InkWell(
-      onTap: () {},
+      onTap: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ObavijestiDetailsScreen(obavijest: obavijest),
+          ),
+        );
+
+        if (!mounted) return;
+
+        if (refresh == true) {
+          _fetchObavijesti(page: _currentPage);
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(14),

@@ -4,6 +4,7 @@ import 'package:littrack_mobile/models/narudzba.dart';
 import 'package:littrack_mobile/providers/narudzba_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
+import 'package:littrack_mobile/screens/narudzbe_details_screen.dart';
 import 'package:provider/provider.dart';
 
 class MojeNarudzbeScreen extends StatefulWidget {
@@ -284,7 +285,20 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      onTap: () {},
+      onTap: () async {
+        final refresh = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NarudzbeDetailsScreen(narudzba: n),
+          ),
+        );
+
+        if (!mounted) return;
+
+        if (refresh == true) {
+          _fetchNarudzbe(page: _currentPage);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
