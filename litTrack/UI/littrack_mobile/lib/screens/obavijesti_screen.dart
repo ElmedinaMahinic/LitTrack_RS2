@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:littrack_mobile/models/obavijest.dart';
 import 'package:littrack_mobile/providers/obavijest_provider.dart';
+import 'package:littrack_mobile/screens/obavijesti_details_screen.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
-import 'package:littrack_mobile/screens/obavijesti_details_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ObavijestiScreen extends StatefulWidget {
   const ObavijestiScreen({super.key});
@@ -25,6 +26,14 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
   final int _pageSize = 10;
   int _totalCount = 0;
 
+  final TextEditingController _searchController = TextEditingController();
+
+  DateTime? _datumOd;
+  DateTime? _datumDo;
+
+  DateTime? _tempDatumOd;
+  DateTime? _tempDatumDo;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +49,11 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
       'pageSize': _pageSize,
       'KorisnikId': AuthProvider.korisnikId,
       if (!_prikaziSve) 'JePogledana': false,
+      if (_searchController.text.isNotEmpty) 'Naslov': _searchController.text,
+      if (_datumOd != null)
+        'DatumObavijestiGTE': DateFormat('yyyy-MM-dd').format(_datumOd!),
+      if (_datumDo != null)
+        'DatumObavijestiLTE': DateFormat('yyyy-MM-dd').format(_datumDo!),
       'orderBy': 'DatumObavijesti',
       'sortDirection': 'desc',
     };
@@ -63,10 +77,180 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
+      if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _deleteObavijest(Obavijest obavijest) async {
+    try {
+      await _provider.delete(obavijest.obavijestId!);
+
+      if (!mounted) return;
+      await showCustomDialog(
+        context: context,
+        title: "Uspješno",
+        message: "Obavijest je obrisana.",
+        icon: Icons.check_circle,
+        iconColor: Colors.green,
+      );
+
+      if (!mounted) return;
+      _fetchObavijesti(page: _currentPage);
+    } catch (e) {
+      if (!mounted) return;
+      await showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
+    }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    _datumOd = null;
+    _datumDo = null;
+    _currentPage = 1;
+    _fetchObavijesti(page: 1);
+  }
+
+  Future<void> _showDateFilterDialog() async {
+    _tempDatumOd = _tempDatumOd ?? _datumOd;
+    _tempDatumDo = _tempDatumDo ?? _datumDo;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setLocalState) {
+            return AlertDialog(
+              backgroundColor: const Color.fromARGB(255, 226, 236, 231),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                "Filter po datumu",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("OD:",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _tempDatumOd != null
+                            ? DateFormat('dd.MM.yyyy').format(_tempDatumOd!)
+                            : "Nije odabrano",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _tempDatumOd ?? DateTime.now(),
+                            firstDate: DateTime(2020),
+                            lastDate: _tempDatumDo ?? DateTime.now(),
+                          );
+                          if (picked != null) {
+                            setLocalState(() {
+                              _tempDatumOd = picked;
+
+                              if (_tempDatumDo != null &&
+                                  _tempDatumDo!.isBefore(_tempDatumOd!)) {
+                                _tempDatumDo = null;
+                              }
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text("DO:",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _tempDatumDo != null
+                            ? DateFormat('dd.MM.yyyy').format(_tempDatumDo!)
+                            : "Nije odabrano",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate:
+                                _tempDatumDo ?? _tempDatumOd ?? DateTime.now(),
+                            firstDate: _tempDatumOd ?? DateTime(2020),
+                            lastDate: DateTime.now(),
+                          );
+                          if (picked != null) {
+                            setLocalState(() {
+                              _tempDatumDo = picked;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    "Zatvori",
+                    style: TextStyle(color: Color(0xFF3C6E71)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _datumOd = _tempDatumOd;
+                      _datumDo = _tempDatumDo;
+                      _currentPage = 1;
+                    });
+
+                    Navigator.of(context).pop();
+                    _fetchObavijesti(page: 1);
+                  },
+                  icon: const Icon(Icons.check, color: Colors.white),
+                  label: const Text("Primijeni",
+                      style: TextStyle(color: Colors.white)),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(const Color(0xFF3C6E71)),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    shadowColor: MaterialStateProperty.all(
+                      Colors.black.withOpacity(0.3),
+                    ),
+                    elevation: MaterialStateProperty.all(6),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -79,6 +263,8 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
             _buildToggleButtons(),
             const SizedBox(height: 17),
             _buildHeader(),
+            const SizedBox(height: 14),
+            _buildSearchBox(),
             const SizedBox(height: 24),
             if (_loading)
               const Center(child: CircularProgressIndicator())
@@ -119,6 +305,49 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSearchBox() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: "Pretraži...",
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear, color: Colors.grey),
+                onPressed: _clearSearch,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.grey, width: 1.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            ),
+            style: const TextStyle(color: Colors.grey),
+            onChanged: (value) {
+              _currentPage = 1;
+              _fetchObavijesti();
+            },
+          ),
+        ),
+        const SizedBox(width: 10),
+        GestureDetector(
+          onTap: _showDateFilterDialog,
+          child: const Icon(Icons.date_range, color: Colors.grey, size: 28),
+        ),
+      ],
     );
   }
 
@@ -213,90 +442,114 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
   }
 
   Widget _buildObavijestCard(Obavijest obavijest) {
-    return InkWell(
-      onTap: () async {
-        final refresh = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ObavijestiDetailsScreen(obavijest: obavijest),
+    return Slidable(
+      key: ValueKey(obavijest.obavijestId),
+      endActionPane: ActionPane(
+        motion: const BehindMotion(),
+        children: [
+          SlidableAction(
+            backgroundColor: Colors.black,
+            icon: Icons.delete,
+            label: "Obriši",
+            onPressed: (_) {
+              showConfirmDialog(
+                context: context,
+                title: "Brisanje obavijesti",
+                message: "Da li ste sigurni da želite obrisati obavijest?",
+                icon: Icons.delete,
+                iconColor: Colors.red,
+                onConfirm: () => _deleteObavijest(obavijest),
+              );
+            },
           ),
-        );
-
-        if (!mounted) return;
-
-        if (refresh == true) {
-          _fetchObavijesti(page: _currentPage);
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+        ],
+      ),
+      child: InkWell(
+        onTap: () async {
+          final refresh = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  ObavijestiDetailsScreen(obavijest: obavijest),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (!obavijest.jePogledana)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3C6E71).withOpacity(0.1),
-                      border: Border.all(
-                        color: const Color(0xFF3C6E71),
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      "NOVO",
-                      style: TextStyle(
-                        color: Color(0xFF3C6E71),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    obavijest.naslov,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              DateFormat('dd.MM.yyyy')
-                  .format(obavijest.datumObavijesti.toLocal()),
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.grey,
+          );
+
+          if (!mounted) return;
+
+          if (refresh == true) {
+            _fetchObavijesti(page: _currentPage);
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-            ),
-            const Divider(),
-            Text(
-              obavijest.sadrzaj,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (!obavijest.jePogledana)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3C6E71).withOpacity(0.1),
+                        border: Border.all(
+                          color: const Color(0xFF3C6E71),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        "NOVO",
+                        style: TextStyle(
+                          color: Color(0xFF3C6E71),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      obavijest.naslov,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                DateFormat('dd.MM.yyyy')
+                    .format(obavijest.datumObavijesti.toLocal()),
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              const Divider(),
+              Text(
+                obavijest.sadrzaj,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );

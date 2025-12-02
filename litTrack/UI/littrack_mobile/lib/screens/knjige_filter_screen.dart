@@ -113,9 +113,10 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
       backgroundColor: const Color(0xFFF6F4F3),
       appBar: AppBar(
         elevation: 0,
+        shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         centerTitle: false,
-        toolbarHeight: kToolbarHeight + 25,
+        toolbarHeight: kToolbarHeight + 15,
         backgroundColor: const Color(0xFFF6F4F3),
         surfaceTintColor: Colors.transparent,
         forceMaterialTransparency: false,
@@ -130,7 +131,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                   icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -138,8 +139,8 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                   children: [
                     Image.asset(
                       "assets/images/logo.png",
-                      height: 45,
-                      width: 45,
+                      height: 40,
+                      width: 40,
                     ),
                     const SizedBox(width: 8),
                     const Text(
@@ -147,7 +148,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 28,
+                        fontSize: 26,
                       ),
                     ),
                   ],
@@ -156,7 +157,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                   icon: const Icon(
                     Icons.shopping_cart,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () {},
                 ),
@@ -172,6 +173,8 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
             child: Column(
               children: [
                 _buildHeader(),
+                const SizedBox(height: 17),
+                _buildOpis(),
                 const SizedBox(height: 24),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
@@ -239,6 +242,69 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
             fontWeight: FontWeight.w600,
           ),
           textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOpis() {
+    if (widget.filterObject is Autor) {
+      final autor = widget.filterObject as Autor;
+      final text = autor.biografija;
+      return _opisSection(
+        title: "Biografija:",
+        content: text ?? "Ovaj autor još nema biografiju.",
+      );
+    }
+
+    if (widget.filterObject is Zanr) {
+      final zanr = widget.filterObject as Zanr;
+      final text = zanr.opis;
+      return _opisSection(
+        title: "Opis:",
+        content: text ?? "Ovaj žanr nema opis.",
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Widget _opisSection({required String title, required String content}) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: "$title ",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: content,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -165,17 +165,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           _arhivaId = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Knjiga uklonjena iz arhive.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Knjiga je uklonjena iz arhive.",
+          icon: Icons.delete,
         );
       } else {
         final dto = await _arhivaProvider.insert({
@@ -189,17 +182,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           _arhivaId = dto.arhivaId;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Knjiga arhivirana.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Knjiga je arhivirana.",
+          icon: Icons.check,
         );
       }
     } catch (e) {
@@ -268,17 +254,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
         _mojaListumId = dto.mojaListaId;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color(0xFFD5E0DB),
-          duration: Duration(seconds: 2),
-          content: Center(
-            child: Text(
-              "Dodano u listu.",
-              style: TextStyle(color: Color(0xFF3C6E71)),
-            ),
-          ),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Knjiga je dodana u listu za čitanje.",
+        icon: Icons.check,
       );
     } catch (e) {
       if (!mounted) return;
@@ -297,7 +276,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   void _showListaMenu(BuildContext context, Offset offset) async {
     final selected = await showMenu<String>(
       context: context,
-      color: const Color(0xFFF6F4F3),
+      color: const Color.fromARGB(255, 226, 236, 231),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -369,31 +348,19 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
         if (!mounted) return;
         setState(() => _jeProcitana = true);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Knjiga označena kao pročitana.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Knjiga je označena kao pročitana.",
+          icon: Icons.check,
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFFD5E0DB),
-            duration: const Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        await showCustomDialog(
+          context: context,
+          title: "Greška",
+          message: e.toString(),
+          icon: Icons.error,
+          iconColor: Colors.red,
         );
       }
     }
@@ -408,31 +375,19 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           _mojaListumId = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Knjiga uklonjena iz liste.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Knjiga je uklonjena iz liste za čitanje.",
+          icon: Icons.delete,
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFFD5E0DB),
-            duration: const Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        await showCustomDialog(
+          context: context,
+          title: "Greška",
+          message: e.toString(),
+          icon: Icons.error,
+          iconColor: Colors.red,
         );
       }
     }
@@ -516,17 +471,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Ocjena ažurirana.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Ocjena je ažurirana.",
+          icon: Icons.check,
         );
       } else {
         final dto = await _ocjenaProvider.insert({
@@ -546,17 +494,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Color(0xFFD5E0DB),
-            duration: Duration(seconds: 3),
-            content: Center(
-              child: Text(
-                "Ocjena uspješno dodana.",
-                style: TextStyle(color: Color(0xFF3C6E71)),
-              ),
-            ),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: "Uspješno ste ocijenili knjigu.",
+          icon: Icons.check,
         );
       }
     } catch (e) {
@@ -612,17 +553,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
       setState(() => _jePreporucena = true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color(0xFFD5E0DB),
-          duration: Duration(seconds: 3),
-          content: Center(
-            child: Text(
-              "Knjiga preporučena.",
-              style: TextStyle(color: Color(0xFF3C6E71)),
-            ),
-          ),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Knjiga je preporučena.",
+        icon: Icons.check,
       );
     } catch (e) {
       if (!mounted) return;
@@ -644,9 +578,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       backgroundColor: const Color(0xFFF6F4F3),
       appBar: AppBar(
         elevation: 0,
+        shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         centerTitle: false,
-        toolbarHeight: kToolbarHeight + 25,
+        toolbarHeight: kToolbarHeight + 15,
         backgroundColor: const Color(0xFFF6F4F3),
         surfaceTintColor: Colors.transparent,
         forceMaterialTransparency: false,
@@ -658,27 +593,27 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.arrow_back,
-                      color: Colors.black, size: 35),
+                      color: Colors.black, size: 30),
                   onPressed: () => Navigator.pop(context, true),
                 ),
                 Row(
                   children: [
                     Image.asset("assets/images/logo.png",
-                        height: 45, width: 45),
+                        height: 40, width: 40),
                     const SizedBox(width: 8),
                     const Text(
                       "LitTrack",
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 28,
+                        fontSize: 26,
                       ),
                     ),
                   ],
                 ),
                 IconButton(
                   icon: const Icon(Icons.shopping_cart,
-                      color: Colors.black, size: 35),
+                      color: Colors.black, size: 30),
                   onPressed: () {},
                 ),
               ],
@@ -1295,15 +1230,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           const SizedBox(width: 8),
           GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    "Možete preporučiti samo pročitane knjige",
-                    style: TextStyle(color: Color(0xFF3C6E71)),
-                  ),
-                  backgroundColor: Color(0xFFD5E0DB),
-                  duration: Duration(seconds: 3),
-                ),
+              showCustomSnackBar(
+                context: context,
+                message: "Možete preporučiti samo pročitane knjige.",
               );
             },
             child: const Icon(Icons.info_outline, size: 22, color: Colors.grey),
@@ -1331,17 +1260,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                           .addToPreporukaList(widget.knjiga);
                       if (!mounted) return;
                       setState(() => _isInPreporuka = true);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Color(0xFFD5E0DB),
-                          duration: Duration(seconds: 3),
-                          content: Center(
-                            child: Text(
-                              "Knjiga dodana u listu za ličnu preporuku.",
-                              style: TextStyle(color: Color(0xFF3C6E71)),
-                            ),
-                          ),
-                        ),
+                      showCustomSnackBar(
+                        context: context,
+                        message: "Knjiga je dodana u listu za ličnu preporuku.",
+                        icon: Icons.check,
                       );
                     } catch (e) {
                       if (!mounted) return;
@@ -1401,15 +1323,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           const SizedBox(width: 8),
           GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    "Možete u ličnu preporuku dodati samo pročitane knjige.",
-                    style: TextStyle(color: Color(0xFF3C6E71)),
-                  ),
-                  backgroundColor: Color(0xFFD5E0DB),
-                  duration: Duration(seconds: 3),
-                ),
+              showCustomSnackBar(
+                context: context,
+                message:
+                    "U ličnu preporuku možete dodati samo pročitane knjige.",
               );
             },
             child: const Icon(Icons.info_outline, size: 22, color: Colors.grey),

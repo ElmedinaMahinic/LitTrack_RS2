@@ -154,8 +154,8 @@ class _NavikeScreenState extends State<NavikeScreen> {
     required IconData icon,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -187,7 +187,6 @@ class _NavikeScreenState extends State<NavikeScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF3C6E71),
-
                 ),
               ),
               const SizedBox(width: 8),
@@ -199,4 +198,3 @@ class _NavikeScreenState extends State<NavikeScreen> {
     );
   }
 }
-

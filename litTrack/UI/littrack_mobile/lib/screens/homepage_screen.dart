@@ -99,7 +99,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   void _showSortMenu(BuildContext context, Offset offset) async {
     final selected = await showMenu<String>(
       context: context,
-      color: const Color(0xFFF6F4F3),
+      color: const Color.fromARGB(255, 226, 236, 231),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),

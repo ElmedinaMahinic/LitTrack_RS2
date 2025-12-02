@@ -61,12 +61,13 @@ class _MasterScreenState extends State<MasterScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F4F3),
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight + 25),
+          preferredSize: const Size.fromHeight(kToolbarHeight + 15),
           child: AppBar(
             elevation: 0,
+            shadowColor: Colors.transparent,
             automaticallyImplyLeading: false,
             centerTitle: false,
-            toolbarHeight: kToolbarHeight + 25,
+            toolbarHeight: kToolbarHeight + 15,
             backgroundColor: const Color(0xFFF6F4F3),
             surfaceTintColor: Colors.transparent,
             forceMaterialTransparency: false,
@@ -83,7 +84,7 @@ class _MasterScreenState extends State<MasterScreen> {
                           icon: const Icon(
                             Icons.menu,
                             color: Colors.black,
-                            size: 35,
+                            size: 30,
                           ),
                           onPressed: () {
                             Scaffold.of(context).openDrawer();
@@ -95,8 +96,8 @@ class _MasterScreenState extends State<MasterScreen> {
                       children: [
                         Image.asset(
                           "assets/images/logo.png",
-                          height: 45,
-                          width: 45,
+                          height: 40,
+                          width: 40,
                         ),
                         const SizedBox(width: 8),
                         const Text(
@@ -104,7 +105,7 @@ class _MasterScreenState extends State<MasterScreen> {
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w600,
-                            fontSize: 28,
+                            fontSize: 26,
                           ),
                         ),
                       ],
@@ -113,7 +114,7 @@ class _MasterScreenState extends State<MasterScreen> {
                       icon: const Icon(
                         Icons.shopping_cart,
                         color: Colors.black,
-                        size: 35,
+                        size: 30,
                       ),
                       onPressed: () {},
                     ),

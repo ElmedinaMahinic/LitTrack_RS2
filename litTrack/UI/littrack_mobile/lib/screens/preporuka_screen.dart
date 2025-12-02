@@ -205,18 +205,13 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
               onPressed: (context) async {
                 await _cartProvider?.removeKnjiga(knjiga['id']);
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    backgroundColor: Color(0xFFD5E0DB),
-                    duration: Duration(seconds: 2),
-                    content: Center(
-                      child: Text(
-                        "Knjiga je uklonjena iz liste.",
-                        style: TextStyle(color: Color(0xFF3C6E71)),
-                      ),
-                    ),
-                  ),
+
+                showCustomSnackBar(
+                  context: context,
+                  message: "Knjiga je uklonjena iz liste.",
+                  icon: Icons.delete,
                 );
+
                 await _fetchData();
               },
               backgroundColor: Colors.black,
@@ -304,17 +299,10 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
           child: ElevatedButton(
             onPressed: () {
               if (_knjige.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    backgroundColor: Color(0xFFD5E0DB),
-                    duration: Duration(seconds: 2),
-                    content: Center(
-                      child: Text(
-                        "Niste dodali nijednu knjigu.",
-                        style: TextStyle(color: Color(0xFF3C6E71)),
-                      ),
-                    ),
-                  ),
+                showCustomSnackBar(
+                  context: context,
+                  message: "Niste dodali nijednu knjigu.",
+                  icon: Icons.warning,
                 );
               } else {
                 Navigator.push(

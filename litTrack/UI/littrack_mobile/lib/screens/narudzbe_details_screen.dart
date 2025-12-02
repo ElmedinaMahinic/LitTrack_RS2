@@ -86,9 +86,10 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
       backgroundColor: const Color(0xFFF6F4F3),
       appBar: AppBar(
         elevation: 0,
+        shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         centerTitle: false,
-        toolbarHeight: kToolbarHeight + 25,
+        toolbarHeight: kToolbarHeight + 15,
         backgroundColor: const Color(0xFFF6F4F3),
         surfaceTintColor: Colors.transparent,
         forceMaterialTransparency: false,
@@ -103,7 +104,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
                   icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () => Navigator.pop(context, true),
                 ),
@@ -111,8 +112,8 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
                   children: [
                     Image.asset(
                       "assets/images/logo.png",
-                      height: 45,
-                      width: 45,
+                      height: 40,
+                      width: 40,
                     ),
                     const SizedBox(width: 8),
                     const Text(
@@ -120,7 +121,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 28,
+                        fontSize: 26,
                       ),
                     ),
                   ],
@@ -129,7 +130,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
                   icon: const Icon(
                     Icons.shopping_cart,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () {},
                 ),
@@ -253,39 +254,43 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
   }
 
   Widget _buildStavkeToggleButton() {
-    return SizedBox(
-      width: 220,
-      height: 48,
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          if (!showStavke) await loadStavke();
-          if (!mounted) return;
-          setState(() => showStavke = !showStavke);
-        },
-        icon: Icon(
-          showStavke ? Icons.hide_source : Icons.shopping_basket,
-          color: Colors.white,
-        ),
-        label: Text(
-          showStavke ? "Sakrij stavke" : "Prikaži stavke",
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        width: 220,
+        height: 48,
+        child: ElevatedButton.icon(
+          onPressed: () async {
+            if (!showStavke) await loadStavke();
+            if (!mounted) return;
+            setState(() => showStavke = !showStavke);
+          },
+          icon: Icon(
+            showStavke ? Icons.hide_source : Icons.shopping_basket,
             color: Colors.white,
           ),
-        ),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return const Color(0xFF33585B);
-            }
-            return const Color(0xFF3C6E71);
-          }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          label: Text(
+            showStavke ? "Sakrij stavke" : "Prikaži stavke",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-          elevation: MaterialStateProperty.all(6),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+              if (states.contains(MaterialState.pressed)) {
+                return const Color(0xFF33585B);
+              }
+              return const Color(0xFF3C6E71);
+            }),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            ),
+            shadowColor:
+                MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
+            elevation: MaterialStateProperty.all(6),
+          ),
         ),
       ),
     );
@@ -386,15 +391,9 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
     }
 
     void showInfo(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xFFD5E0DB),
-          duration: const Duration(seconds: 3),
-          content: Text(
-            message,
-            style: const TextStyle(color: Color(0xFF3C6E71)),
-          ),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: message,
       );
     }
 
@@ -404,7 +403,6 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
       required String label,
       required VoidCallback? onPressed,
       required String infoMessage,
-      required bool showInfoIcon,
     }) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -426,14 +424,11 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
               style: buttonStyle(enabled),
             ),
           ),
-          if (showInfoIcon) ...[
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => showInfo(infoMessage),
-              child:
-                  const Icon(Icons.info_outline, size: 22, color: Colors.grey),
-            ),
-          ],
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => showInfo(infoMessage),
+            child: const Icon(Icons.info_outline, size: 22, color: Colors.grey),
+          ),
         ],
       );
     }
@@ -458,7 +453,6 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
             },
             infoMessage:
                 "Narudžbu možete otkazati ako plaćate gotovinom a još nije preuzeta za obradu.",
-            showInfoIcon: status.toLowerCase() != "ponistena",
           ),
           const SizedBox(height: 12),
           buildButtonWithInfo(
@@ -476,7 +470,6 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
               );
             },
             infoMessage: "Kliknite dugme Završi kada primite narudžbu.",
-            showInfoIcon: status.toLowerCase() != "zavrsena",
           ),
         ],
       ),

@@ -71,9 +71,10 @@ class _LicnePreporukeDetailsScreenState
       backgroundColor: const Color(0xFFF6F4F3),
       appBar: AppBar(
         elevation: 0,
+        shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         centerTitle: false,
-        toolbarHeight: kToolbarHeight + 25,
+        toolbarHeight: kToolbarHeight + 15,
         backgroundColor: const Color(0xFFF6F4F3),
         surfaceTintColor: Colors.transparent,
         forceMaterialTransparency: false,
@@ -88,7 +89,7 @@ class _LicnePreporukeDetailsScreenState
                   icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () => Navigator.pop(context, true),
                 ),
@@ -96,8 +97,8 @@ class _LicnePreporukeDetailsScreenState
                   children: [
                     Image.asset(
                       "assets/images/logo.png",
-                      height: 45,
-                      width: 45,
+                      height: 40,
+                      width: 40,
                     ),
                     const SizedBox(width: 8),
                     const Text(
@@ -105,7 +106,7 @@ class _LicnePreporukeDetailsScreenState
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 28,
+                        fontSize: 26,
                       ),
                     ),
                   ],
@@ -114,7 +115,7 @@ class _LicnePreporukeDetailsScreenState
                   icon: const Icon(
                     Icons.shopping_cart,
                     color: Colors.black,
-                    size: 35,
+                    size: 30,
                   ),
                   onPressed: () {},
                 ),

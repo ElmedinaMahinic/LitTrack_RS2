@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-
 Future<void> showCustomDialog({
   required BuildContext context,
   required String title,
@@ -90,7 +89,6 @@ Future<void> showConfirmDialog({
         actionsPadding: const EdgeInsets.only(bottom: 12),
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: [
-          // "Da" ide prvo
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -106,7 +104,6 @@ Future<void> showConfirmDialog({
             ),
             child: const Text('Da'),
           ),
-          // "Ne" ide drugo
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
@@ -125,7 +122,48 @@ Future<void> showConfirmDialog({
   );
 }
 
+void showCustomSnackBar({
+  required BuildContext context,
+  required String message,
+  IconData icon = Icons.info,
+}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(16),
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      backgroundColor: const Color.fromARGB(255, 226, 236, 231),
+      duration: const Duration(seconds: 3),
+      content: Row(
+        children: [
+          Icon(
+            icon,
+            color: const Color(0xFF3C6E71),
+            size: 22,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Color(0xFF3C6E71),
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 Image imageFromString(String input) {
-  return Image.memory(base64Decode(input), fit: BoxFit.cover,);
+  return Image.memory(
+    base64Decode(input),
+    fit: BoxFit.cover,
+  );
 }

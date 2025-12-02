@@ -55,7 +55,7 @@ namespace litTrack.API.Controllers
             return base.Update(id, request, cancellationToken);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpDelete("{id}")]
         public override Task Delete(int id, CancellationToken cancellationToken = default)
         {
