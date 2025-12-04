@@ -1,4 +1,5 @@
 ﻿using litTrack.API.Controllers.BaseControllers;
+using litTrack.Model.DTOs;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
@@ -18,6 +19,14 @@ namespace litTrack.API.Controllers
             : base(arhivaService)
         {
             _arhivaService = arhivaService;
+        }
+
+        [Authorize]
+        [HttpGet("KnjigeFavoriti")]
+        public async Task<ActionResult<PagedResult<KnjigaFavoritDTO>>> GetKnjigeFavoriti([FromQuery] KnjigaFavoritSearchObject search, CancellationToken cancellationToken)
+        {
+            var result = await _arhivaService.GetKnjigeFavoritiAsync(search, cancellationToken);
+            return Ok(result);
         }
 
         [Authorize]

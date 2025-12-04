@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using litTrack.Model.Helpers;
 
 namespace litTrack.Services.Interfaces
 {
@@ -14,6 +15,8 @@ namespace litTrack.Services.Interfaces
     {
         Task<int> GetBrojArhiviranjaAsync(int knjigaId, CancellationToken cancellationToken = default);
         Task<string> GetNajdrazaKnjigaNazivAsync(CancellationToken cancellationToken = default);
+
+        Task<PagedResult<KnjigaFavoritDTO>> GetKnjigeFavoritiAsync(KnjigaFavoritSearchObject search, CancellationToken cancellationToken = default);
 
     }
 }

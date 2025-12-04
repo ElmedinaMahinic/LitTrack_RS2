@@ -21,6 +21,14 @@ namespace litTrack.API.Controllers
         }
 
         [Authorize]
+        [HttpGet("PreporuceneKnjige")]
+        public async Task<ActionResult<PagedResult<PreporucenaKnjigaDTO>>> GetPreporuceneKnjige([FromQuery] PreporucenaKnjigaSearchObject search, CancellationToken cancellationToken)
+        {
+            var result = await _preporukaService.GetPreporuceneKnjigeAsync(search, cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
         [HttpGet("BrojPreporuka/{knjigaId}")]
         public async Task<ActionResult<int>> GetBrojPreporuka(int knjigaId, CancellationToken cancellationToken)
         {

@@ -1,4 +1,5 @@
 ﻿using litTrack.Model.DTOs;
+using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.BaseServicesInterfaces;
@@ -13,5 +14,7 @@ namespace litTrack.Services.Interfaces
     public interface IPreporukaService : ICRUDServiceAsync<PreporukaDTO, PreporukaSearchObject, PreporukaInsertRequest, PreporukaUpdateRequest>
     {
         Task<int> GetBrojPreporukaAsync(int knjigaId, CancellationToken cancellationToken = default);
+
+        Task<PagedResult<PreporucenaKnjigaDTO>> GetPreporuceneKnjigeAsync(PreporucenaKnjigaSearchObject search, CancellationToken cancellationToken = default);
     }
 }

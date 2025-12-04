@@ -164,6 +164,48 @@ namespace litTrack.Services.ServicesImplementation
             return knjiga;
         }
 
+        public async Task<PagedResult<KnjigaFavoritDTO>> GetKnjigeFavoritiAsync(KnjigaFavoritSearchObject search, CancellationToken cancellationToken = default)
+        {
+            var query = Context.Arhivas
+                .Where(a => !a.IsDeleted)
+                .GroupBy(a => a.KnjigaId)
+                .Select(g => new
+                {
+                    KnjigaId = g.Key,
+                    BrojArhiviranja = g.Count()
+                })
+                .Join(Context.Knjigas.Include(k => k.Autor),
+                    arhiva => arhiva.KnjigaId,
+                    knjiga => knjiga.KnjigaId,
+                    (arhiva, knjiga) => new KnjigaFavoritDTO
+                    {
+                        KnjigaId = knjiga.KnjigaId,
+                        NazivKnjige = knjiga.Naziv,
+                        AutorNaziv = knjiga.Autor.Ime + " " + knjiga.Autor.Prezime,
+                        Slika = knjiga.Slika,
+                        BrojArhiviranja = arhiva.BrojArhiviranja
+                    });
+
+            query = search.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.BrojArhiviranja)
+                : query.OrderByDescending(x => x.BrojArhiviranja);
+
+            int count = await query.CountAsync(cancellationToken);
+
+            if (search.Page.HasValue && search.PageSize.HasValue)
+            {
+                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value)
+                             .Take(search.PageSize.Value);
+            }
+
+            var resultList = await query.ToListAsync(cancellationToken);
+
+            return new PagedResult<KnjigaFavoritDTO>
+            {
+                Count = count,
+                ResultList = resultList
+            };
+        }
 
     }
 }

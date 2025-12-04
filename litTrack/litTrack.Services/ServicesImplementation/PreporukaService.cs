@@ -145,5 +145,48 @@ namespace litTrack.Services.ServicesImplementation
                 .CountAsync(cancellationToken);
         }
 
+        public async Task<PagedResult<PreporucenaKnjigaDTO>> GetPreporuceneKnjigeAsync(PreporucenaKnjigaSearchObject search, CancellationToken cancellationToken = default)
+        {
+            var query = Context.Preporukas
+                .Where(p => !p.IsDeleted)
+                .GroupBy(p => p.KnjigaId)
+                .Select(g => new
+                {
+                    KnjigaId = g.Key,
+                    BrojPreporuka = g.Count()
+                })
+                .Join(Context.Knjigas.Include(k => k.Autor),
+                    preporuka => preporuka.KnjigaId,
+                    knjiga => knjiga.KnjigaId,
+                    (preporuka, knjiga) => new PreporucenaKnjigaDTO
+                    {
+                        KnjigaId = knjiga.KnjigaId,
+                        NazivKnjige = knjiga.Naziv,
+                        AutorNaziv = knjiga.Autor.Ime + " " + knjiga.Autor.Prezime,
+                        Slika = knjiga.Slika,
+                        BrojPreporuka = preporuka.BrojPreporuka
+                    });
+
+            query = search.SortDirection?.ToLower() == "asc"
+                ? query.OrderBy(x => x.BrojPreporuka)
+                : query.OrderByDescending(x => x.BrojPreporuka);
+
+            int count = await query.CountAsync(cancellationToken);
+
+            if (search.Page.HasValue && search.PageSize.HasValue)
+            {
+                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value)
+                             .Take(search.PageSize.Value);
+            }
+
+            var resultList = await query.ToListAsync(cancellationToken);
+
+            return new PagedResult<PreporucenaKnjigaDTO>
+            {
+                Count = count,
+                ResultList = resultList
+            };
+        }
+
     }
 }
