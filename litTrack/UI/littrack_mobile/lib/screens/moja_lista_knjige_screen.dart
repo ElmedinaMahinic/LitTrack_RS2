@@ -7,6 +7,7 @@ import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 
 class MojaListaKnjigeScreen extends StatefulWidget {
   final bool jeProcitana;
@@ -66,7 +67,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         try {
           final prosjek =
               await _ocjenaProvider.getProsjekOcjena(knjiga.knjigaId);
-          if (!mounted) return;    
+          if (!mounted) return;
           setState(() {
             _prosjekOcjena[knjiga.knjigaId] = prosjek;
           });
@@ -142,7 +143,14 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -245,9 +253,10 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
         return GestureDetector(
           onTap: () async {
             try {
-              final knjigaDetalji = await _knjigaProvider.getById(knjiga.knjigaId);
-              
-              if (!mounted) return;    
+              final knjigaDetalji =
+                  await _knjigaProvider.getById(knjiga.knjigaId);
+
+              if (!mounted) return;
 
               final result = await Navigator.push(
                 context,
@@ -327,7 +336,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                             children: [
                               const Icon(
                                 Icons.star,
-                                color: Colors.pinkAccent,
+                                color: Color(0xFFF34FA7),
                                 size: 18,
                               ),
                               const SizedBox(width: 4),

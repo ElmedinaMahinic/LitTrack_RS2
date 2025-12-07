@@ -153,7 +153,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.pink,
+        color: const Color(0xFFF34FA7),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -203,16 +203,27 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
           children: [
             SlidableAction(
               onPressed: (context) async {
-                await _cartProvider?.removeKnjiga(knjiga['id']);
-                if (!mounted) return;
+                try {
+                  await _cartProvider?.removeKnjiga(knjiga['id']);
 
-                showCustomSnackBar(
-                  context: context,
-                  message: "Knjiga je uklonjena iz liste.",
-                  icon: Icons.delete,
-                );
+                  if (!mounted) return;
 
-                await _fetchData();
+                  showCustomSnackBar(
+                    context: context,
+                    message: "Knjiga je uklonjena iz liste.",
+                    icon: Icons.delete,
+                  );
+
+                  await _fetchData();
+                } catch (e) {
+                  if (!mounted) return;
+
+                  showCustomSnackBar(
+                    context: context,
+                    message: "Nije moguće ukloniti knjigu.",
+                    icon: Icons.error,
+                  );
+                }
               },
               backgroundColor: Colors.black,
               icon: Icons.delete,

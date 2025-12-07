@@ -136,7 +136,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  _prikaziPoslane ? Colors.pinkAccent : Colors.grey[300],
+                  _prikaziPoslane ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -162,7 +162,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  !_prikaziPoslane ? Colors.pinkAccent : Colors.grey[300],
+                  !_prikaziPoslane ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),

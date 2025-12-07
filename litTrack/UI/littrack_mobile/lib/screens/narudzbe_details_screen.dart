@@ -4,6 +4,7 @@ import 'package:littrack_mobile/models/narudzba.dart';
 import 'package:littrack_mobile/models/stavka_narudzbe.dart';
 import 'package:littrack_mobile/providers/narudzba_provider.dart';
 import 'package:littrack_mobile/providers/stavka_narudzbe_provider.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -132,7 +133,14 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

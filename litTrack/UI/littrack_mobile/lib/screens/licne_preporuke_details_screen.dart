@@ -5,6 +5,7 @@ import 'package:littrack_mobile/providers/licna_preporuka_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 
 class LicnePreporukeDetailsScreen extends StatefulWidget {
   final LicnaPreporuka licnaPreporuka;
@@ -117,7 +118,14 @@ class _LicnePreporukeDetailsScreenState
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -319,18 +327,19 @@ class _LicnePreporukeDetailsScreenState
             ),
           ),
           const Divider(height: 20, thickness: 1),
-          ...knjige.map((knjiga) =>  Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(
-                    knjiga,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+          ...knjige.map(
+            (knjiga) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Text(
+                knjiga,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
+                  decoration: TextDecoration.underline,
                 ),
               ),
+            ),
+          ),
         ],
       ),
     );

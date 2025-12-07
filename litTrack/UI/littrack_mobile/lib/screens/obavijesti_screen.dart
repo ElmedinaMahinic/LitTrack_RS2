@@ -364,7 +364,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
               elevation: _prikaziSve ? 8 : 3,
               shadowColor: Colors.black.withOpacity(0.3),
               backgroundColor:
-                  _prikaziSve ? Colors.pinkAccent : Colors.grey[300],
+                  _prikaziSve ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -390,7 +390,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
               elevation: !_prikaziSve ? 8 : 3,
               shadowColor: Colors.black.withOpacity(0.3),
               backgroundColor:
-                  !_prikaziSve ? Colors.pinkAccent : Colors.grey[300],
+                  !_prikaziSve ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),

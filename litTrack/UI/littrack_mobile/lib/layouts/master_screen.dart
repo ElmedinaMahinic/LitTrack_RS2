@@ -15,6 +15,7 @@ import 'package:littrack_mobile/screens/preporuke_favoriti_screen.dart';
 import 'package:littrack_mobile/screens/licne_preporuke_screen.dart';
 import 'package:littrack_mobile/screens/moje_narudzbe_screen.dart';
 import 'package:littrack_mobile/screens/obavijesti_screen.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 
 class MasterScreen extends StatefulWidget {
   const MasterScreen({super.key});
@@ -116,7 +117,14 @@ class _MasterScreenState extends State<MasterScreen> {
                         color: Colors.black,
                         size: 30,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const KorpaScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

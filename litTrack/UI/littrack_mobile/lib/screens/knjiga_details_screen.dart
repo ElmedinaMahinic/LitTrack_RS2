@@ -7,6 +7,8 @@ import 'package:littrack_mobile/providers/preporuka_provider.dart';
 import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/arhiva_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
+import 'package:littrack_mobile/providers/cart_provider.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 import 'package:provider/provider.dart';
 
 class KnjigaDetailsScreen extends StatefulWidget {
@@ -33,6 +35,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   late OcjenaProvider _ocjenaProvider;
   PreporukaCartProvider? _licnaPreporukaProvider;
   late PreporukaProvider _preporukaProvider;
+  CartProvider? _cartProvider;
 
   bool _isLoadingProcitano = false;
   bool _jeProcitana = false;
@@ -57,7 +60,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   bool _jePreporucena = false;
   bool _isLoadingPreporuka = false;
 
-  int _kolicina = 0;
+  bool _isLoadingKorpa = false;
+  int _kolicina = 1;
 
   @override
   void initState() {
@@ -79,6 +83,10 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
     _licnaPreporukaProvider = AuthProvider.korisnikId == null
         ? null
         : PreporukaCartProvider(AuthProvider.korisnikId!);
+
+    if (AuthProvider.korisnikId != null) {
+      _cartProvider = CartProvider(AuthProvider.korisnikId!);
+    }
 
     _provjeriProcitano();
     _provjeriPreporuka();
@@ -614,7 +622,14 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 IconButton(
                   icon: const Icon(Icons.shopping_cart,
                       color: Colors.black, size: 30),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -1030,7 +1045,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.star, color: Colors.pinkAccent, size: 26),
+            const Icon(Icons.star, color: Color(0xFFF34FA7), size: 26),
             const SizedBox(width: 6),
             Text(
               (_prosjekOcjena ?? 0) > 0
@@ -1074,9 +1089,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) {
               if (states.contains(MaterialState.pressed)) {
-                return Colors.pink.shade700;
+                return Colors.pink.shade500;
               } else {
-                return Colors.pinkAccent;
+                return const Color(0xFFF34FA7);
               }
             },
           ),
@@ -1128,7 +1143,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
               child: Icon(
                 Icons.star,
                 size: 32,
-                color: isActive ? Colors.pinkAccent : Colors.grey,
+                color: isActive ? const Color(0xFFF34FA7) : Colors.grey,
               ),
             );
           }),
@@ -1356,7 +1371,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
               color: Colors.transparent,
               shape: const CircleBorder(),
               child: InkWell(
-                onTap: _kolicina > 0
+                onTap: _kolicina > 1
                     ? () {
                         setState(() {
                           _kolicina--;
@@ -1368,8 +1383,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: _kolicina > 0
-                        ? Colors.pinkAccent
+                    color: _kolicina > 1
+                        ? const Color(0xFFF34FA7)
                         : Colors.grey.shade600,
                     shape: BoxShape.circle,
                   ),
@@ -1404,7 +1419,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: _kolicina < 10
-                        ? Colors.pinkAccent
+                        ? const Color(0xFFF34FA7)
                         : Colors.grey.shade600,
                     shape: BoxShape.circle,
                   ),
@@ -1419,7 +1434,55 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           width: 220,
           height: 48,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: _isLoadingKorpa
+                ? null
+                : () async {
+                    if (_cartProvider == null) return;
+
+                    if (_kolicina < 1) {
+                      showCustomDialog(
+                        context: context,
+                        title: "Greška",
+                        message: "Količina mora biti najmanje 1.",
+                        icon: Icons.error,
+                      );
+                      return;
+                    }
+
+                    setState(() {
+                      _isLoadingKorpa = true;
+                    });
+
+                    try {
+                      await _cartProvider!.addToCart(widget.knjiga, _kolicina);
+
+                      if (!mounted) return;
+
+                      showCustomSnackBar(
+                        context: context,
+                        message: 'Knjiga dodana u korpu.',
+                        icon: Icons.check,
+                      );
+
+                      setState(() {
+                        _kolicina = 1;
+                      });
+                    } catch (e) {
+                      if (!mounted) return;
+                      showCustomDialog(
+                        context: context,
+                        title: "Greška",
+                        message: e.toString(),
+                        icon: Icons.error,
+                      );
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          _isLoadingKorpa = false;
+                        });
+                      }
+                    }
+                  },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith<Color>(
                 (states) {

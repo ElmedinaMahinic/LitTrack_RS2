@@ -8,6 +8,7 @@ import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 
 class KnjigeFilterScreen extends StatefulWidget {
   final dynamic filterObject;
@@ -159,7 +160,14 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -410,7 +418,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                             children: [
                               const Icon(
                                 Icons.star,
-                                color: Colors.pinkAccent,
+                                color: Color(0xFFF34FA7),
                                 size: 18,
                               ),
                               const SizedBox(width: 4),

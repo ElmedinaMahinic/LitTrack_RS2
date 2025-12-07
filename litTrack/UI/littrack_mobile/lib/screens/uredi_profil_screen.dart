@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 import 'package:littrack_mobile/main.dart';
 
 class UrediProfilScreen extends StatefulWidget {
@@ -114,7 +115,14 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

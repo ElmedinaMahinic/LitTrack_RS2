@@ -404,7 +404,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                           Row(
                             children: [
                               const Icon(Icons.star,
-                                  color: Colors.pinkAccent, size: 18),
+                                  color: Color(0xFFF34FA7), size: 18),
                               const SizedBox(width: 4),
                               Text(
                                 prosjek > 0 ? prosjek.toStringAsFixed(1) : "-",

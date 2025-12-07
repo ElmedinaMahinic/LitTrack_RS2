@@ -5,6 +5,7 @@ import 'package:littrack_mobile/providers/licna_preporuka_provider.dart';
 import 'package:littrack_mobile/providers/preporuka_cart_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:littrack_mobile/layouts/master_screen.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 import 'package:provider/provider.dart';
 
 class PreporukaPorukaScreen extends StatefulWidget {
@@ -223,7 +224,14 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -256,7 +264,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.pink,
+        color: const Color(0xFFF34FA7),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -346,8 +354,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor:
-              MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
+          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
           elevation: MaterialStateProperty.all(6),
         ),
         child: _isSaving

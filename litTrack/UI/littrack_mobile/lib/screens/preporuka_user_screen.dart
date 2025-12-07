@@ -3,6 +3,7 @@ import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/screens/preporuka_poruka_screen.dart';
+import 'package:littrack_mobile/screens/korpa_screen.dart';
 
 class PreporukaUserScreen extends StatefulWidget {
   const PreporukaUserScreen({super.key});
@@ -74,7 +75,14 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KorpaScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -105,7 +113,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.pink,
+        color: const Color(0xFFF34FA7),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -258,8 +266,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor:
-              MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
+          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
           elevation: MaterialStateProperty.all(6),
         ),
         child: _isLoading

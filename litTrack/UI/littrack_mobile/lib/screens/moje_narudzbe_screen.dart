@@ -293,7 +293,7 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
               _fetchNarudzbe(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: !_showSve ? Colors.pinkAccent : Colors.grey[300],
+              backgroundColor: !_showSve ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -320,7 +320,7 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
               _fetchNarudzbe(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _showSve ? Colors.pinkAccent : Colors.grey[300],
+              backgroundColor: _showSve ? const Color(0xFFF34FA7) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
