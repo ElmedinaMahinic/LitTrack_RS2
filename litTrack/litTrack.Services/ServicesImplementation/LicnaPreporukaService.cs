@@ -23,15 +23,18 @@ namespace litTrack.Services.ServicesImplementation
         private readonly ILicnaPreporukaValidator _licnaPreporukaValidator;
         private readonly IKnjigaValidator _knjigaValidator;
         private readonly IActiveUserServiceAsync _activeUserService;
+        private readonly IObavijestService _obavijestService;
         public LicnaPreporukaService(_210078Context context, IMapper mapper,
             ILicnaPreporukaValidator licnaPreporukaValidator, IKnjigaValidator knjigaValidator,
-            IActiveUserServiceAsync activeUserService
+            IActiveUserServiceAsync activeUserService,
+            IObavijestService obavijestService
          )
             : base(context, mapper)
         {
             _licnaPreporukaValidator= licnaPreporukaValidator;
             _knjigaValidator = knjigaValidator;
             _activeUserService= activeUserService;
+            _obavijestService = obavijestService;
         }
 
         public override IQueryable<LicnaPreporuka> AddFilter(LicnaPreporukaSearchObject searchObject, IQueryable<LicnaPreporuka> query)
@@ -216,6 +219,31 @@ namespace litTrack.Services.ServicesImplementation
             }
 
             await Context.SaveChangesAsync(cancellationToken);
+
+            var primalac = await Context.Korisniks
+        .FirstOrDefaultAsync(k => k.KorisnikId == entity.KorisnikPrimalacId && !k.IsDeleted, cancellationToken);
+
+            var posiljalac = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.KorisnikId == entity.KorisnikPosiljalacId && !k.IsDeleted, cancellationToken);
+
+            if (primalac != null && posiljalac != null)
+            {
+                var naslovPreporuke = string.IsNullOrWhiteSpace(entity.Naslov) ? "Nova lična preporuka" : entity.Naslov;
+                var sadrzaj =
+                    $"Poštovanje {primalac.Ime} {primalac.Prezime},\n\n" +
+                    $"Primili ste preporuku od korisnika {posiljalac.Ime} {posiljalac.Prezime}.\n" +
+                    $"Naslov preporuke: {naslovPreporuke}\n\n" +
+                    $"Lijep pozdrav,\nVaš LitTrack tim";
+
+                var obavijest = new ObavijestInsertRequest
+                {
+                    KorisnikId = primalac.KorisnikId,
+                    Naslov = "Nova lična preporuka",
+                    Sadrzaj = sadrzaj
+                };
+
+                await _obavijestService.InsertAsync(obavijest, cancellationToken);
+            }
         }
 
 

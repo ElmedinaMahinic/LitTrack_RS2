@@ -9,6 +9,7 @@ import 'package:littrack_mobile/providers/arhiva_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/cart_provider.dart';
 import 'package:littrack_mobile/screens/korpa_screen.dart';
+import 'package:littrack_mobile/screens/recenzije_screen.dart';
 import 'package:provider/provider.dart';
 
 class KnjigaDetailsScreen extends StatefulWidget {
@@ -1084,7 +1085,16 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       width: 220,
       height: 48,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecenzijeScreen(
+                knjigaId: widget.knjiga.knjigaId!,
+              ),
+            ),
+          );
+        },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) {

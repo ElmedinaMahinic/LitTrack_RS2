@@ -1,6 +1,7 @@
 ﻿using litTrack.Model.DTOs;
 using litTrack.Model.Requests;
 using litTrack.Services.Database;
+using litTrack.Services.Interfaces;
 using litTrack.Services.Validators.Interfaces;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -17,15 +18,17 @@ namespace litTrack.Services.NarudzbaStateMachine
         private readonly INarudzbaValidator _narudzbaValidator;
         private readonly IStavkaNarudzbeValidator _stavkaNarudzbeValidator;
         private readonly IKnjigaValidator _knjigaValidator;
+        private readonly IObavijestService _obavijestService;
         public InitialNarudzbaState(_210078Context context, IMapper mapper,
             IServiceProvider serviceProvider, 
             INarudzbaValidator narudzbaValidator, IStavkaNarudzbeValidator stavkaNarudzbeValidator,
-            IKnjigaValidator knjigaValidator)
+            IKnjigaValidator knjigaValidator, IObavijestService obavijestService)
             : base(context, mapper, serviceProvider)
         {
             _narudzbaValidator = narudzbaValidator;
             _stavkaNarudzbeValidator = stavkaNarudzbeValidator;
             _knjigaValidator = knjigaValidator;
+            _obavijestService = obavijestService;
         }
 
         public override async Task<NarudzbaDTO> Insert(NarudzbaInsertRequest narudzba, CancellationToken cancellationToken = default)
@@ -69,6 +72,22 @@ namespace litTrack.Services.NarudzbaStateMachine
 
             entity.UkupnaCijena = ukupno;
             await Context.SaveChangesAsync(cancellationToken);
+
+            var radnici = await Context.Korisniks
+                .Where(k => !k.IsDeleted && k.KorisnikUlogas.Any(u => u.Uloga.Naziv == "Radnik"))
+                .ToListAsync(cancellationToken);
+
+            foreach (var radnik in radnici)
+            {
+                var obavijest = new ObavijestInsertRequest
+                {
+                    KorisnikId = radnik.KorisnikId,
+                    Naslov = "Nova narudžba",
+                    Sadrzaj = $"Poštovani, kreirana je nova narudžba broj {entity.Sifra}. Molimo vas da preuzmete narudžbu i krenete sa obradom."
+                };
+
+                await _obavijestService.InsertAsync(obavijest, cancellationToken);
+            }
 
             return Mapper.Map<NarudzbaDTO>(entity);
         }
