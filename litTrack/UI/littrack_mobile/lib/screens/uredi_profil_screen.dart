@@ -24,6 +24,9 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
   bool _isNewPasswordHidden = true;
   bool _isConfirmPasswordHidden = true;
 
+  bool _isSaving = false;
+  bool _isDeactivating = false;
+
   Map<String, dynamic> _initialValue = {};
 
   @override
@@ -371,16 +374,19 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
             width: 220,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: "Uređivanje profila",
-                  message: "Da li ste sigurni da želite sačuvati izmjene?",
-                  icon: Icons.edit,
-                  iconColor: const Color(0xFF3C6E71),
-                  onConfirm: _save,
-                );
-              },
+              onPressed: _isSaving
+                  ? null
+                  : () {
+                      showConfirmDialog(
+                        context: context,
+                        title: "Uređivanje profila",
+                        message:
+                            "Da li ste sigurni da želite sačuvati izmjene?",
+                        icon: Icons.edit,
+                        iconColor: const Color(0xFF3C6E71),
+                        onConfirm: _save,
+                      );
+                    },
               icon: const Icon(Icons.check, color: Colors.white),
               label: const Text(
                 "Sačuvaj",
@@ -398,55 +404,19 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
             width: 220,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: "Deaktivacija profila",
-                  message:
-                      "Da li ste sigurni da želite deaktivirati svoj profil?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
-                  onConfirm: () async {
-                    try {
-                      await _provider.deaktiviraj(AuthProvider.korisnikId!);
-                      if (!mounted) return;
-
-                      await showCustomDialog(
+              onPressed: _isDeactivating
+                  ? null
+                  : () {
+                      showConfirmDialog(
                         context: context,
-                        title: "Uspjeh",
-                        message: "Profil je uspješno deaktiviran.",
-                        icon: Icons.check_circle,
-                        iconColor: Colors.green,
-                      );
-
-                      AuthProvider.username = null;
-                      AuthProvider.password = null;
-                      AuthProvider.korisnikId = null;
-                      AuthProvider.ime = null;
-                      AuthProvider.prezime = null;
-                      AuthProvider.email = null;
-                      AuthProvider.telefon = null;
-                      AuthProvider.uloge = null;
-                      AuthProvider.isSignedIn = false;
-
-                      if (!mounted) return;
-
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const MyApp()),
-                      );
-                    } catch (e) {
-                      if (!mounted) return;
-                      showCustomDialog(
-                        context: context,
-                        title: "Greška",
-                        message: e.toString(),
-                        icon: Icons.error,
+                        title: "Deaktivacija profila",
+                        message:
+                            "Da li ste sigurni da želite deaktivirati svoj profil?",
+                        icon: Icons.warning,
                         iconColor: Colors.red,
+                        onConfirm: _deaktivirajProfil,
                       );
-                    }
-                  },
-                );
-              },
+                    },
               icon: const Icon(Icons.block, color: Colors.white),
               label: const Text(
                 "Deaktiviraj profil",
@@ -482,6 +452,9 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
       request['lozinkaPotvrda'] = formValues['lozinkaPotvrda'];
     }
 
+    if (!mounted) return;
+    setState(() => _isSaving = true);
+
     try {
       await _provider.update(AuthProvider.korisnikId!, request);
 
@@ -502,7 +475,6 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
       );
 
       if (!mounted) return;
-
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -513,6 +485,52 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _deaktivirajProfil() async {
+    if (!mounted) return;
+    setState(() => _isDeactivating = true);
+
+    try {
+      await _provider.deaktiviraj(AuthProvider.korisnikId!);
+      if (!mounted) return;
+
+      await showCustomDialog(
+        context: context,
+        title: "Uspjeh",
+        message: "Profil je uspješno deaktiviran.",
+        icon: Icons.check_circle,
+        iconColor: Colors.green,
+      );
+
+      AuthProvider.username = null;
+      AuthProvider.password = null;
+      AuthProvider.korisnikId = null;
+      AuthProvider.ime = null;
+      AuthProvider.prezime = null;
+      AuthProvider.email = null;
+      AuthProvider.telefon = null;
+      AuthProvider.uloge = null;
+      AuthProvider.isSignedIn = false;
+
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MyApp()),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
+    } finally {
+      if (mounted) setState(() => _isDeactivating = false);
     }
   }
 }

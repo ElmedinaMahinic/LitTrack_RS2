@@ -19,6 +19,8 @@ public partial class Narudzba : ISoftDelete
 
     public string? StateMachine { get; set; }
 
+    public string? Adresa { get; set; }
+
     public bool IsDeleted { get; set; }
 
     public DateTime? VrijemeBrisanja { get; set; }

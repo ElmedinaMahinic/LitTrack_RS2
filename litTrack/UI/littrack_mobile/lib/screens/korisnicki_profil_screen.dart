@@ -121,29 +121,34 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
   Widget _buildInfoRow(String label, String value, IconData icon,
       {Color? iconColor}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 20),
+          Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 22),
           const SizedBox(width: 10),
-          SizedBox(
-            width: 160,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.5,
-                color: Color(0xFF3C6E71),
-              ),
-            ),
-          ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black,
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF3C6E71),
+                ),
+                children: [
+                  TextSpan(
+                    text: "$label ",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -156,7 +161,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -165,7 +170,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

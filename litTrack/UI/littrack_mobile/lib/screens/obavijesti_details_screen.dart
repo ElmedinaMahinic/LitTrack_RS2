@@ -184,7 +184,7 @@ class _ObavijestiDetailsScreenState extends State<ObavijestiDetailsScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

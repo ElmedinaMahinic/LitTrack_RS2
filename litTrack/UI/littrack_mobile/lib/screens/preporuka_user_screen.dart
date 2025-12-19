@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +15,10 @@ class PreporukaUserScreen extends StatefulWidget {
 }
 
 class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
-  final TextEditingController _usernameController = TextEditingController();
   late KorisnikProvider _provider;
   bool _isLoading = false;
+
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -97,7 +100,10 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
               children: [
                 _buildHeader(),
                 const SizedBox(height: 100),
-                _buildSection(),
+                FormBuilder(
+                  key: _formKey,
+                  child: _buildSection(),
+                ),
                 const SizedBox(height: 40),
                 _buildDaljeButton(),
               ],
@@ -113,7 +119,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF34FA7),
+        color: const Color(0xFFD55B91),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -152,8 +158,11 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        TextField(
-          controller: _usernameController,
+        FormBuilderTextField(
+          name: 'username',
+          validator: FormBuilderValidators.required(
+            errorText: "Molimo unesite korisničko ime.",
+          ),
           decoration: InputDecoration(
             isDense: true,
             contentPadding:
@@ -165,7 +174,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             filled: true,
-            fillColor: Colors.grey[200],
+            fillColor: Colors.white,
             prefixIcon: const Icon(Icons.search),
           ),
         ),
@@ -181,29 +190,19 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
         onPressed: _isLoading
             ? null
             : () async {
-                String username = _usernameController.text.trim();
+                final isValid = _formKey.currentState?.saveAndValidate() ?? false;
+                if (!isValid) return;
 
-                if (username.isEmpty) {
-                  if (!mounted) return;
-                  await showCustomDialog(
-                    context: context,
-                    title: "Greška",
-                    message: "Molimo unesite korisničko ime.",
-                    icon: Icons.error,
-                    iconColor: Colors.red,
-                  );
-                  return;
-                }
+                final username =
+                    _formKey.currentState!.value['username'].toString().trim();
 
                 setState(() {
                   _isLoading = true;
                 });
 
                 int usernameId = 0;
-
                 try {
-                  usernameId =
-                      await _provider.getKorisnikIdByUsername(username);
+                  usernameId = await _provider.getKorisnikIdByUsername(username);
                 } catch (e) {
                   if (!mounted) return;
                   await showCustomDialog(
@@ -215,9 +214,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
                     buttonColor: const Color(0xFF43675E),
                   );
                   if (mounted) {
-                    setState(() {
-                      _isLoading = false;
-                    });
+                    setState(() => _isLoading = false);
                   }
                   return;
                 }
@@ -232,18 +229,12 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
                     icon: Icons.error,
                     iconColor: Colors.red,
                   );
-                  if (mounted) {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  }
+                  if (mounted) setState(() => _isLoading = false);
                   return;
                 }
 
                 if (!mounted) return;
-                setState(() {
-                  _isLoading = false;
-                });
+                setState(() => _isLoading = false);
 
                 if (!mounted) return;
                 Navigator.push(
@@ -290,3 +281,4 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
     );
   }
 }
+

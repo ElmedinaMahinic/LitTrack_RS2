@@ -156,7 +156,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  _prikaziPreporuke ? const Color(0xFFF34FA7) : Colors.grey[300],
+                  _prikaziPreporuke ? const Color(0xFFD55B91) : Colors.grey[300],
               elevation: _prikaziPreporuke ? 8 : 3,
               shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(
@@ -184,7 +184,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  !_prikaziPreporuke ? const Color(0xFFF34FA7) : Colors.grey[300],
+                  !_prikaziPreporuke ? const Color(0xFFD55B91) : Colors.grey[300],
               elevation: !_prikaziPreporuke ? 8 : 3,
               shadowColor: Colors.black.withOpacity(0.3),
               shape: RoundedRectangleBorder(

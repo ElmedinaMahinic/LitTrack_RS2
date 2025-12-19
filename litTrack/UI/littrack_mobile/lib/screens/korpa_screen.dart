@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:littrack_mobile/providers/cart_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
+import 'package:littrack_mobile/screens/kreiranje_narudzbe_screen.dart';
 
 class KorpaScreen extends StatefulWidget {
   const KorpaScreen({super.key});
@@ -72,7 +73,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
                 IconButton(
                   icon: const Icon(Icons.arrow_back,
                       color: Colors.black, size: 30),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context, true),
                 ),
                 Row(
                   children: [
@@ -162,7 +163,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF34FA7),
+        color: const Color(0xFFD55B91),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -199,7 +200,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -230,7 +231,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
                   showCustomDialog(
                     context: context,
                     title: "Greška",
-                    message: "Nije moguće obrisati knjigu: $e",
+                    message: "Nije moguće ukloniti knjigu: $e",
                     icon: Icons.error,
                   );
                 }
@@ -377,7 +378,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-        color: enabled ? const Color(0xFFF34FA7) : Colors.grey.shade600,
+        color: enabled ? const Color(0xFFD55B91) : Colors.grey.shade600,
         shape: BoxShape.circle,
       ),
       child: Icon(icon, color: Colors.white, size: 18),
@@ -388,7 +389,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
     final ukupno =
         formatNumber(_cartProvider!.izracunajUkupnuCijenu(cartItems));
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: BoxDecoration(
         color: const Color(0xFFF6F4F3),
         boxShadow: [
@@ -420,7 +421,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
                 height: 45,
                 width: 180,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
@@ -453,17 +454,37 @@ class _KorpaScreenState extends State<KorpaScreen> {
                         message: "Korpa je prazna.",
                         icon: Icons.info,
                       );
-                    } else {}
+                      return;
+                    }
+
+                    final odabraneKnjige = cartItems.entries.toList();
+                    final ukupnaCijena =
+                        _cartProvider!.izracunajUkupnuCijenu(cartItems);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => KreiranjeNarudzbeScreen(
+                          odabraneKnjige: odabraneKnjige,
+                          ukupnaCijena: ukupnaCijena,
+                        ),
+                      ),
+                    );
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith(
-                        (states) => const Color(0xFF3C6E71).withOpacity(0.3)),
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return const Color(0xFF33585B);
+                      }
+                      return const Color(0xFF3C6E71);
+                    }),
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25)),
                     ),
                     shadowColor: MaterialStateProperty.all(
-                        Colors.black.withOpacity(0.2)),
+                        Colors.black.withOpacity(0.3)),
                     elevation: MaterialStateProperty.all(6),
                   ),
                   child: const Text(

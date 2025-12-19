@@ -123,7 +123,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                           "Ukupno knjiga: ",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -153,7 +153,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF34FA7),
+        color: const Color(0xFFD55B91),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -190,7 +190,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -282,14 +282,28 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: Text(
-                    knjiga['naziv'] ?? "-",
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    maxLines: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        knjiga['naziv'] ?? "-",
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        knjiga['autorNaziv'] ?? "",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 2,
+                      ),
+                    ],
                   ),
                 ),
               ),

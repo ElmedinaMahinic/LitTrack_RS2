@@ -418,7 +418,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                             children: [
                               const Icon(
                                 Icons.star,
-                                color: Color(0xFFF34FA7),
+                                color: Color(0xFFD55B91),
                                 size: 18,
                               ),
                               const SizedBox(width: 4),

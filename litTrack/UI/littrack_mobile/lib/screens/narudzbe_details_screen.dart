@@ -26,6 +26,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
   late final String nacinPlacanja;
   late final int brojStavki;
   late final int ukupanBrojKnjiga;
+  late final String? adresa;
 
   late StavkaNarudzbeProvider _stavkaProvider;
   late NarudzbaProvider _narudzbaProvider;
@@ -47,6 +48,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
     nacinPlacanja = narudzba.nacinPlacanja ?? "/";
     brojStavki = narudzba.brojStavki ?? 0;
     ukupanBrojKnjiga = narudzba.ukupanBrojKnjiga ?? 0;
+    adresa = narudzba.adresa ?? "/";
 
     _stavkaProvider = context.read<StavkaNarudzbeProvider>();
     _narudzbaProvider = context.read<NarudzbaProvider>();
@@ -214,7 +216,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -228,6 +230,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
               "${ukupnaCijena.toStringAsFixed(2)} KM", Icons.attach_money),
           _buildInfoRow("Status:", status, Icons.info_outline),
           _buildInfoRow("Naručilac:", imePrezime, Icons.person_outline),
+          _buildInfoRow("Adresa:", adresa ?? "/", Icons.location_on_outlined),
           _buildInfoRow(
               "Način plaćanja:", nacinPlacanja, Icons.payment_outlined),
           _buildInfoRow("Broj stavki:", brojStavki.toString(),
@@ -264,41 +267,34 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
   Widget _buildStavkeToggleButton() {
     return Align(
       alignment: Alignment.centerLeft,
-      child: SizedBox(
-        width: 220,
-        height: 48,
-        child: ElevatedButton.icon(
-          onPressed: () async {
-            if (!showStavke) await loadStavke();
-            if (!mounted) return;
-            setState(() => showStavke = !showStavke);
-          },
-          icon: Icon(
-            showStavke ? Icons.hide_source : Icons.shopping_basket,
-            color: Colors.white,
+      child: TextButton.icon(
+        onPressed: () async {
+          if (!showStavke) await loadStavke();
+          if (!mounted) return;
+          setState(() => showStavke = !showStavke);
+        },
+        icon: Icon(
+          showStavke ? Icons.hide_source : Icons.shopping_basket,
+          color: const Color(0xFF3C6E71),
+        ),
+        label: Text(
+          showStavke ? "Sakrij stavke" : "Prikaži stavke",
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF3C6E71),
           ),
-          label: Text(
-            showStavke ? "Sakrij stavke" : "Prikaži stavke",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+        ),
+        style: ButtonStyle(
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           ),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
-                return const Color(0xFF33585B);
-              }
-              return const Color(0xFF3C6E71);
-            }),
-            shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-            ),
-            shadowColor:
-                MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-            elevation: MaterialStateProperty.all(6),
-          ),
+          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return const Color(0xFF3C6E71).withOpacity(0.1);
+            }
+            return Colors.transparent;
+          }),
         ),
       ),
     );

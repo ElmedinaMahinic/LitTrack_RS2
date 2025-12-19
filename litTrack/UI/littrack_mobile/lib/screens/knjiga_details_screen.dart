@@ -1046,7 +1046,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.star, color: Color(0xFFF34FA7), size: 26),
+            const Icon(Icons.star, color: Color(0xFFD55B91), size: 26),
             const SizedBox(width: 6),
             Text(
               (_prosjekOcjena ?? 0) > 0
@@ -1099,9 +1099,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) {
               if (states.contains(MaterialState.pressed)) {
-                return Colors.pink.shade500;
+                return const Color.fromARGB(255, 169, 71, 115);
               } else {
-                return const Color(0xFFF34FA7);
+                return const Color(0xFFD55B91);
               }
             },
           ),
@@ -1153,7 +1153,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
               child: Icon(
                 Icons.star,
                 size: 32,
-                color: isActive ? const Color(0xFFF34FA7) : Colors.grey,
+                color: isActive ? const Color(0xFFD55B91) : Colors.grey,
               ),
             );
           }),
@@ -1210,7 +1210,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
-                if (!mozePreporuciti || trebaProcitatiPrvo) {
+                if (_isLoadingPreporuka ||
+                    !mozePreporuciti ||
+                    trebaProcitatiPrvo) {
                   return Colors.grey;
                 }
                 if (states.contains(MaterialState.pressed)) {
@@ -1219,36 +1221,47 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 return const Color(0xFF3C6E71);
               }),
               shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
               shadowColor: MaterialStateProperty.all(
                 Colors.black.withOpacity(0.3),
               ),
               elevation: MaterialStateProperty.all(6),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Text(
-                    _jePreporucena ? "Preporučena" : "Preporuči svima",
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontSize: 16,
+            child: _isLoadingPreporuka
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
                     ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          _jePreporucena ? "Preporučena" : "Preporuči svima",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        _jePreporucena ? Icons.check : Icons.thumb_up,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  _jePreporucena ? Icons.check : Icons.thumb_up,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ],
-            ),
           ),
         ),
         if (trebaProcitatiPrvo) ...[
@@ -1260,7 +1273,11 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 message: "Možete preporučiti samo pročitane knjige.",
               );
             },
-            child: const Icon(Icons.info_outline, size: 22, color: Colors.grey),
+            child: const Icon(
+              Icons.info_outline,
+              size: 22,
+              color: Colors.grey,
+            ),
           ),
         ],
       ],
@@ -1394,7 +1411,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: _kolicina > 1
-                        ? const Color(0xFFF34FA7)
+                        ? const Color(0xFFD55B91)
                         : Colors.grey.shade600,
                     shape: BoxShape.circle,
                   ),
@@ -1429,7 +1446,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: _kolicina < 10
-                        ? const Color(0xFFF34FA7)
+                        ? const Color(0xFFD55B91)
                         : Colors.grey.shade600,
                     shape: BoxShape.circle,
                   ),
@@ -1510,14 +1527,23 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
               elevation: MaterialStateProperty.all(6),
             ),
-            child: const Text(
-              "Dodaj u korpu",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: _isLoadingKorpa
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    "Dodaj u korpu",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ),
       ],

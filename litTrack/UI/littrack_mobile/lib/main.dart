@@ -15,6 +15,7 @@ import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/narudzba_provider.dart';
 import 'package:littrack_mobile/providers/stavka_narudzbe_provider.dart';
 import 'package:littrack_mobile/providers/obavijest_provider.dart';
+import 'package:littrack_mobile/providers/nacin_placanja_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/screens/login_screen.dart';
 import 'package:littrack_mobile/screens/registracija_screen_1.dart';
@@ -39,6 +40,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => StavkaNarudzbeProvider()),
         ChangeNotifierProvider(create: (_) => ObavijestProvider()),
         ChangeNotifierProvider(create: (_) => OcjenaProvider()),
+        ChangeNotifierProvider(create: (_) => NacinPlacanjaProvider()),
       ],
       child: const MyApp(),
     ),

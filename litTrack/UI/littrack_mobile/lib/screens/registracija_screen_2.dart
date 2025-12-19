@@ -26,6 +26,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
 
   bool _isHidden = true;
   bool _isHiddenConfirm = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -287,51 +288,56 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                           SizedBox(
                             width: double.infinity,
                             height: 45,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                showConfirmDialog(
-                                  context: context,
-                                  title: "Registracija",
-                                  message:
-                                      "Da li ste sigurni da želite kreirati račun?",
-                                  icon: Icons.person_add,
-                                  iconColor: const Color(0xFF3C6E71),
-                                  onConfirm: _save,
-                                );
-                              },
-                              icon: const Icon(Icons.check,
-                                  color: Colors.white, size: 20),
-                              label: const Text(
-                                "KREIRAJTE RAČUN",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                            child: ElevatedButton(
+                              onPressed: _isSaving
+                                  ? null
+                                  : () {
+                                      showConfirmDialog(
+                                        context: context,
+                                        title: "Registracija",
+                                        message:
+                                            "Da li ste sigurni da želite kreirati račun?",
+                                        icon: Icons.person_add,
+                                        iconColor: const Color(0xFF3C6E71),
+                                        onConfirm: _save,
+                                      );
+                                    },
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
                                         (states) {
-                                  if (states.contains(MaterialState.pressed)) {
-                                    return const Color(0xFF2E5A58);
-                                  }
+                                  if (states.contains(MaterialState.pressed)) return const Color(0xFF2E5A58);
                                   return const Color(0xFF3C6E71);
                                 }),
                                 foregroundColor:
                                     MaterialStateProperty.all(Colors.white),
                                 shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
+                                      borderRadius: BorderRadius.circular(25)),
                                 ),
                                 elevation: MaterialStateProperty.all(6),
                                 shadowColor: MaterialStateProperty.all(
                                     Colors.black.withOpacity(0.3)),
                                 padding: MaterialStateProperty.all(
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                                ),
+                                    const EdgeInsets.symmetric(horizontal: 16)),
                               ),
+                              child: _isSaving
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      "KREIRAJTE RAČUN",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 15),
@@ -381,6 +387,8 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
     final isValid = _formKey.currentState?.saveAndValidate() ?? false;
     if (!isValid) return;
 
+    setState(() => _isSaving = true);
+
     final formValues = Map<String, dynamic>.from(_formKey.currentState!.value);
 
     final request = {
@@ -421,6 +429,8 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 }

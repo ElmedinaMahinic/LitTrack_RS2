@@ -63,6 +63,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
         'DatumNarudzbeGTE': DateFormat('yyyy-MM-dd').format(_datumOd!),
       if (_datumDo != null)
         'DatumNarudzbeLTE': DateFormat('yyyy-MM-dd').format(_datumDo!),
+      'orderBy': 'DatumNarudzbe',
+      'sortDirection': 'desc',
     };
 
     try {
@@ -293,7 +295,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
               _fetchNarudzbe(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: !_showSve ? const Color(0xFFF34FA7) : Colors.grey[300],
+              backgroundColor:
+                  !_showSve ? const Color(0xFFD55B91) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -320,7 +323,8 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
               _fetchNarudzbe(page: 1);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _showSve ? const Color(0xFFF34FA7) : Colors.grey[300],
+              backgroundColor:
+                  _showSve ? const Color(0xFFD55B91) : Colors.grey[300],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),

@@ -16,6 +16,8 @@ namespace litTrack.Model.DTOs
 
         public string? StateMachine { get; set; }
 
+        public string? Adresa { get; set; }
+
         public int KorisnikId { get; set; }
 
         public int NacinPlacanjaId { get; set; }

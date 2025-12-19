@@ -9,6 +9,7 @@ class Narudzba {
   DateTime datumNarudzbe;
   double ukupnaCijena;
   String? stateMachine;
+  String? adresa;
   int korisnikId;
   int nacinPlacanjaId;
   String? imePrezime;
@@ -22,6 +23,7 @@ class Narudzba {
     this.datumNarudzbe,
     this.ukupnaCijena,
     this.stateMachine,
+    this.adresa,
     this.korisnikId,
     this.nacinPlacanjaId,
     this.imePrezime,

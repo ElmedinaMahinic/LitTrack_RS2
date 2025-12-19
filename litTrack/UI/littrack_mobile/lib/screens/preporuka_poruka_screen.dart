@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/licna_preporuka_provider.dart';
@@ -17,8 +19,7 @@ class PreporukaPorukaScreen extends StatefulWidget {
 }
 
 class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
-  final TextEditingController _naslovController = TextEditingController();
-  final TextEditingController _porukaController = TextEditingController();
+  final _formKey = GlobalKey<FormBuilderState>();
 
   late LicnaPreporukaProvider _licnaPreporukaProvider;
   late KorisnikProvider _korisnikProvider;
@@ -67,50 +68,17 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _save() async {
     if (_isSaving) return;
 
-    final naslov = _naslovController.text.trim();
-    final poruka = _porukaController.text.trim();
+    if (!_formKey.currentState!.saveAndValidate()) return;
 
-    if (naslov.isEmpty || poruka.isEmpty) {
-      await showCustomDialog(
-        context: context,
-        title: "Greška",
-        message: "Molimo unesite i naslov i poruku.",
-        icon: Icons.error,
-        iconColor: Colors.red,
-      );
-      return;
-    }
-
-    if (naslov.length > 100) {
-      await showCustomDialog(
-        context: context,
-        title: "Greška",
-        message: "Naslov može imati najviše 100 karaktera.",
-        icon: Icons.error,
-        iconColor: Colors.red,
-      );
-      return;
-    }
-
-    if (poruka.length > 1000) {
-      await showCustomDialog(
-        context: context,
-        title: "Greška",
-        message: "Poruka može imati najviše 1000 karaktera.",
-        icon: Icons.error,
-        iconColor: Colors.red,
-      );
-      return;
-    }
+    final naslov = (_formKey.currentState!.value['naslov'] as String).trim();
+    final poruka = (_formKey.currentState!.value['poruka'] as String).trim();
 
     if (_knjigeIds.isEmpty) {
       await showCustomDialog(
@@ -131,9 +99,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
       "knjige": _knjigeIds,
     };
 
-    if (mounted) {
-      setState(() => _isSaving = true);
-    }
+    if (mounted) setState(() => _isSaving = true);
 
     try {
       await _licnaPreporukaProvider.insert(request);
@@ -166,9 +132,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -248,7 +212,10 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
                     children: [
                       _buildHeader(),
                       const SizedBox(height: 40),
-                      _buildSection(),
+                      FormBuilder(
+                        key: _formKey,
+                        child: _buildSection(),
+                      ),
                       const SizedBox(height: 40),
                       _buildPreporuciButton(),
                     ],
@@ -264,7 +231,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF34FA7),
+        color: const Color(0xFFD55B91),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -300,8 +267,8 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: _naslovController,
+        FormBuilderTextField(
+          name: 'naslov',
           decoration: InputDecoration(
             hintText: "Naslov...",
             filled: true,
@@ -312,6 +279,12 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           ),
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(
+                errorText: "Naslov ne može biti prazan"),
+            FormBuilderValidators.maxLength(100,
+                errorText: "Naslov može imati najviše 100 karaktera"),
+          ]),
         ),
         const SizedBox(height: 25),
         const Text(
@@ -319,8 +292,8 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
-        TextField(
-          controller: _porukaController,
+        FormBuilderTextField(
+          name: 'poruka',
           maxLines: 5,
           decoration: InputDecoration(
             hintText: "Poruka...",
@@ -332,6 +305,12 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           ),
+          validator: FormBuilderValidators.compose([
+            FormBuilderValidators.required(
+                errorText: "Poruka ne može biti prazna"),
+            FormBuilderValidators.maxLength(1000,
+                errorText: "Poruka može imati najviše 1000 karaktera"),
+          ]),
         ),
       ],
     );
@@ -362,7 +341,7 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
                 height: 22,
                 width: 22,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2.4,
+                  strokeWidth: 2.5,
                   color: Colors.white,
                 ),
               )

@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isHidden = true;
+  bool _isLoggingIn = false;
 
   @override
   void initState() {
@@ -26,6 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
+      setState(() => _isLoggingIn = true);
+
       try {
         final korisnikProvider = KorisnikProvider();
         final korisnik = await korisnikProvider.login(
@@ -77,6 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
           iconColor: Colors.red,
           buttonColor: const Color(0xFF43675E),
         );
+      } finally {
+        if (mounted) setState(() => _isLoggingIn = false);
       }
     }
   }
@@ -197,7 +202,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton(
-                              onPressed: _login,
+                              onPressed: _isLoggingIn
+                                  ? null
+                                  : _login, 
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.resolveWith<Color>(
@@ -218,13 +225,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Colors.black.withOpacity(0.3)),
                                 elevation: MaterialStateProperty.all(6),
                               ),
-                              child: const Text(
-                                "PRIJAVA",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              child: _isLoggingIn
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      "PRIJAVA",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 15),

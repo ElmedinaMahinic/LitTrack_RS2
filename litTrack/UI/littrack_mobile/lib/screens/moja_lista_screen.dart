@@ -353,7 +353,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                                   children: [
                                     const Icon(
                                       Icons.star,
-                                      color: Colors.pinkAccent,
+                                      color: Color(0xFFD55B91),
                                       size: 18,
                                     ),
                                     const SizedBox(width: 4),
