@@ -104,6 +104,10 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -149,6 +153,10 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -250,6 +258,9 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -270,6 +281,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
         if (selected == true) {
           try {
             final knjiga = await provider.getById(item.knjigaId!);
+            if (!context.mounted) return;
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
@@ -280,6 +292,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
               filterServerSide(nazivFilter, autorNazivFilter);
             }
           } catch (e) {
+            if (!context.mounted) return;
             showCustomDialog(
               context: context,
               title: 'Greška',
@@ -303,7 +316,11 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(item.naziv),
+              child: Text(
+                item.naziv,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -312,7 +329,11 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(item.autorNaziv ?? '-'),
+              child: Text(
+                item.autorNaziv ?? '-',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -333,6 +354,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                 onPressed: () async {
                   try {
                     final knjiga = await provider.getById(item.knjigaId!);
+                    if (!context.mounted) return;
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -344,6 +366,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                       filterServerSide(nazivFilter, autorNazivFilter);
                     }
                   } catch (e) {
+                    if (!context.mounted) return;
                     showCustomDialog(
                       context: context,
                       title: 'Greška',
@@ -355,6 +378,10 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -389,6 +416,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                     onConfirm: () async {
                       try {
                         await provider.delete(item.knjigaId!);
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Uspjeh",
@@ -398,6 +426,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                         );
                         filterServerSide(nazivFilter, autorNazivFilter);
                       } catch (e) {
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Greška",
@@ -412,6 +441,10 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }

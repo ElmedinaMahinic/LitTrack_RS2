@@ -33,6 +33,7 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
   }
 
   void _refreshTable() {
+    if (!mounted) return;
     setState(() {
       _dataSource.filterServerSide(_imeController.text);
     });
@@ -86,6 +87,10 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -126,6 +131,10 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -227,6 +236,9 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -265,7 +277,11 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(item.ime),
+              child: Text(
+                item.ime,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -274,7 +290,11 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(item.prezime),
+              child: Text(
+                item.prezime,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -294,13 +314,18 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
                   if (result == true) refreshParent();
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color(0xFF51968F);
-                    }
-                    return const Color(0xFF3C6E71);
-                  }),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) {
+                      if (states.contains(MaterialState.pressed) ||
+                          states.contains(MaterialState.selected)) {
+                        return const Color(0xFF41706A);
+                      }
+                      if (states.contains(MaterialState.hovered)) {
+                        return const Color(0xFF51968F);
+                      }
+                      return const Color(0xFF3C6E71);
+                    },
+                  ),
                   padding: MaterialStateProperty.all(
                       const EdgeInsets.symmetric(horizontal: 13, vertical: 9)),
                   shape: MaterialStateProperty.all(
@@ -331,6 +356,7 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
                     onConfirm: () async {
                       try {
                         await provider.delete(item.autorId!);
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Uspjeh",
@@ -340,6 +366,7 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
                         );
                         filterServerSide(imeFilter);
                       } catch (e) {
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Greška",
@@ -352,13 +379,18 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
                   );
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color(0xFF51968F);
-                    }
-                    return const Color(0xFF3C6E71);
-                  }),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) {
+                      if (states.contains(MaterialState.pressed) ||
+                          states.contains(MaterialState.selected)) {
+                        return const Color(0xFF41706A);
+                      }
+                      if (states.contains(MaterialState.hovered)) {
+                        return const Color(0xFF51968F);
+                      }
+                      return const Color(0xFF3C6E71);
+                    },
+                  ),
                   padding: MaterialStateProperty.all(
                       const EdgeInsets.symmetric(horizontal: 13, vertical: 9)),
                   shape: MaterialStateProperty.all(

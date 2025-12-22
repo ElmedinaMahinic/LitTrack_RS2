@@ -31,12 +31,15 @@ class _RadnikNarudzbeDetailsScreenState
   late final String nacinPlacanja;
   late final int brojStavki;
   late final int ukupanBrojKnjiga;
+  late final String? adresa;
 
   late StavkaNarudzbeProvider _stavkaProvider;
+  late NarudzbaProvider _narudzbaProvider;
 
   bool showStavke = false;
   bool isLoadingStavke = false;
   List<StavkaNarudzbe> stavke = [];
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -50,11 +53,14 @@ class _RadnikNarudzbeDetailsScreenState
     nacinPlacanja = narudzba.nacinPlacanja ?? "/";
     brojStavki = narudzba.brojStavki ?? 0;
     ukupanBrojKnjiga = narudzba.ukupanBrojKnjiga ?? 0;
+    adresa = narudzba.adresa ?? "/";
 
     _stavkaProvider = context.read<StavkaNarudzbeProvider>();
+    _narudzbaProvider = context.read<NarudzbaProvider>();
   }
 
   Future<void> loadStavke() async {
+    if (!mounted) return;
     setState(() {
       isLoadingStavke = true;
     });
@@ -64,14 +70,13 @@ class _RadnikNarudzbeDetailsScreenState
         "NarudzbaId": widget.narudzba.narudzbaId,
       });
 
+      if (!mounted) return;
+
       setState(() {
         stavke = result.resultList;
-        isLoadingStavke = false;
       });
     } catch (e) {
-      setState(() {
-        isLoadingStavke = false;
-      });
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -79,6 +84,10 @@ class _RadnikNarudzbeDetailsScreenState
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) {
+        setState(() => isLoadingStavke = false);
+      }
     }
   }
 
@@ -134,6 +143,10 @@ class _RadnikNarudzbeDetailsScreenState
         ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed) ||
+                states.contains(MaterialState.selected)) {
+              return const Color(0xFF41706A);
+            }
             if (states.contains(MaterialState.hovered)) {
               return const Color(0xFF51968F);
             }
@@ -233,6 +246,7 @@ class _RadnikNarudzbeDetailsScreenState
               "${ukupnaCijena.toStringAsFixed(2)} KM", Icons.attach_money),
           _buildInfoRow("Status:", status, Icons.info_outline),
           _buildInfoRow("Naručilac:", imePrezime, Icons.person_outline),
+          _buildInfoRow("Adresa:", adresa ?? "/", Icons.location_on_outlined),
           _buildInfoRow(
               "Način plaćanja:", nacinPlacanja, Icons.payment_outlined),
           _buildInfoRow("Broj stavki:", brojStavki.toString(),
@@ -279,8 +293,6 @@ class _RadnikNarudzbeDetailsScreenState
   }
 
   Widget _buildActionButtons() {
-    final NarudzbaProvider provider = NarudzbaProvider();
-
     String getButtonText() {
       switch (status.toLowerCase()) {
         case "kreirana":
@@ -288,7 +300,7 @@ class _RadnikNarudzbeDetailsScreenState
         case "preuzeta":
           return "Pošalji narudžbu";
         case "utoku":
-          return "Završi narudžbu";
+          return "Narudžba poslana";
         case "ponistena":
           return "Narudžba otkazana";
         case "zavrsena":
@@ -299,22 +311,21 @@ class _RadnikNarudzbeDetailsScreenState
     }
 
     bool isButtonEnabled() {
-      return ["kreirana", "preuzeta", "utoku"].contains(status.toLowerCase());
+      return ["kreirana", "preuzeta"].contains(status.toLowerCase());
     }
 
     Future<void> onStatusButtonPressed() async {
+      if (_isProcessing) return;
+
       String actionText = getButtonText();
       Future<void> Function()? action;
 
       switch (status.toLowerCase()) {
         case "kreirana":
-          action = () => provider.preuzmi(widget.narudzba.narudzbaId!);
+          action = () => _narudzbaProvider.preuzmi(widget.narudzba.narudzbaId!);
           break;
         case "preuzeta":
-          action = () => provider.uToku(widget.narudzba.narudzbaId!);
-          break;
-        case "utoku":
-          action = () => provider.zavrsi(widget.narudzba.narudzbaId!);
+          action = () => _narudzbaProvider.uToku(widget.narudzba.narudzbaId!);
           break;
         default:
           return;
@@ -327,8 +338,13 @@ class _RadnikNarudzbeDetailsScreenState
         icon: Icons.help_outline,
         iconColor: Colors.red,
         onConfirm: () async {
+          if (!mounted) return;
+          setState(() => _isProcessing = true);
+
           try {
             await action!();
+
+            if (!mounted) return;
             await showCustomDialog(
               context: context,
               title: "Uspjeh",
@@ -336,8 +352,11 @@ class _RadnikNarudzbeDetailsScreenState
               icon: Icons.check_circle,
               iconColor: Colors.green,
             );
+
+            if (!mounted) return;
             Navigator.pop(context, true);
           } catch (e) {
+            if (!mounted) return;
             await showCustomDialog(
               context: context,
               title: "Greška",
@@ -345,6 +364,8 @@ class _RadnikNarudzbeDetailsScreenState
               icon: Icons.error,
               iconColor: Colors.red,
             );
+          } finally {
+            if (mounted) setState(() => _isProcessing = false);
           }
         },
       );
@@ -371,61 +392,70 @@ class _RadnikNarudzbeDetailsScreenState
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.hovered)) {
-                  return Colors.grey.shade600;
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color.fromARGB(255, 100, 100, 100);
                 }
-                return Colors.grey;
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color.fromARGB(255, 150, 150, 150);
+                }
+                return const Color.fromARGB(255, 120, 120, 120);
               }),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              elevation: MaterialStateProperty.all(4),
-              padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              shadowColor: MaterialStateProperty.all(Colors.black54),
             ),
           ),
         ),
         const SizedBox(width: 20),
-        SizedBox(
-          width: 200,
-          height: 45,
-          child: ElevatedButton.icon(
-            onPressed: isButtonEnabled() ? onStatusButtonPressed : null,
-            icon: const Icon(Icons.update, color: Colors.white, size: 18),
-            label: Text(
-              getButtonText(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (!isButtonEnabled()) return Colors.grey.shade400;
-                if (states.contains(MaterialState.hovered)) {
-                  return const Color(0xFF51968F);
-                }
-                return const Color(0xFF3C6E71);
-              }),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+        if (isButtonEnabled())
+          SizedBox(
+            width: 200,
+            height: 45,
+            child: ElevatedButton.icon(
+              onPressed: _isProcessing ? null : onStatusButtonPressed,
+              icon: _isProcessing
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.update, color: Colors.white, size: 18),
+              label: _isProcessing
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      getButtonText(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-              elevation: MaterialStateProperty.all(4),
-              padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              shadowColor: MaterialStateProperty.all(Colors.black54),
             ),
-          ),
-        ),
+          )
       ],
     );
   }

@@ -77,24 +77,4 @@ class NarudzbaProvider extends BaseProvider<Narudzba> {
           "Greška prilikom postavljanja narudžbe u tok: ${e.toString()}");
     }
   }
-
-  Future<void> zavrsi(int narudzbaId) async {
-    var url = "${BaseProvider.baseUrl}Narudzba/$narudzbaId/zavrsi";
-    var uri = Uri.parse(url);
-    var headers = createHeaders();
-
-    try {
-      var response = await http.put(uri, headers: headers);
-
-      if (!isValidResponse(response)) {
-        throw UserException("Greška prilikom završetka narudžbe.");
-      }
-    } catch (e) {
-      if (e is UserException) {
-        rethrow;
-      }
-      throw UserException(
-          "Greška prilikom završetka narudžbe: ${e.toString()}");
-    }
-  }
 }

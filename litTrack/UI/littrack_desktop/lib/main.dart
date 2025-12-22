@@ -75,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoggingIn = false;
 
   @override
   void initState() {
@@ -112,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // LOGO + TEXT
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -130,12 +130,8 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   const SizedBox(height: 45),
-
-                  // MAIN MIDDLE IMAGE
                   Image.asset("assets/images/login_middle.png", width: 130),
                   const SizedBox(height: 45),
-
-                  // LOGIN FORM
                   Form(
                     key: _formKey,
                     child: ConstrainedBox(
@@ -217,83 +213,123 @@ class _LoginPageState extends State<LoginPage> {
                             width: double.infinity,
                             height: inputHeight,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  try {
-                                    final korisnikProvider = KorisnikProvider();
-                                    final korisnik =
-                                        await korisnikProvider.login(
-                                      _usernameController.text,
-                                      _passwordController.text,
-                                    );
+                              onPressed: _isLoggingIn
+                                  ? null
+                                  : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        if (!context.mounted) return;
+                                        setState(() => _isLoggingIn = true);
+                                        try {
+                                          final korisnikProvider =
+                                              KorisnikProvider();
+                                          final korisnik =
+                                              await korisnikProvider.login(
+                                            _usernameController.text,
+                                            _passwordController.text,
+                                          );
 
-                                    // Provjera da li je deaktiviran
-                                    if (korisnik.jeAktivan == false) {
-                                      await showCustomDialog(
-                                        context: context,
-                                        title: 'Račun deaktiviran',
-                                        message:
-                                            'Vaš korisnički račun je deaktiviran!',
-                                        icon: Icons.block,
-                                        iconColor: Colors.red,
-                                        buttonColor: const Color(0xFF43675E),
-                                      );
-                                      return;
-                                    }
+                                          if (korisnik.jeAktivan == false) {
+                                            if (!context.mounted) return;
+                                            await showCustomDialog(
+                                              context: context,
+                                              title: 'Račun deaktiviran',
+                                              message:
+                                                  'Vaš korisnički račun je deaktiviran!',
+                                              icon: Icons.block,
+                                              iconColor: Colors.red,
+                                              buttonColor:
+                                                  const Color(0xFF43675E),
+                                            );
+                                            return;
+                                          }
 
-                                    AuthProvider.isSignedIn = true;
+                                          AuthProvider.isSignedIn = true;
 
-                                    // Navigacija na osnovu uloge
-                                    if (AuthProvider.uloge != null &&
-                                        AuthProvider.uloge!.contains("Admin")) {
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const AdminDashboardScreen(),
-                                        ),
-                                      );
-                                    } else if (AuthProvider.uloge != null &&
-                                        AuthProvider.uloge!.contains("Radnik")) {
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RadnikDashboardScreen(),
-                                        ),
-                                      );
-                                    } else {
-                                      await showCustomDialog(
-                                        context: context,
-                                        title: 'Pristup odbijen',
-                                        message:
-                                            'Nemate pristup ovom interfejsu.',
-                                        icon: Icons.lock_outline,
-                                        iconColor: Colors.red,
-                                        buttonColor: const Color(0xFF43675E),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    await showCustomDialog(
-                                      context: context,
-                                      title: 'Greška',
-                                      message: e.toString(),
-                                      icon: Icons.error_outline,
-                                      iconColor: Colors.red,
-                                      buttonColor: const Color(0xFF43675E),
-                                    );
+                                          if (AuthProvider.uloge != null &&
+                                              AuthProvider.uloge!
+                                                  .contains("Admin")) {
+                                            if (!context.mounted) return;
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const AdminDashboardScreen(),
+                                              ),
+                                            );
+                                          } else if (AuthProvider.uloge !=
+                                                  null &&
+                                              AuthProvider.uloge!
+                                                  .contains("Radnik")) {
+                                            if (!context.mounted) return;
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const RadnikDashboardScreen(),
+                                              ),
+                                            );
+                                          } else {
+                                            if (!context.mounted) return;
+                                            await showCustomDialog(
+                                              context: context,
+                                              title: 'Pristup odbijen',
+                                              message:
+                                                  'Nemate pristup ovom interfejsu.',
+                                              icon: Icons.lock_outline,
+                                              iconColor: Colors.red,
+                                              buttonColor:
+                                                  const Color(0xFF43675E),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (!context.mounted) return;
+                                          await showCustomDialog(
+                                            context: context,
+                                            title: 'Greška',
+                                            message: e.toString(),
+                                            icon: Icons.error_outline,
+                                            iconColor: Colors.red,
+                                            buttonColor:
+                                                const Color(0xFF43675E),
+                                          );
+                                        } finally {
+                                          if (mounted)  setState(() => _isLoggingIn = false);
+                                        }
+                                      }
+                                    },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (states) {
+                                  if (states.contains(MaterialState.pressed) ||
+                                      states.contains(MaterialState.selected)) {
+                                    return const Color(0xFF41706A);
                                   }
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF43675E),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return const Color(0xFF51968F);
+                                  }
+                                  return const Color(0xFF43675E);
+                                }),
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.white),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
                                 ),
                               ),
-                              child: const Text(
-                                "PRIJAVA",
-                                style: TextStyle(fontSize: 16),
-                              ),
+                              child: _isLoggingIn
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      "PRIJAVA",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                             ),
                           ),
                         ],

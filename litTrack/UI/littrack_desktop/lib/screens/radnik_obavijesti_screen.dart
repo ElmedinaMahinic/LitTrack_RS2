@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:littrack_desktop/screens/radnik_obavijesti_details.dart';
 
 class RadnikObavijestiScreen extends StatefulWidget {
-
   const RadnikObavijestiScreen({super.key});
 
   @override
@@ -55,6 +54,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
 
     try {
       final result = await _provider.get(filter: filter);
+      if (!mounted) return;
 
       setState(() {
         _obavijesti = result.resultList;
@@ -62,6 +62,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
         _currentPage = page;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -70,7 +71,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -82,12 +83,14 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
+      if (!mounted) return;
       setState(() => _selectedDate = picked);
       _fetchObavijesti(page: 1);
     }
   }
 
   void _clearFilters() {
+    if (!mounted) return;
     setState(() {
       _naslovController.clear();
       _samoStare = false;
@@ -135,8 +138,28 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
             const Center(child: CircularProgressIndicator())
           else if (_obavijesti.isEmpty)
             const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text("Nema dostupnih obavijesti."),
+              padding: EdgeInsets.all(25.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_outlined,
+                      size: 60,
+                      color: Color(0xFF3C6E71),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Nema dostupnih obavijesti",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF3C6E71),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
           else
             Column(
@@ -442,6 +465,10 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
   ButtonStyle _buttonStyle() {
     return ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.pressed) ||
+            states.contains(MaterialState.selected)) {
+          return const Color(0xFF41706A);
+        }
         if (states.contains(MaterialState.hovered)) {
           return const Color(0xFF51968F);
         }

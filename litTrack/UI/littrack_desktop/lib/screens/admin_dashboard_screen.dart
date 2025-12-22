@@ -92,6 +92,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -231,8 +232,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       'Nov',
       'Dec'
     ];
-    final chartLineColor = const Color(0xFF3C6E71);
-    final backgroundColor = const Color(0xFFF9F9F9);
+    const chartLineColor = Color(0xFF3C6E71);
+    const backgroundColor = Color(0xFFF9F9F9);
 
     final totalOrders = narudzbePoMjesecima.fold(0, (sum, item) => sum + item);
 
@@ -245,8 +246,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 6.0),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 6.0),
           child: Text(
             "Broj narudžbi po mjesecu",
             style: TextStyle(
@@ -318,7 +319,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       interval: 5,
                       getTitlesWidget: (value, meta) => Text(
                         '${value.toInt()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: backgroundColor,
                           fontSize: 1,
                         ),
@@ -370,7 +371,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         if (index >= 0 && index < months.length) {
                           return Text(
                             months[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: backgroundColor,
                               fontSize: 12,
                             ),
@@ -455,6 +456,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed) ||
+                states.contains(MaterialState.selected)) {
+              return const Color(0xFF41706A);
+            }
             if (states.contains(MaterialState.hovered)) {
               return const Color(0xFF51968F);
             }
@@ -487,6 +492,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           try {
             final filePath = await generatePdf();
 
+            if (!mounted) return;
+
             await showCustomDialog(
               context: context,
               title: "Uspjeh",
@@ -495,6 +502,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               iconColor: Colors.green,
             );
           } catch (e) {
+            if (!mounted) return;
             await showCustomDialog(
               context: context,
               title: "Greška",
@@ -506,6 +514,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         },
       );
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -530,12 +539,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
           ),
           pw.SizedBox(height: 20),
-          pw.Text('Broj procitanih knjiga: $procitaneKnjige'),
-          pw.Text('Broj arhiviranih knjiga: $arhiviraneKnjige'),
-          pw.Text('Broj recenzija: $brojRecenzija'),
-          pw.Text('Broj preporuka: $brojPreporuka'),
-          pw.Text('Broj knjiga za buduce citanje: $knjigeZaBuduceCitanje'),
-          pw.Text('Najdraza knjiga: $najdrazaKnjigaNaziv'),
+          pw.Text('Ukupan broj citanja: $procitaneKnjige'),
+          pw.Text('Ukupan broj arhiviranja: $arhiviraneKnjige'),
+          pw.Text('Ukupan broj napisanih recenzija: $brojRecenzija'),
+          pw.Text('Ukupan broj preporuka (globalnih i licnih): $brojPreporuka'),
+          pw.Text('Ukupan broj planiranih citanja: $knjigeZaBuduceCitanje'),
+          pw.Text('Trenutna najdraza knjiga: $najdrazaKnjigaNaziv'),
           pw.SizedBox(height: 20),
           pw.Text(
             'Prikazane narudzbe: ${selectedDisplayState ?? "Sve narudzbe"}',
@@ -567,7 +576,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
     );
 
-    final dir =  await getApplicationDocumentsDirectory();
+    final dir = await getApplicationDocumentsDirectory();
     final vrijeme = DateTime.now();
     final formattedDate =
         '${vrijeme.year}-${vrijeme.month.toString().padLeft(2, '0')}-${vrijeme.day.toString().padLeft(2, '0')}';
@@ -579,15 +588,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   String getProcitaneKnjigeText(int count) {
-    if (count == 1) return "Pročitana knjiga";
-    if (count >= 2 && count <= 4) return "Pročitane knjige";
-    return "Pročitanih knjiga";
+    if (count == 1) return "Čitanje";
+    if (count >= 2 && count <= 4) return "Čitanja";
+    return "Čitanja";
   }
 
   String getArhiviraneKnjigeText(int count) {
-    if (count == 1) return "Arhivirana knjiga";
-    if (count >= 2 && count <= 4) return "Arhivirane knjige";
-    return "Arhiviranih knjiga";
+    if (count == 1) return "Arhiviranje";
+    if (count >= 2 && count <= 4) return "Arhiviranja";
+    return "Arhiviranja";
   }
 
   String getRecenzijeText(int count) {
@@ -597,15 +606,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   String getPreporukeText(int count) {
-    if (count == 1) return "Preporučena knjiga";
-    if (count >= 2 && count <= 4) return "Preporučene knjige";
-    return "Preporučenih knjiga";
+    if (count == 1) return "Preporuka";
+    if (count >= 2 && count <= 4) return "Preporuke";
+    return "Preporuka";
   }
 
   String getZaBuduceText(int count) {
-    if (count == 1) return "Knjiga za buduće čitanje";
-    if (count >= 2 && count <= 4) return "Knjige za buduće čitanje";
-    return "Knjiga za buduće čitanje";
+    if (count == 1) return "Planirano čitanje";
+    if (count >= 2 && count <= 4) return "Planirana čitanja";
+    return "Planiranih čitanja";
   }
 
   Widget _buildStatCard(String title, dynamic value) {

@@ -77,6 +77,10 @@ class _AdminZanroviScreenState extends State<AdminZanroviScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -119,6 +123,10 @@ class _AdminZanroviScreenState extends State<AdminZanroviScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -215,6 +223,9 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -257,7 +268,11 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(item.naziv),
+              child: Text(
+                item.naziv,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -290,6 +305,10 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -324,6 +343,7 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
                     onConfirm: () async {
                       try {
                         await provider.delete(item.zanrId!);
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Uspjeh",
@@ -333,6 +353,7 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
                         );
                         filterServerSide(nazivFilter);
                       } catch (e) {
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Greška",
@@ -347,6 +368,10 @@ class ZanrDataSource extends AdvancedDataTableSource<Zanr> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }

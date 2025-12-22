@@ -19,6 +19,8 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
   int brojPreuzetih = 0;
   int brojZavrsenih = 0;
   int brojOtkazanih = 0;
+  int brojKreiranih = 0;
+  int brojPoslanih = 0;
   bool isLoading = true;
 
   List<int> narudzbePoMjesecima = List.filled(12, 0);
@@ -51,7 +53,11 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
       final zavrsene =
           await narudzbaProvider.get(filter: {"stateMachine": "zavrsena"});
       final otkazane =
-          await narudzbaProvider.get(filter: {"stateMachine": "otkazana"});
+          await narudzbaProvider.get(filter: {"stateMachine": "ponistena"});
+      final kreirane =
+          await narudzbaProvider.get(filter: {"stateMachine": "kreirana"});
+      final poslane =
+          await narudzbaProvider.get(filter: {"stateMachine": "uToku"});
 
       final String? backendSelectedState = selectedDisplayState != null
           ? stateDisplayToValue[selectedDisplayState!]
@@ -62,14 +68,19 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
         stateFilter: backendSelectedState,
       );
 
+      if (!mounted) return;
+
       setState(() {
         brojPreuzetih = preuzete.count;
         brojZavrsenih = zavrsene.count;
         brojOtkazanih = otkazane.count;
+        brojKreiranih = kreirane.count;
+        brojPoslanih = poslane.count;
         narudzbePoMjesecima = narudzbePoMjesecimaData;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -97,12 +108,31 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
                         spacing: 30,
                         runSpacing: 30,
                         children: [
-                          _buildStatCard(getPreuzeteText(brojPreuzetih),
-                              brojPreuzetih, Icons.inventory_2),
-                          _buildStatCard(getZavrseneText(brojZavrsenih),
-                              brojZavrsenih, Icons.check_circle),
-                          _buildStatCard(getOtkazaneText(brojOtkazanih),
-                              brojOtkazanih, Icons.cancel),
+                          _buildStatCard(
+                            getKreiraneText(brojKreiranih),
+                            brojKreiranih,
+                            Icons.shopping_cart,
+                          ),
+                          _buildStatCard(
+                            getPreuzeteText(brojPreuzetih),
+                            brojPreuzetih,
+                            Icons.checklist,
+                          ),
+                          _buildStatCard(
+                            getPoslaneText(brojPoslanih),
+                            brojPoslanih,
+                            Icons.local_shipping,
+                          ),
+                          _buildStatCard(
+                            getOtkazaneText(brojOtkazanih),
+                            brojOtkazanih,
+                            Icons.cancel,
+                          ),
+                          _buildStatCard(
+                            getZavrseneText(brojZavrsenih),
+                            brojZavrsenih,
+                            Icons.check_circle,
+                          ),
                         ],
                       ),
                     ),
@@ -204,8 +234,8 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
       'Nov',
       'Dec'
     ];
-    final chartLineColor = const Color(0xFF3C6E71);
-    final backgroundColor = const Color(0xFFF9F9F9);
+    const chartLineColor = Color(0xFF3C6E71);
+    const backgroundColor = Color(0xFFF9F9F9);
 
     final totalOrders = narudzbePoMjesecima.fold(0, (sum, item) => sum + item);
 
@@ -218,8 +248,8 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 6.0),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 6.0),
           child: Text(
             "Broj narudžbi po mjesecu",
             style: TextStyle(
@@ -291,7 +321,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
                       interval: 5,
                       getTitlesWidget: (value, meta) => Text(
                         '${value.toInt()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: backgroundColor,
                           fontSize: 1,
                         ),
@@ -343,7 +373,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
                         if (index >= 0 && index < months.length) {
                           return Text(
                             months[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: backgroundColor,
                               fontSize: 12,
                             ),
@@ -428,6 +458,10 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
         ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.pressed) ||
+                states.contains(MaterialState.selected)) {
+              return const Color(0xFF41706A);
+            }
             if (states.contains(MaterialState.hovered)) {
               return const Color(0xFF51968F);
             }
@@ -460,6 +494,8 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
           try {
             final filePath = await generatePdf();
 
+            if (!mounted) return;
+
             await showCustomDialog(
               context: context,
               title: "Uspjeh",
@@ -468,6 +504,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
               iconColor: Colors.green,
             );
           } catch (e) {
+            if (!mounted) return;
             await showCustomDialog(
               context: context,
               title: "Greška",
@@ -479,6 +516,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
         },
       );
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -503,9 +541,11 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
             ),
           ),
           pw.SizedBox(height: 20),
+          pw.Text('Broj kreiranih narudzbi: $brojKreiranih'),
           pw.Text('Broj preuzetih narudzbi: $brojPreuzetih'),
+          pw.Text('Broj poslanih narudzbi: $brojPoslanih'),
+          pw.Text('Broj ponistenih narudzbi: $brojOtkazanih'),
           pw.Text('Broj zavrsenih narudzbi: $brojZavrsenih'),
-          pw.Text('Broj otkazanih narudzbi: $brojOtkazanih'),
           pw.SizedBox(height: 20),
           pw.Text(
             'Prikazane narudzbe: ${selectedDisplayState ?? "Sve narudzbe"}',
@@ -561,9 +601,21 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
   }
 
   String getOtkazaneText(int count) {
-    if (count == 1) return "Otkazana narudžba";
-    if (count >= 2 && count <= 4) return "Otkazane narudžbe";
-    return "Otkazanih narudžbi";
+    if (count == 1) return "Poništena narudžba";
+    if (count >= 2 && count <= 4) return "Poništene narudžbe";
+    return "Poništenih narudžbi";
+  }
+
+  String getKreiraneText(int count) {
+    if (count == 1) return "Kreirana narudžba";
+    if (count >= 2 && count <= 4) return "Kreirane narudžbe";
+    return "Kreiranih narudžbi";
+  }
+
+  String getPoslaneText(int count) {
+    if (count == 1) return "Poslana narudžba";
+    if (count >= 2 && count <= 4) return "Poslane narudžbe";
+    return "Poslanih narudžbi";
   }
 
   Widget _buildStatCard(String title, int value, IconData icon) {

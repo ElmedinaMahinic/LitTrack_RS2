@@ -26,6 +26,8 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
 
   Map<String, dynamic> _initialValue = {};
   bool _isLoading = true;
+  bool _isSaving = false;
+  bool _isDeactivating = false;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
         'promijeniLozinku': false,
       };
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: 'Greška',
@@ -53,11 +56,12 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+      if (!mounted) return;
       Navigator.pop(context);
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -289,77 +293,43 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
             width: 220,
             height: 45,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: "Deaktivacija profila",
-                  message:
-                      "Da li ste sigurni da želite deaktivirati svoj profil?",
-                  icon: Icons.warning,
-                  iconColor: Colors.red,
-                  onConfirm: () async {
-                    try {
-                      await _provider.deaktiviraj(AuthProvider.korisnikId!);
-
-                      await showCustomDialog(
+              onPressed: _isDeactivating
+                  ? null
+                  : () {
+                      showConfirmDialog(
                         context: context,
-                        title: "Uspjeh",
-                        message: "Profil je uspješno deaktiviran.",
-                        icon: Icons.check_circle,
-                        iconColor: Colors.green,
-                      );
-
-                      AuthProvider.username = null;
-                      AuthProvider.password = null;
-                      AuthProvider.korisnikId = null;
-                      AuthProvider.ime = null;
-                      AuthProvider.prezime = null;
-                      AuthProvider.email = null;
-                      AuthProvider.telefon = null;
-                      AuthProvider.uloge = null;
-                      AuthProvider.isSignedIn = false;
-
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const MyApp()),
-                      );
-                    } catch (e) {
-                      showCustomDialog(
-                        context: context,
-                        title: "Greška",
-                        message: e.toString(),
-                        icon: Icons.error,
+                        title: "Deaktivacija profila",
+                        message:
+                            "Da li ste sigurni da želite deaktivirati svoj profil?",
+                        icon: Icons.warning,
                         iconColor: Colors.red,
+                        onConfirm: _deactivateProfile,
                       );
-                    }
-                  },
-                );
-              },
-              icon: const Icon(Icons.block, color: Colors.white, size: 20),
-              label: const Text(
-                "Deaktiviraj profil",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return const Color(0xFF51968F);
-                  }
-                  return const Color(0xFF3C6E71);
-                }),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 20),
-                ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+                    },
+              icon: _isDeactivating
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.block, color: Colors.white, size: 20),
+              label: _isDeactivating
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Deaktiviraj profil",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+              style: _buttonStyle(
+                Colors.redAccent,
+                Colors.red.shade300,
+                selected: Colors.red.shade700,
               ),
             ),
           ),
@@ -379,23 +349,10 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return const Color.fromARGB(255, 150, 150, 150);
-                  }
-                  return const Color.fromARGB(255, 120, 120, 120);
-                }),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+              style: _buttonStyle(
+                const Color.fromARGB(255, 100, 100, 100),
+                const Color.fromARGB(255, 150, 150, 150),
+                selected: const Color.fromARGB(255, 100, 100, 100),
               ),
             ),
           ),
@@ -404,48 +361,116 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
             width: 140,
             height: 45,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: "Uređivanje profila",
-                  message: "Da li ste sigurni da želite sačuvati izmjene?",
-                  icon: Icons.edit,
-                  iconColor: const Color(0xFF3C6E71),
-                  onConfirm: _save,
-                );
-              },
-              icon: const Icon(Icons.check, color: Colors.white, size: 20),
-              label: const Text(
-                "Sačuvaj",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return const Color(0xFF51968F);
-                  }
-                  return const Color(0xFF3C6E71);
-                }),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+              onPressed: _isSaving
+                  ? null
+                  : () {
+                      showConfirmDialog(
+                        context: context,
+                        title: "Uređivanje profila",
+                        message:
+                            "Da li ste sigurni da želite sačuvati izmjene?",
+                        icon: Icons.edit,
+                        iconColor: const Color(0xFF3C6E71),
+                        onConfirm: _save,
+                      );
+                    },
+              icon: _isSaving
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.check, color: Colors.white, size: 20),
+              label: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Sačuvaj",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+              style: _buttonStyle(
+                const Color(0xFF3C6E71),
+                const Color(0xFF51968F),
+                selected: const Color(0xFF41706A),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  ButtonStyle _buttonStyle(Color normal, Color hover, {Color? selected}) {
+    return ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.pressed) ||
+            states.contains(MaterialState.selected)) {
+          return selected ?? normal;
+        }
+        if (states.contains(MaterialState.hovered)) return hover;
+        return normal;
+      }),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      elevation: MaterialStateProperty.all(4),
+      padding: MaterialStateProperty.all(
+        const EdgeInsets.symmetric(horizontal: 16),
+      ),
+      shadowColor: MaterialStateProperty.all(Colors.black54),
+    );
+  }
+
+  Future<void> _deactivateProfile() async {
+    if (!mounted) return;
+    setState(() => _isDeactivating = true);
+
+    try {
+      await _provider.deaktiviraj(AuthProvider.korisnikId!);
+      if (!mounted) return;
+
+      await showCustomDialog(
+        context: context,
+        title: "Uspjeh",
+        message: "Profil je uspješno deaktiviran.",
+        icon: Icons.check_circle,
+        iconColor: Colors.green,
+      );
+
+      AuthProvider.username = null;
+      AuthProvider.password = null;
+      AuthProvider.korisnikId = null;
+      AuthProvider.ime = null;
+      AuthProvider.prezime = null;
+      AuthProvider.email = null;
+      AuthProvider.telefon = null;
+      AuthProvider.uloge = null;
+      AuthProvider.isSignedIn = false;
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const MyApp()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
+    } finally {
+      if (mounted) setState(() => _isDeactivating = false);
+    }
   }
 
   Future<void> _save() async {
@@ -466,8 +491,12 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
       request['lozinkaPotvrda'] = formValues['lozinkaPotvrda'];
     }
 
+    if (!mounted) return;
+    setState(() => _isSaving = true);
+
     try {
       await _provider.update(AuthProvider.korisnikId!, request);
+      if (!mounted) return;
 
       if (_promijeniLozinku &&
           formValues['lozinka'] != null &&
@@ -483,8 +512,10 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
         iconColor: Colors.green,
       );
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -492,6 +523,8 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 }

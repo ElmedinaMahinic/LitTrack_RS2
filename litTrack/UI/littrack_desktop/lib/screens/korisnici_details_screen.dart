@@ -135,6 +135,10 @@ class KorisniciDetailsScreen extends StatelessWidget {
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color.fromARGB(255, 100, 100, 100);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color.fromARGB(255, 150, 150, 150);
                   }

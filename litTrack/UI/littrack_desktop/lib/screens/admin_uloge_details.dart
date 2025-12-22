@@ -21,6 +21,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   late UlogaProvider _provider;
   late Map<String, dynamic> _initialValue;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -126,14 +127,17 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
                 ),
               ),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color.fromARGB(255, 140, 140, 140);
-                    }
-                    return const Color.fromARGB(255, 120, 120, 120);
-                  },
-                ),
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color.fromARGB(255, 100, 100, 100);
+                  }
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color.fromARGB(255, 150, 150, 150);
+                  }
+                  return const Color.fromARGB(255, 120, 120, 120);
+                }),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -152,38 +156,56 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
             width: 140,
             height: 45,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: widget.uloga == null
-                      ? "Dodavanje uloge"
-                      : "Uređivanje uloge",
-                  message: widget.uloga == null
-                      ? "Da li ste sigurni da želite dodati ovu ulogu?"
-                      : "Da li ste sigurni da želite urediti ovu ulogu?",
-                  icon: widget.uloga == null ? Icons.verified_user : Icons.edit,
-                  iconColor: const Color(0xFF3C6E71),
-                  onConfirm: _save,
-                );
-              },
-              icon: const Icon(Icons.check, color: Colors.white, size: 20),
-              label: const Text(
-                "Sačuvaj",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              onPressed: _isSaving
+                  ? null
+                  : () {
+                      showConfirmDialog(
+                        context: context,
+                        title: widget.uloga == null
+                            ? "Dodavanje uloge"
+                            : "Uređivanje uloge",
+                        message: widget.uloga == null
+                            ? "Da li ste sigurni da želite dodati ovu ulogu?"
+                            : "Da li ste sigurni da želite urediti ovu ulogu?",
+                        icon: widget.uloga == null
+                            ? Icons.verified_user
+                            : Icons.edit,
+                        iconColor: const Color(0xFF3C6E71),
+                        onConfirm: _save,
+                      );
+                    },
+              icon: _isSaving
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.check, color: Colors.white, size: 20),
+              label: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Sačuvaj",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color(0xFF51968F);
-                    }
-                    return const Color(0xFF3C6E71);
-                  },
-                ),
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
                 shape: MaterialStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -208,9 +230,13 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
 
     final request = _formKey.currentState!.value;
 
+    if (!mounted) return;
+    setState(() => _isSaving = true);
+
     try {
       if (widget.uloga == null) {
         await _provider.insert(request);
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -220,6 +246,7 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
         );
       } else {
         await _provider.update(widget.uloga!.ulogaId!, request);
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -229,8 +256,10 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
         );
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -238,6 +267,10 @@ class _AdminUlogaDetailsScreenState extends State<AdminUlogaDetailsScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

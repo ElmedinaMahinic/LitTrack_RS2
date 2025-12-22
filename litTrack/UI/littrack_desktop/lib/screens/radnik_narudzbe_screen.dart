@@ -46,6 +46,7 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
   }
 
   Future<void> _fetchNarudzbe({int page = 1}) async {
+    if (!mounted) return;
     setState(() => _loading = true);
 
     final filter = <String, dynamic>{
@@ -58,16 +59,20 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
       },
       if (_showHistorija && selectedDisplayState != "Sve narudžbe")
         'StateMachine': stateDisplayToValue[selectedDisplayState],
+      'orderBy': 'DatumNarudzbe',
+      'sortDirection': 'desc',
     };
 
     try {
       final result = await _provider.get(filter: filter);
+      if (!mounted) return;
       setState(() {
         _narudzbe = result.resultList;
         _totalCount = result.count;
         _currentPage = page;
       });
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -76,7 +81,9 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -88,12 +95,14 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
+      if (!mounted) return;
       setState(() => _selectedDate = picked);
       _fetchNarudzbe(page: 1);
     }
   }
 
   void _clearFilters() {
+    if (!mounted) return;
     setState(() {
       _selectedDate = null;
       _sifraController.clear();
@@ -140,8 +149,28 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
             const Center(child: CircularProgressIndicator())
           else if (_narudzbe.isEmpty)
             const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text("Nema dostupnih narudžbi."),
+              padding: EdgeInsets.all(25.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 60,
+                      color: Color(0xFF3C6E71),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Nema dostupnih narudžbi",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF3C6E71),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
           else
             Column(
@@ -188,6 +217,10 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.pressed) ||
+                          states.contains(MaterialState.selected)) {
+                        return const Color(0xFF41706A);
+                      }
                       if (states.contains(MaterialState.hovered)) {
                         return const Color(0xFF51968F);
                       }
@@ -207,10 +240,12 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _selectedDate != null
-                            ? 'Datum: ${DateFormat('dd.MM.yyyy').format(_selectedDate!)}'
+                            ? 'Narudžbe do: ${DateFormat('dd.MM.yyyy').format(_selectedDate!)}'
                             : 'Odaberi datum',
                         style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -221,6 +256,10 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -245,7 +284,7 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
               const SizedBox(width: 12),
               Tooltip(
                 message: _showHistorija
-                    ? 'Filtrirajte narudžbe po šifri i/ili datumu'
+                    ? 'Filtrirajte narudžbe po šifri i/ili do određenog datuma'
                     : 'Filtrirajte narudžbe po šifri',
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 128, 136, 132),

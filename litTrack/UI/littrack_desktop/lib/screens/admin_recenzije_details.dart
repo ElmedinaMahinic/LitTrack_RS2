@@ -31,6 +31,8 @@ class _AdminRecenzijeDetailsScreenState
   late final int brojDislajkova;
   late final String komentar;
 
+  bool _isDeleting = false;
+
   @override
   void initState() {
     super.initState();
@@ -198,12 +200,16 @@ class _AdminRecenzijeDetailsScreenState
             ),
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.hovered)) {
-                  return Colors.grey.shade600;
-                }
-                return Colors.grey;
-              }),
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color.fromARGB(255, 100, 100, 100);
+                  }
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color.fromARGB(255, 150, 150, 150);
+                  }
+                  return const Color.fromARGB(255, 120, 120, 120);
+                }),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -222,25 +228,40 @@ class _AdminRecenzijeDetailsScreenState
           width: 140,
           height: 45,
           child: ElevatedButton.icon(
-            onPressed: _delete,
-            icon:
-                const Icon(Icons.delete_outline, color: Colors.white, size: 20),
-            label: const Text(
-              "Obriši",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            onPressed: _isDeleting ? null : _delete,
+            icon: _isDeleting
+                ? const SizedBox.shrink()
+                : const Icon(Icons.delete_outline,
+                    color: Colors.white, size: 20),
+            label: _isDeleting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text(
+                    "Obriši",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.hovered)) {
-                  return const Color(0xFF51968F);
-                }
-                return const Color(0xFF3C6E71);
-              }),
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
+                  if (states.contains(MaterialState.hovered)) {
+                    return const Color(0xFF51968F);
+                  }
+                  return const Color(0xFF3C6E71);
+                }),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -267,6 +288,10 @@ class _AdminRecenzijeDetailsScreenState
       icon: Icons.warning,
       iconColor: Colors.red,
       onConfirm: () async {
+        if (!mounted) return;
+
+        setState(() => _isDeleting = true);
+
         try {
           if (isRecenzija) {
             final provider = RecenzijaProvider();
@@ -275,6 +300,8 @@ class _AdminRecenzijeDetailsScreenState
             final provider = RecenzijaOdgovorProvider();
             await provider.delete(widget.odgovor!.recenzijaOdgovorId!);
           }
+
+          if (!mounted) return;
 
           await showCustomDialog(
             context: context,
@@ -285,8 +312,10 @@ class _AdminRecenzijeDetailsScreenState
             iconColor: Colors.green,
           );
 
+          if (!mounted) return;
           Navigator.pop(context, true);
         } catch (e) {
+          if (!mounted) return;
           await showCustomDialog(
             context: context,
             title: "Greška",
@@ -294,6 +323,10 @@ class _AdminRecenzijeDetailsScreenState
             icon: Icons.error,
             iconColor: Colors.red,
           );
+        } finally {
+          if (mounted) {
+            setState(() => _isDeleting = false);
+          }
         }
       },
     );

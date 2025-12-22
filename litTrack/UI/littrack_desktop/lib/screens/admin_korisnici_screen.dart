@@ -49,6 +49,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
 
   Future<void> _loadUloge() async {
     final result = await _ulogaProvider.get();
+    if (!mounted) return;
     setState(() {
       _ulogeList = result.resultList;
     });
@@ -129,6 +130,10 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -170,6 +175,10 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -275,6 +284,9 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -310,8 +322,11 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 150),
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(ulogeText,
-                  softWrap: true, overflow: TextOverflow.ellipsis),
+              child: Text(
+                ulogeText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -321,8 +336,11 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 150),
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(item.korisnickoIme ?? '',
-                  softWrap: true, overflow: TextOverflow.ellipsis),
+              child: Text(
+                item.korisnickoIme ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -332,8 +350,11 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 200),
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(item.email ?? '',
-                  softWrap: true, overflow: TextOverflow.ellipsis),
+              child: Text(
+                item.email ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -352,6 +373,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                     try {
                       if (item.jeAktivan == true) {
                         await provider.deaktiviraj(item.korisnikId!);
+                        if (!context.mounted) return;
 
                         if (item.korisnikId == AuthProvider.korisnikId) {
                           AuthProvider.username = null;
@@ -374,6 +396,8 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                         await provider.aktiviraj(item.korisnikId!);
                       }
 
+                      if (!context.mounted) return;
+
                       showCustomDialog(
                         context: context,
                         title: "Uspjeh",
@@ -385,6 +409,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
 
                       refreshParent();
                     } catch (e) {
+                      if (!context.mounted) return;
                       showCustomDialog(
                         context: context,
                         title: "Greška",
@@ -409,6 +434,10 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                 minimumSize: MaterialStateProperty.all(const Size(130, 40)),
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color(0xFF51968F);
                   }
@@ -438,6 +467,10 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color(0xFF51968F);
                   }

@@ -22,7 +22,7 @@ class AdminSidebar extends StatefulWidget {
 class _AdminSidebarState extends State<AdminSidebar> {
   Widget _buildMenuItem(IconData icon, String label, VoidCallback onTap) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0), // smanjen razmak
+      padding: const EdgeInsets.symmetric(vertical: 2.0), 
       child: ListTile(
         leading: Icon(icon, color: Colors.white, size: 25),
         title: Text(
@@ -42,7 +42,7 @@ class _AdminSidebarState extends State<AdminSidebar> {
   Widget build(BuildContext context) {
     return Container(
       width: 300,
-      color: const Color(0xFF3C6E71), // tamno zelena
+      color: const Color(0xFF3C6E71), 
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -124,9 +124,10 @@ class _AdminSidebarState extends State<AdminSidebar> {
                               AuthProvider.uloge = null;
                               AuthProvider.isSignedIn = false;
 
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => const MyApp()),
+                                    builder: (_) => const MyApp()),
+                                (route) => false,
                               );
                             },
                           );

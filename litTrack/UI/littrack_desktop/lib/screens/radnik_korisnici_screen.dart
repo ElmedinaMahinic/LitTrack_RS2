@@ -46,6 +46,7 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
 
   Future<void> _loadUloge() async {
     final result = await _ulogaProvider.get();
+    if (!mounted) return;
     setState(() {
       _ulogeList = result.resultList;
     });
@@ -126,6 +127,10 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -150,7 +155,7 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
           Tooltip(
             message: 'Filtrirajte korisnike po korisničkom imenu i/ili ulozi.',
             decoration: BoxDecoration(
-              color:const Color.fromARGB(255, 128, 136, 132),
+              color: const Color.fromARGB(255, 128, 136, 132),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: const Color.fromARGB(255, 96, 102, 102),
@@ -173,36 +178,35 @@ class _RadnikKorisniciScreenState extends State<RadnikKorisniciScreen> {
   }
 
   Widget _buildTable() {
-  return Padding(
-    padding: const EdgeInsets.all(8),
-    child: DataTableTheme(
-      data: DataTableThemeData(
-        headingRowColor: MaterialStateProperty.all(
-          const Color.fromARGB(255, 213, 224, 219),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: DataTableTheme(
+        data: DataTableThemeData(
+          headingRowColor: MaterialStateProperty.all(
+            const Color.fromARGB(255, 213, 224, 219),
+          ),
+          headingTextStyle: const TextStyle(
+            color: Color(0xFF3C6E71),
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+          dataTextStyle: const TextStyle(fontSize: 15),
         ),
-        headingTextStyle: const TextStyle(
-          color: Color(0xFF3C6E71),
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
+        child: AdvancedPaginatedDataTable(
+          showCheckboxColumn: false,
+          addEmptyRows: false,
+          source: _dataSource,
+          rowsPerPage: 10,
+          columns: const [
+            DataColumn(label: Text("ULOGE")),
+            DataColumn(label: Text("KORISNIČKO IME")),
+            DataColumn(label: Text("EMAIL")),
+            DataColumn(label: Text("OPCIJE")),
+          ],
         ),
-        dataTextStyle: const TextStyle(fontSize: 15),
       ),
-      child: AdvancedPaginatedDataTable(
-        showCheckboxColumn: false,
-        addEmptyRows: false,
-        source: _dataSource,
-        rowsPerPage: 10,
-        columns: const [
-          DataColumn(label: Text("ULOGE")),
-          DataColumn(label: Text("KORISNIČKO IME")),
-          DataColumn(label: Text("EMAIL")),
-          DataColumn(label: Text("OPCIJE")),
-        ],
-      ),
-    ),
-  );
-}
-
+    );
+  }
 }
 
 class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
@@ -246,6 +250,9 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -324,6 +331,10 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color(0xFF51968F);
                   }

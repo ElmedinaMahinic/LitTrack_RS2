@@ -43,6 +43,7 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
   }
 
   void _refreshTable() {
+    if (!mounted) return;
     setState(() {
       _dataSource.filterServerSide(_korisnickoImeController.text, _prikazTipa);
     });
@@ -101,6 +102,10 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -155,7 +160,6 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Dugme za recenzije
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -185,9 +189,7 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(width: 10),
-
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -217,9 +219,7 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(width: 12),
-
               Tooltip(
                 message:
                     'Izaberite da prikažete korisničke recenzije ili odgovore na njih.',
@@ -331,6 +331,9 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
 
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -365,9 +368,6 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
       return null;
     }
 
-    String prikazKomentara =
-        komentar.length > 50 ? '${komentar.substring(0, 50)}...' : komentar;
-
     return DataRow(
       color: MaterialStateProperty.resolveWith<Color?>((states) {
         if (states.contains(MaterialState.hovered)) {
@@ -394,16 +394,25 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Text(korisnickoIme),
+              child: Text(
+                korisnickoIme,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
         DataCell(
           Tooltip(
             message: komentar,
-            child: Padding(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 200),
               padding: const EdgeInsets.all(4),
-              child: Text(prikazKomentara),
+              child: Text(
+                komentar,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -412,7 +421,11 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Text(brojLajkova.toString()),
+              child: Text(
+                brojLajkova.toString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -421,7 +434,11 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
             message: "Klikni za prikaz detalja",
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Text(brojDislajkova.toString()),
+              child: Text(
+                brojDislajkova.toString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -446,6 +463,10 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -456,7 +477,8 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
                   ),
                   shape: MaterialStateProperty.all(
                     RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   elevation: MaterialStateProperty.all(0),
                 ),

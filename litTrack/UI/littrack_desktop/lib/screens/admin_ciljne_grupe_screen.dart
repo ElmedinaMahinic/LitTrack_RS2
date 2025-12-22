@@ -79,6 +79,10 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -121,6 +125,10 @@ class _AdminCiljneGrupeScreenState extends State<AdminCiljneGrupeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -218,6 +226,9 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -269,6 +280,8 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                   fontSize: 16,
                   color: Colors.black,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
@@ -292,13 +305,18 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                   }
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color(0xFF51968F);
-                    }
-                    return const Color(0xFF3C6E71);
-                  }),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) {
+                      if (states.contains(MaterialState.pressed) ||
+                          states.contains(MaterialState.selected)) {
+                        return const Color(0xFF41706A);
+                      }
+                      if (states.contains(MaterialState.hovered)) {
+                        return const Color(0xFF51968F);
+                      }
+                      return const Color(0xFF3C6E71);
+                    },
+                  ),
                   padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
                   ),
@@ -330,6 +348,7 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                     onConfirm: () async {
                       try {
                         await provider.delete(item.ciljnaGrupaId!);
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Uspjeh",
@@ -339,6 +358,7 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                         );
                         filterServerSide(nazivFilter);
                       } catch (e) {
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Greška",
@@ -351,13 +371,18 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
                   );
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.hovered)) {
-                      return const Color(0xFF51968F);
-                    }
-                    return const Color(0xFF3C6E71);
-                  }),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (states) {
+                      if (states.contains(MaterialState.pressed) ||
+                          states.contains(MaterialState.selected)) {
+                        return const Color(0xFF41706A);
+                      }
+                      if (states.contains(MaterialState.hovered)) {
+                        return const Color(0xFF51968F);
+                      }
+                      return const Color(0xFF3C6E71);
+                    },
+                  ),
                   padding: MaterialStateProperty.all(
                     const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
                   ),
@@ -378,7 +403,7 @@ class CiljnaGrupaDataSource extends AdvancedDataTableSource<CiljnaGrupa> {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

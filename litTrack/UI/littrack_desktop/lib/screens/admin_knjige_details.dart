@@ -38,6 +38,7 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
   String? _base64Image;
 
   late Map<String, dynamic> _initialValue;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -54,6 +55,8 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
     final autoriResult = await _autorProvider.get();
     final zanroviResult = await _zanrProvider.get();
     final ciljneGrupeResult = await _ciljnaGrupaProvider.get();
+
+    if (!mounted) return;
 
     List<dynamic> autori = autoriResult.resultList;
     List<dynamic> zanrovi = zanroviResult.resultList;
@@ -73,6 +76,7 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
         );
         initialData['AutorId'] = autor.autorId;
       } catch (e) {
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Greška",
@@ -92,6 +96,8 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
           .map((c) => c.ciljnaGrupaId)
           .toList();
     }
+
+    if (!mounted) return;
 
     setState(() {
       _autori = autori;
@@ -130,7 +136,6 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // PRVI RED: Naziv i Opis
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -175,7 +180,6 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            // DRUGI RED: Godina izdavanja i Cijena
             Row(
               children: [
                 Expanded(
@@ -341,15 +345,30 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          _buildButton("Odustani", Colors.grey, () => Navigator.pop(context)),
+          _buildButton(
+            "Odustani",
+            const Color.fromARGB(255, 120, 120, 120),
+            const Color.fromARGB(255, 150, 150, 150),
+            const Color.fromARGB(255, 100, 100, 100),
+            () => Navigator.pop(context),
+          ),
           const SizedBox(width: 20),
-          _buildButton("Sačuvaj", const Color(0xFF3C6E71), _save),
+          _buildButton(
+            "Sačuvaj",
+            const Color(0xFF3C6E71),
+            const Color(0xFF51968F),
+            const Color(0xFF41706A),
+            _save,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildButton(String text, Color color, VoidCallback onPressed) {
+  Widget _buildButton(String text, Color normal, Color hover, Color selected,
+      VoidCallback onPressed) {
+    final bool isSaveButton = text == "Sačuvaj";
+
     IconData? icon;
     if (text == "Sačuvaj") {
       icon = Icons.check;
@@ -361,41 +380,53 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
       width: 140,
       height: 45,
       child: ElevatedButton.icon(
-        onPressed: () {
-          if (text == "Sačuvaj") {
-            showConfirmDialog(
-              context: context,
-              title: widget.knjiga == null ? "Dodaj knjigu" : "Uredi knjigu",
-              message: widget.knjiga == null
-                  ? "Da li ste sigurni da želite dodati ovu knjigu?"
-                  : "Da li ste sigurni da želite urediti ovu knjigu?",
-              icon: widget.knjiga == null ? Icons.menu_book : Icons.edit,
-              iconColor: const Color(0xFF3C6E71),
-              onConfirm: onPressed,
-            );
-          } else {
-            onPressed();
-          }
-        },
-        icon: Icon(icon, color: Colors.white, size: 18),
-        label: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        onPressed: (isSaveButton && _isSaving)
+            ? null
+            : () {
+                if (isSaveButton) {
+                  showConfirmDialog(
+                    context: context,
+                    title:
+                        widget.knjiga == null ? "Dodaj knjigu" : "Uredi knjigu",
+                    message: widget.knjiga == null
+                        ? "Da li ste sigurni da želite dodati ovu knjigu?"
+                        : "Da li ste sigurni da želite urediti ovu knjigu?",
+                    icon: widget.knjiga == null ? Icons.menu_book : Icons.edit,
+                    iconColor: const Color(0xFF3C6E71),
+                    onConfirm: onPressed,
+                  );
+                } else {
+                  onPressed();
+                }
+              },
+        icon: (isSaveButton && _isSaving)
+            ? const SizedBox.shrink()
+            : Icon(icon, color: Colors.white, size: 18),
+        label: (isSaveButton && _isSaving)
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.hovered)) {
-              if (color == const Color(0xFF3C6E71)) {
-                return const Color(0xFF51968F);
-              } else if (color == const Color.fromARGB(255, 120, 120, 120)) {
-                return const Color.fromARGB(255, 150, 150, 150);
-              }
+            if (states.contains(MaterialState.pressed) ||
+                states.contains(MaterialState.selected)) {
+              return selected;
             }
-            return color;
+            if (states.contains(MaterialState.hovered)) return hover;
+            return normal;
           }),
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
@@ -422,9 +453,14 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
     data['Cijena'] = double.tryParse(data['Cijena']);
     data['Slika'] = _base64Image;
 
+    if (!mounted) return;
+
+    setState(() => _isSaving = true);
+
     try {
       if (widget.knjiga == null) {
         await _knjigaProvider.insert(data);
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -433,7 +469,11 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
           iconColor: Colors.green,
         );
       } else {
-        await _knjigaProvider.update(widget.knjiga!.knjigaId!, data);
+        await _knjigaProvider.update(
+          widget.knjiga!.knjigaId!,
+          data,
+        );
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -443,8 +483,10 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
         );
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -452,6 +494,10 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 

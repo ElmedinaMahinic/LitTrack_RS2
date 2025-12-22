@@ -48,6 +48,7 @@ class _RadnikObavijestiDetailsScreenState
             .oznaciKaoProcitanu(widget.obavijest.obavijestId!);
       }
     } catch (e) {
+      if (!mounted) return;
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -204,10 +205,14 @@ class _RadnikObavijestiDetailsScreenState
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.hovered)) {
-                  return Colors.grey.shade600;
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color.fromARGB(255, 100, 100, 100);
                 }
-                return Colors.grey;
+                if (states.contains(MaterialState.hovered)) {
+                  return const Color.fromARGB(255, 150, 150, 150);
+                }
+                return const Color.fromARGB(255, 120, 120, 120);
               }),
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(

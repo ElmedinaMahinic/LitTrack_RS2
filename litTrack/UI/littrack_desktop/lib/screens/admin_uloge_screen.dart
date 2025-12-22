@@ -47,7 +47,6 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
       padding: const EdgeInsets.all(25),
       child: Row(
         children: [
-          // Polje za pretragu
           Expanded(
             flex: 3,
             child: TextField(
@@ -68,8 +67,6 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
             ),
           ),
           const SizedBox(width: 20),
-
-          // Očisti filtere dugme
           ElevatedButton(
             onPressed: () {
               _nazivController.clear();
@@ -79,6 +76,10 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -101,8 +102,6 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
             ),
           ),
           const SizedBox(width: 15),
-
-          // Dodaj ulogu dugme
           ElevatedButton.icon(
             onPressed: () async {
               final result = await Navigator.push(
@@ -123,6 +122,10 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.resolveWith<Color>((states) {
+                if (states.contains(MaterialState.pressed) ||
+                    states.contains(MaterialState.selected)) {
+                  return const Color(0xFF41706A);
+                }
                 if (states.contains(MaterialState.hovered)) {
                   return const Color(0xFF51968F);
                 }
@@ -137,8 +140,6 @@ class _AdminUlogeScreenState extends State<AdminUlogeScreen> {
             ),
           ),
           const SizedBox(width: 12),
-
-          // Info ikonica
           Tooltip(
             message: 'Filtrirajte uloge po nazivu.',
             decoration: BoxDecoration(
@@ -223,6 +224,9 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
+      if (!context.mounted) {
+        return RemoteDataSourceDetails(0, []);
+      }
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -266,7 +270,11 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
             message: 'Klikni za prikaz detalja',
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(item.naziv),
+              child: Text(
+                item.naziv,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ),
@@ -274,7 +282,6 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Dugme Uredi
               ElevatedButton(
                 onPressed: () async {
                   final result = await Navigator.push(
@@ -291,6 +298,10 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }
@@ -315,8 +326,6 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                 ),
               ),
               const SizedBox(width: 10),
-
-              // Dugme Obriši
               ElevatedButton(
                 onPressed: () {
                   showConfirmDialog(
@@ -328,6 +337,7 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                     onConfirm: () async {
                       try {
                         await provider.delete(item.ulogaId!);
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Uspjeh",
@@ -337,6 +347,7 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                         );
                         filterServerSide(nazivFilter);
                       } catch (e) {
+                        if (!context.mounted) return;
                         showCustomDialog(
                           context: context,
                           title: "Greška",
@@ -351,6 +362,10 @@ class UlogaDataSource extends AdvancedDataTableSource<Uloga> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(MaterialState.pressed) ||
+                        states.contains(MaterialState.selected)) {
+                      return const Color(0xFF41706A);
+                    }
                     if (states.contains(MaterialState.hovered)) {
                       return const Color(0xFF51968F);
                     }

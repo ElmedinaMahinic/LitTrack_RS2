@@ -151,7 +151,7 @@ namespace litTrack.Services.ServicesImplementation
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (najdraza == null)
-                return "Nema arhiviranih knjiga";
+                return "Nema podataka";
 
             var knjiga = await Context.Knjigas
                 .Where(k => k.KnjigaId == najdraza.KnjigaId && !k.IsDeleted)
@@ -159,7 +159,7 @@ namespace litTrack.Services.ServicesImplementation
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (knjiga == null)
-                throw new UserException("Knjiga nije pronađena.");
+                return "Nema podataka";
 
             return knjiga;
         }

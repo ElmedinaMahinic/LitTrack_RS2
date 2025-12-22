@@ -11,7 +11,6 @@ import 'package:littrack_desktop/providers/korisnik_provider.dart';
 import 'package:littrack_desktop/providers/uloga_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 
-
 class AdminDodajRadnikaScreen extends StatefulWidget {
   const AdminDodajRadnikaScreen({super.key});
 
@@ -27,6 +26,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
   int? _radnikUlogaId;
   String? _generisanaLozinka;
   final TextEditingController _lozinkaController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -41,10 +41,12 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
       final result = await _ulogaProvider.get();
       final radnikUloga =
           result.resultList.firstWhere((x) => x.naziv == "Radnik");
+      if (!mounted) return;
       setState(() {
         _radnikUlogaId = radnikUloga.ulogaId;
       });
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: 'Greška',
@@ -52,6 +54,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+      if (!mounted) return;
       Navigator.pop(context);
     }
   }
@@ -269,8 +272,10 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                 ),
               ),
               style: _buttonStyle(
-                  const Color.fromARGB(255, 120, 120, 120),
-                  const Color.fromARGB(255, 150, 150, 150)),
+                const Color.fromARGB(255, 120, 120, 120),
+                const Color.fromARGB(255, 150, 150, 150),
+                const Color.fromARGB(255, 100, 100, 100),
+              ),
             ),
           ),
           const SizedBox(width: 20),
@@ -278,26 +283,43 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
             width: 140,
             height: 45,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: "Dodavanje radnika",
-                  message: "Da li ste sigurni da želite dodati radnika?",
-                  icon: Icons.person_add,
-                  iconColor: const Color(0xFF3C6E71),
-                  onConfirm: _save,
-                );
-              },
-              icon: const Icon(Icons.check, color: Colors.white, size: 20),
-              label: const Text(
-                "Sačuvaj",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              onPressed: _isSaving
+                  ? null
+                  : () {
+                      showConfirmDialog(
+                        context: context,
+                        title: "Dodavanje radnika",
+                        message: "Da li ste sigurni da želite dodati radnika?",
+                        icon: Icons.person_add,
+                        iconColor: const Color(0xFF3C6E71),
+                        onConfirm: _save,
+                      );
+                    },
+              icon: _isSaving
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.check, color: Colors.white, size: 20),
+              label: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Sačuvaj",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+              style: _buttonStyle(
+                const Color(0xFF3C6E71),
+                const Color(0xFF51968F),
+                const Color(0xFF41706A),
               ),
-              style: _buttonStyle(const Color(0xFF3C6E71), const Color(0xFF51968F)),
             ),
           ),
         ],
@@ -305,9 +327,13 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
     );
   }
 
-  ButtonStyle _buttonStyle(Color normal, Color hover) {
+  ButtonStyle _buttonStyle(Color normal, Color hover, Color selected) {
     return ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.pressed) ||
+            states.contains(MaterialState.selected)) {
+          return selected;
+        }
         if (states.contains(MaterialState.hovered)) return hover;
         return normal;
       }),
@@ -337,21 +363,28 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
       return;
     }
 
-    final formValues = Map<String, dynamic>.from(_formKey.currentState!.value);
+    if (!mounted) return;
 
-    final request = {
-      'ime': formValues['ime'],
-      'prezime': formValues['prezime'],
-      'korisnickoIme': formValues['korisnickoIme'],
-      'email': formValues['email'],
-      'telefon': formValues['telefon'],
-      'lozinka': _generisanaLozinka!,
-      'lozinkaPotvrda': _generisanaLozinka!,
-      'uloge': [_radnikUlogaId],
-    };
+    setState(() => _isSaving = true);
 
     try {
+      final formValues =
+          Map<String, dynamic>.from(_formKey.currentState!.value);
+
+      final request = {
+        'ime': formValues['ime'],
+        'prezime': formValues['prezime'],
+        'korisnickoIme': formValues['korisnickoIme'],
+        'email': formValues['email'],
+        'telefon': formValues['telefon'],
+        'lozinka': _generisanaLozinka!,
+        'lozinkaPotvrda': _generisanaLozinka!,
+        'uloge': [_radnikUlogaId],
+      };
+
       await _korisnikProvider.insert(request);
+      if (!mounted) return;
+
       await showCustomDialog(
         context: context,
         title: "Uspjeh",
@@ -359,6 +392,8 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         icon: Icons.check_circle,
         iconColor: Colors.green,
       );
+
+      if (!mounted) return;
 
       await showConfirmDialog(
         context: context,
@@ -369,8 +404,11 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         onConfirm: () => createPdfFile(request),
       );
 
+      if (!mounted) return;
+
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -378,6 +416,10 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -439,11 +481,11 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
       child: pw.Row(
         children: [
           pw.Text("$label: ",
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
+              style:
+                  pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
           pw.Text(value, style: const pw.TextStyle(fontSize: 14)),
         ],
       ),
     );
   }
 }
-

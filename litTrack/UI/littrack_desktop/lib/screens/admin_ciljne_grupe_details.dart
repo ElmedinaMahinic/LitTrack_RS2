@@ -23,6 +23,8 @@ class _AdminCiljnaGrupaDetailsScreenState
   late CiljnaGrupaProvider _provider;
   late Map<String, dynamic> _initialValue;
 
+  bool _isSaving = false;
+
   @override
   void initState() {
     super.initState();
@@ -105,6 +107,10 @@ class _AdminCiljnaGrupaDetailsScreenState
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color.fromARGB(255, 100, 100, 100);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color.fromARGB(255, 150, 150, 150);
                   }
@@ -128,33 +134,51 @@ class _AdminCiljnaGrupaDetailsScreenState
             width: 140,
             height: 45,
             child: ElevatedButton.icon(
-              onPressed: () {
-                showConfirmDialog(
-                  context: context,
-                  title: widget.ciljnaGrupa == null
-                      ? "Dodavanje ciljne grupe"
-                      : "Uređivanje ciljne grupe",
-                  message: widget.ciljnaGrupa == null
-                      ? "Da li ste sigurni da želite dodati ovu ciljnu grupu?"
-                      : "Da li ste sigurni da želite urediti ovu ciljnu grupu?",
-                  icon:
-                      widget.ciljnaGrupa == null ? Icons.group_add : Icons.edit,
-                  iconColor: const Color(0xFF3C6E71),
-                  onConfirm: _save,
-                );
-              },
-              icon: const Icon(Icons.check, color: Colors.white, size: 20),
-              label: const Text(
-                "Sačuvaj",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              onPressed: _isSaving
+                  ? null
+                  : () {
+                      showConfirmDialog(
+                        context: context,
+                        title: widget.ciljnaGrupa == null
+                            ? "Dodavanje ciljne grupe"
+                            : "Uređivanje ciljne grupe",
+                        message: widget.ciljnaGrupa == null
+                            ? "Da li ste sigurni da želite dodati ovu ciljnu grupu?"
+                            : "Da li ste sigurni da želite urediti ovu ciljnu grupu?",
+                        icon: widget.ciljnaGrupa == null
+                            ? Icons.group_add
+                            : Icons.edit,
+                        iconColor: const Color(0xFF3C6E71),
+                        onConfirm: _save,
+                      );
+                    },
+              icon: _isSaving
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.check, color: Colors.white, size: 20),
+              label: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Sačuvaj",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.selected)) {
+                    return const Color(0xFF41706A);
+                  }
                   if (states.contains(MaterialState.hovered)) {
                     return const Color(0xFF51968F);
                   }
@@ -184,9 +208,14 @@ class _AdminCiljnaGrupaDetailsScreenState
 
     final request = _formKey.currentState!.value;
 
+    if (mounted) {
+      setState(() => _isSaving = true);
+    }
+
     try {
       if (widget.ciljnaGrupa == null) {
         await _provider.insert(request);
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -195,7 +224,11 @@ class _AdminCiljnaGrupaDetailsScreenState
           iconColor: Colors.green,
         );
       } else {
-        await _provider.update(widget.ciljnaGrupa!.ciljnaGrupaId!, request);
+        await _provider.update(
+          widget.ciljnaGrupa!.ciljnaGrupaId!,
+          request,
+        );
+        if (!mounted) return;
         await showCustomDialog(
           context: context,
           title: "Uspjeh",
@@ -205,8 +238,10 @@ class _AdminCiljnaGrupaDetailsScreenState
         );
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       await showCustomDialog(
         context: context,
         title: "Greška",
@@ -214,6 +249,10 @@ class _AdminCiljnaGrupaDetailsScreenState
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }
