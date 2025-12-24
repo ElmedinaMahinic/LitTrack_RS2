@@ -354,7 +354,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       try {
         await _mojaListumProvider.oznaciKaoProcitanu(_mojaListumId!);
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         setState(() => _jeProcitana = true);
 
         showCustomSnackBar(
@@ -363,7 +363,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           icon: Icons.check,
         );
       } catch (e) {
-        if (!mounted) return;
+        if (!context.mounted) return;
         await showCustomDialog(
           context: context,
           title: "Greška",
@@ -378,7 +378,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       try {
         await _mojaListumProvider.delete(_mojaListumId!);
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         setState(() {
           _jeUListi = false;
           _mojaListumId = null;
@@ -390,7 +390,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           icon: Icons.delete,
         );
       } catch (e) {
-        if (!mounted) return;
+        if (!context.mounted) return;
         await showCustomDialog(
           context: context,
           title: "Greška",

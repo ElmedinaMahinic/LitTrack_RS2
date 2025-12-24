@@ -333,7 +333,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               final knjigaDetalji =
                   await _knjigaProvider.getById(knjiga.knjigaId!);
 
-              if (!mounted) return;
+              if (!context.mounted) return;
 
               final result = await Navigator.push(
                 context,
@@ -346,7 +346,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
 
               if (result == true) _fetchData();
             } catch (e) {
-              if (!mounted) return;
+              if (!context.mounted) return;
               showCustomDialog(
                 context: context,
                 title: "Greška",

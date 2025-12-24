@@ -21,5 +21,9 @@ namespace litTrack.Model.DTOs
         public int BrojDislajkova { get; set; }
 
         public string? KorisnickoIme { get; set; }
+
+        public bool? JeLajkovao { get; set; }
+
+        public bool? JeDislajkovao { get; set; }
     }
 }

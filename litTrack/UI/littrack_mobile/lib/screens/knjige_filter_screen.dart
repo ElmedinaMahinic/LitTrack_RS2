@@ -338,7 +338,7 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
             try {
               final knjigaDetalji =
                   await _knjigaProvider.getById(knjiga.knjigaId!);
-              if (!mounted) return;
+              if (!context.mounted) return;
 
               final result = await Navigator.push(
                 context,
@@ -348,13 +348,13 @@ class _KnjigeFilterScreenState extends State<KnjigeFilterScreen> {
                 ),
               );
 
-              if (!mounted) return;
+              if (!context.mounted) return;
 
               if (result == true) {
                 _fetchData();
               }
             } catch (e) {
-              if (!mounted) return;
+              if (!context.mounted) return;
               showCustomDialog(
                 context: context,
                 title: "Greška",

@@ -3,6 +3,7 @@ using litTrack.Model.Exceptions;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
+using litTrack.Services.Auth;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
@@ -22,13 +23,16 @@ namespace litTrack.Services.ServicesImplementation
         private readonly IKorisnikValidator _korisnikValidator;
         private readonly IKnjigaValidator _knjigaValidator;
         private readonly IRecenzijaOdgovorService _recenzijaOdgovorService;
+        private readonly IActiveUserServiceAsync _activeUserService;
         public RecenzijaService(_210078Context context, IMapper mapper, IKorisnikValidator korisnikValidator,
-            IKnjigaValidator knjigaValidator, IRecenzijaOdgovorService recenzijaOdgovorService)
+            IKnjigaValidator knjigaValidator, IRecenzijaOdgovorService recenzijaOdgovorService,
+            IActiveUserServiceAsync activeUserService)
             : base(context, mapper)
         {
             _korisnikValidator = korisnikValidator;
             _knjigaValidator = knjigaValidator;
             _recenzijaOdgovorService = recenzijaOdgovorService;
+            _activeUserService = activeUserService;
         }
 
         public override IQueryable<Database.Recenzija> AddFilter(RecenzijaSearchObject searchObject, IQueryable<Database.Recenzija> query)
@@ -93,7 +97,12 @@ namespace litTrack.Services.ServicesImplementation
 
         public override async Task<PagedResult<RecenzijaDTO>> GetPagedAsync(RecenzijaSearchObject search, CancellationToken cancellationToken = default)
         {
-            var query = Context.Recenzijas.Include(r => r.Korisnik).Where(r => !r.IsDeleted);
+            var currentUserId = await _activeUserService.GetActiveUserIdAsync(cancellationToken);
+
+            var query = Context.Recenzijas
+                .Include(r => r.Korisnik)
+                .Include(r => r.RecenzijaReakcijas)
+                .Where(r => !r.IsDeleted);
 
             query = AddFilter(search, query);
 
@@ -111,15 +120,28 @@ namespace litTrack.Services.ServicesImplementation
             }
 
             var list = await query.ToListAsync(cancellationToken);
-
             var result = Mapper.Map<List<RecenzijaDTO>>(list);
 
             for (int i = 0; i < result.Count; i++)
             {
-                var korisnik = list[i].Korisnik;
-                if (korisnik is null) continue;
+                var entity = list[i];
 
-                result[i].KorisnickoIme = korisnik.KorisnickoIme;
+                var korisnik = entity.Korisnik;
+                if (korisnik != null)
+                    result[i].KorisnickoIme = korisnik.KorisnickoIme;
+
+                if (currentUserId == null)
+                {
+                    result[i].JeLajkovao = false;
+                    result[i].JeDislajkovao = false;
+                    continue;
+                }
+
+                var reakcija = entity.RecenzijaReakcijas
+                    .FirstOrDefault(x => x.KorisnikId == currentUserId && !x.IsDeleted);
+
+                result[i].JeLajkovao = reakcija != null && reakcija.JeLajk;
+                result[i].JeDislajkovao = reakcija != null && !reakcija.JeLajk;
             }
 
             return new PagedResult<RecenzijaDTO>
@@ -128,6 +150,7 @@ namespace litTrack.Services.ServicesImplementation
                 Count = count
             };
         }
+
 
 
         public override async Task BeforeInsertAsync(RecenzijaInsertRequest request, Database.Recenzija entity, CancellationToken cancellationToken = default)
@@ -169,6 +192,9 @@ namespace litTrack.Services.ServicesImplementation
 
             if (recenzija == null)
                 throw new UserException("Recenzija ne postoji.");
+
+            if (recenzija.KorisnikId == korisnikId)
+                throw new UserException("Ne možete lajkovati vlastitu recenziju.");
 
             var reakcija = await Context.RecenzijaReakcijas
                 .FirstOrDefaultAsync(x => x.RecenzijaId == recenzijaId && x.KorisnikId == korisnikId && !x.IsDeleted, cancellationToken);
@@ -215,6 +241,12 @@ namespace litTrack.Services.ServicesImplementation
 
             if (recenzija == null)
                 throw new UserException("Recenzija ne postoji.");
+
+            if (recenzija.KorisnikId == korisnikId)
+            {
+                throw new UserException("Ne možete dislajkovati vlastitu recenziju.");
+            }
+
 
             var reakcija = await Context.RecenzijaReakcijas
                 .FirstOrDefaultAsync(x => x.RecenzijaId == recenzijaId && x.KorisnikId == korisnikId && !x.IsDeleted, cancellationToken);

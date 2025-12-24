@@ -273,7 +273,7 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                   try {
                     final knjigaDetalji =
                         await _knjigaProvider.getById(knjiga.knjigaId);
-                    if (!mounted) return;
+                    if (!context.mounted) return;
 
                     final result = await Navigator.push(
                       context,
@@ -282,13 +282,13 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                             KnjigaDetailsScreen(knjiga: knjigaDetalji),
                       ),
                     );
-                    if (!mounted) return;
+                    if (!context.mounted) return;
 
                     if (result == true) {
                       _fetchData();
                     }
                   } catch (e) {
-                    if (!mounted) return;
+                    if (!context.mounted) return;
                     showCustomDialog(
                       context: context,
                       title: 'Greška',

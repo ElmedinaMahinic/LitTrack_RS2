@@ -3,6 +3,7 @@ using litTrack.Model.Exceptions;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
+using litTrack.Services.Auth;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
@@ -22,12 +23,14 @@ namespace litTrack.Services.ServicesImplementation
     {
         private readonly IKorisnikValidator _korisnikValidator;
         private readonly IRecenzijaValidator _recenzijaValidator;
+        private readonly IActiveUserServiceAsync _activeUserService;
         public RecenzijaOdgovorService(_210078Context context, IMapper mapper, IKorisnikValidator korisnikValidator,
-            IRecenzijaValidator recenzijaValidator)
+            IRecenzijaValidator recenzijaValidator, IActiveUserServiceAsync activeUserService)
             : base(context, mapper)
         {
             _korisnikValidator = korisnikValidator;
             _recenzijaValidator = recenzijaValidator;
+            _activeUserService = activeUserService;
         }
 
         public override IQueryable<Database.RecenzijaOdgovor> AddFilter(RecenzijaOdgovorSearchObject searchObject, IQueryable<Database.RecenzijaOdgovor> query)
@@ -92,34 +95,47 @@ namespace litTrack.Services.ServicesImplementation
 
         public override async Task<PagedResult<RecenzijaOdgovorDTO>> GetPagedAsync(RecenzijaOdgovorSearchObject search, CancellationToken cancellationToken = default)
         {
-            var query = Context.RecenzijaOdgovors.Include(o => o.Korisnik).Where(o => !o.IsDeleted);
+            var currentUserId = await _activeUserService.GetActiveUserIdAsync(cancellationToken);
+
+            var query = Context.RecenzijaOdgovors
+                .Include(o => o.Korisnik)
+                .Include(o => o.RecenzijaOdgovorReakcijas)
+                .Where(o => !o.IsDeleted);
 
             query = AddFilter(search, query);
 
             int count = await query.CountAsync(cancellationToken);
 
-            if (!string.IsNullOrEmpty(search?.OrderBy) &&
-                !string.IsNullOrEmpty(search?.SortDirection))
-            {
+            if (!string.IsNullOrEmpty(search?.OrderBy) && !string.IsNullOrEmpty(search?.SortDirection))
                 query = ApplySorting(query, search.OrderBy, search.SortDirection);
-            }
 
             if (search?.Page.HasValue == true && search?.PageSize.HasValue == true)
-            {
-                query = query
-                    .Skip((search.Page.Value - 1) * search.PageSize.Value)
-                    .Take(search.PageSize.Value);
-            }
+                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value)
+                             .Take(search.PageSize.Value);
 
             var list = await query.ToListAsync(cancellationToken);
             var result = Mapper.Map<List<RecenzijaOdgovorDTO>>(list);
 
             for (int i = 0; i < result.Count; i++)
             {
-                var korisnik = list[i].Korisnik;
-                if (korisnik is null) continue;
+                var entity = list[i];
 
-                result[i].KorisnickoIme = korisnik.KorisnickoIme;
+                var korisnik = entity.Korisnik;
+                if (korisnik != null)
+                    result[i].KorisnickoIme = korisnik.KorisnickoIme;
+
+                if (currentUserId == null)
+                {
+                    result[i].JeLajkovao = false;
+                    result[i].JeDislajkovao = false;
+                    continue;
+                }
+
+                var reakcija = entity.RecenzijaOdgovorReakcijas
+                    .FirstOrDefault(x => x.KorisnikId == currentUserId && !x.IsDeleted);
+
+                result[i].JeLajkovao = reakcija != null && reakcija.JeLajk;
+                result[i].JeDislajkovao = reakcija != null && !reakcija.JeLajk;
             }
 
             return new PagedResult<RecenzijaOdgovorDTO>
@@ -128,6 +144,7 @@ namespace litTrack.Services.ServicesImplementation
                 Count = count
             };
         }
+
 
 
         public override async Task BeforeInsertAsync(RecenzijaOdgovorInsertRequest request, Database.RecenzijaOdgovor entity, CancellationToken cancellationToken = default)
@@ -149,6 +166,12 @@ namespace litTrack.Services.ServicesImplementation
 
             if (odgovor == null)
                 throw new UserException("Odgovor na recenziju ne postoji.");
+
+            if (odgovor.KorisnikId == korisnikId)
+            {
+                throw new UserException("Ne možete lajkovati vlastiti odgovor.");
+            }
+
 
             var reakcija = await Context.RecenzijaOdgovorReakcijas
                 .FirstOrDefaultAsync(x => x.RecenzijaOdgovorId == recenzijaOdgovorId &&
@@ -194,6 +217,12 @@ namespace litTrack.Services.ServicesImplementation
 
             if (odgovor == null)
                 throw new UserException("Odgovor na recenziju ne postoji.");
+
+            if (odgovor.KorisnikId == korisnikId)
+            {
+                throw new UserException("Ne možete dislajkovati vlastiti odgovor.");
+            }
+
 
             var reakcija = await Context.RecenzijaOdgovorReakcijas
                 .FirstOrDefaultAsync(x => x.RecenzijaOdgovorId == recenzijaOdgovorId &&

@@ -284,8 +284,9 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
                   );
                   if (!mounted) return;
 
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const MyApp()),
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const MyApp()),
+                    (route) => false,
                   );
                 },
               );

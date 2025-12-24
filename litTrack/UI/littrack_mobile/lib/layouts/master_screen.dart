@@ -241,12 +241,11 @@ class _MasterScreenState extends State<MasterScreen> {
                               iconColor: Colors.green,
                             );
 
-                            if (!mounted) return;
+                            if (!context.mounted) return;
 
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const MyApp(),
-                              ),
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const MyApp()),
+                              (route) => false,
                             );
                           },
                         );

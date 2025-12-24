@@ -216,7 +216,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
                 try {
                   await _cartProvider?.deleteFromCart(knjigaDetails['id']);
 
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   showCustomSnackBar(
                     context: context,
@@ -226,7 +226,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
 
                   await _loadCart();
                 } catch (e) {
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   showCustomDialog(
                     context: context,

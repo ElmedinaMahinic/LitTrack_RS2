@@ -206,7 +206,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                 try {
                   await _cartProvider?.removeKnjiga(knjiga['id']);
 
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   showCustomSnackBar(
                     context: context,
@@ -216,7 +216,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
 
                   await _fetchData();
                 } catch (e) {
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   showCustomSnackBar(
                     context: context,

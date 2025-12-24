@@ -444,19 +444,19 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
           buildButtonWithInfo(
             enabled: canOtkazi && !isActionDisabled,
             icon: Icons.cancel_outlined,
-            label: status.toLowerCase() == "ponistena" ? "Otkazana" : "Otkaži",
+            label: status.toLowerCase() == "ponistena" ? "Poništena" : "Poništi",
             onPressed: () {
               showConfirmDialog(
                 context: context,
-                title: "Otkazivanje narudžbe",
-                message: "Da li ste sigurni da želite otkazati narudžbu?",
+                title: "Poništavanje narudžbe",
+                message: "Da li ste sigurni da želite poništiti narudžbu?",
                 icon: Icons.cancel_outlined,
                 iconColor: const Color(0xFF3C6E71),
                 onConfirm: _otkaziNarudzbu,
               );
             },
             infoMessage:
-                "Narudžbu možete otkazati ako plaćate gotovinom a još nije preuzeta za obradu.",
+                "Narudžbu možete poništiti ako plaćate gotovinom i ako još nije preuzeta za obradu.",
           ),
           const SizedBox(height: 12),
           buildButtonWithInfo(
@@ -492,7 +492,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
       await showCustomDialog(
         context: context,
         title: "Uspjeh",
-        message: "Narudžba je uspješno otkazana.",
+        message: "Narudžba je uspješno poništena.",
         icon: Icons.check_circle,
         iconColor: Colors.green,
       );

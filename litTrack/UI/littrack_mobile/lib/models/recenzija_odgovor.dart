@@ -12,6 +12,8 @@ class RecenzijaOdgovor {
   int brojLajkova;
   int brojDislajkova;
   String? korisnickoIme;
+  bool? jeLajkovao;    
+  bool? jeDislajkovao; 
 
   RecenzijaOdgovor(
     this.recenzijaOdgovorId,
@@ -22,6 +24,8 @@ class RecenzijaOdgovor {
     this.brojLajkova,
     this.brojDislajkova,
     this.korisnickoIme,
+    this.jeLajkovao,   
+    this.jeDislajkovao,   
   );
 
   factory RecenzijaOdgovor.fromJson(Map<String, dynamic> json) =>

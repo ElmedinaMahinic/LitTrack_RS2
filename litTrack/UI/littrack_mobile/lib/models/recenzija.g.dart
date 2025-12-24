@@ -15,6 +15,8 @@ Recenzija _$RecenzijaFromJson(Map<String, dynamic> json) => Recenzija(
       (json['brojLajkova'] as num).toInt(),
       (json['brojDislajkova'] as num).toInt(),
       json['korisnickoIme'] as String?,
+      json['jeLajkovao'] as bool?,
+      json['jeDislajkovao'] as bool?,
     );
 
 Map<String, dynamic> _$RecenzijaToJson(Recenzija instance) => <String, dynamic>{
@@ -26,4 +28,6 @@ Map<String, dynamic> _$RecenzijaToJson(Recenzija instance) => <String, dynamic>{
       'brojLajkova': instance.brojLajkova,
       'brojDislajkova': instance.brojDislajkova,
       'korisnickoIme': instance.korisnickoIme,
+      'jeLajkovao': instance.jeLajkovao,
+      'jeDislajkovao': instance.jeDislajkovao,
     };
