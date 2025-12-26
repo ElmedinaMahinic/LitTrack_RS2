@@ -12,5 +12,8 @@ namespace litTrack.Services.Interfaces
 {
     public interface IKnjigaService : ICRUDServiceAsync<KnjigaDTO, KnjigaSearchObject, KnjigaInsertRequest, KnjigaUpdateRequest>
     {
+        Task<List<KnjigaDTO>> Recommend(int knjigaId);
+        Task TrainData();
+
     }
 }

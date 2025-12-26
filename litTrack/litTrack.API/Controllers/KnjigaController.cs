@@ -1,8 +1,10 @@
 ﻿using litTrack.API.Controllers.BaseControllers;
+using litTrack.Model.DTOs;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
 using litTrack.Services.Interfaces;
+using litTrack.Services.ServicesImplementation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +14,25 @@ namespace litTrack.API.Controllers
     [Route("api/[controller]")]
     public class KnjigaController : BaseCRUDControllerAsync<Model.DTOs.KnjigaDTO, KnjigaSearchObject, KnjigaInsertRequest, KnjigaUpdateRequest>
     {
+        private readonly IKnjigaService _knjigaService;
         public KnjigaController(IKnjigaService service)
-           : base(service)
+        : base(service)
         {
+            _knjigaService = service;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{knjigaId}/recommended")]
+        public async Task<List<KnjigaDTO>> Recommend(int knjigaId)
+        {
+            return await _knjigaService.Recommend(knjigaId);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("traindata")]
+        public async Task TrainData()
+        {
+            await _knjigaService.TrainData();
         }
 
         [AllowAnonymous]

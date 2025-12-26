@@ -6,6 +6,7 @@ using litTrack.Model.SearchObjects;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
+using litTrack.Services.Recommender;
 using litTrack.Services.Validators.Interfaces;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +25,11 @@ namespace litTrack.Services.ServicesImplementation
         private readonly ICiljnaGrupaValidator _ciljnaGrupaValidator;
         private readonly IAutorValidator _autorValidator;
         private readonly IKnjigaValidator _knjigaValidator;
+        private readonly IKnjigaRecommenderService _recommenderService;
         public KnjigaService(_210078Context context, IMapper mapper, IZanrValidator zanrValidator,
             ICiljnaGrupaValidator ciljnaGrupaValidator, IKnjigaValidator knjigaValidator,
-            IAutorValidator autorValidator
+            IAutorValidator autorValidator,
+            IKnjigaRecommenderService recommenderService
          )
             : base(context, mapper)
         {
@@ -34,6 +37,7 @@ namespace litTrack.Services.ServicesImplementation
             _ciljnaGrupaValidator = ciljnaGrupaValidator;
             _knjigaValidator = knjigaValidator;
             _autorValidator = autorValidator;
+            _recommenderService = recommenderService;
         }
 
         public override IQueryable<Knjiga> AddFilter(KnjigaSearchObject searchObject, IQueryable<Knjiga> query)
@@ -359,6 +363,16 @@ namespace litTrack.Services.ServicesImplementation
             }
 
             await base.BeforeDeleteAsync(entity, cancellationToken);
+        }
+
+        public async Task<List<KnjigaDTO>> Recommend(int knjigaId)
+        {
+            return await _recommenderService.GetRecommendedBooks(knjigaId);
+        }
+
+        public async Task TrainData()
+        {
+            await _recommenderService.TrainData();
         }
     }
 }

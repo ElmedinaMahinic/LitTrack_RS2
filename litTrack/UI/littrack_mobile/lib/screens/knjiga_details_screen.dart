@@ -6,6 +6,7 @@ import 'package:littrack_mobile/providers/preporuka_cart_provider.dart';
 import 'package:littrack_mobile/providers/preporuka_provider.dart';
 import 'package:littrack_mobile/providers/moja_listum_provider.dart';
 import 'package:littrack_mobile/providers/arhiva_provider.dart';
+import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/providers/cart_provider.dart';
 import 'package:littrack_mobile/screens/korpa_screen.dart';
@@ -37,6 +38,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   PreporukaCartProvider? _licnaPreporukaProvider;
   late PreporukaProvider _preporukaProvider;
   CartProvider? _cartProvider;
+  late KnjigaProvider _knjigaProvider;
 
   bool _isLoadingProcitano = false;
   bool _jeProcitana = false;
@@ -64,6 +66,9 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
   bool _isLoadingKorpa = false;
   int _kolicina = 1;
 
+  List<Knjiga> _preporuceneKnjige = [];
+  bool _isLoadingPreporucene = false;
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +85,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
     _arhivaProvider = context.read<ArhivaProvider>();
     _ocjenaProvider = context.read<OcjenaProvider>();
     _preporukaProvider = context.read<PreporukaProvider>();
+    _knjigaProvider = context.read<KnjigaProvider>();
 
     _licnaPreporukaProvider = AuthProvider.korisnikId == null
         ? null
@@ -96,6 +102,40 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
     _provjeriProsjek();
     _provjeriOcjenu();
     _provjeriPreporucena();
+    _fetchPreporuceneKnjige();
+  }
+
+  Future<void> _fetchPreporuceneKnjige() async {
+    if (!mounted) return;
+    setState(() => _isLoadingPreporucene = true);
+
+    try {
+      final rezultat =
+          await _knjigaProvider.getRecommendedBooks(widget.knjiga.knjigaId!);
+
+      if (!mounted) return;
+
+      setState(() {
+        _preporuceneKnjige = rezultat;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: e.toString(),
+        icon: Icons.error,
+      );
+
+      setState(() {
+        _preporuceneKnjige = [];
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingPreporucene = false);
+      }
+    }
   }
 
   Future<void> _provjeriProcitano() async {
@@ -730,6 +770,8 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   _buildCijena(),
                   const SizedBox(height: 22),
                   _buildButtonKorpa(),
+                  const SizedBox(height: 26),
+                  _buildRecommended(),
                 ],
               ),
             ),
@@ -1547,6 +1589,149 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildRecommended() {
+    if (_isLoadingPreporucene) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_preporuceneKnjige.isEmpty) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Čitatelji također kupuju",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _preporuceneKnjige.length,
+          itemBuilder: (context, index) {
+            return _buildRecommendedCard(_preporuceneKnjige[index]);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecommendedCard(Knjiga knjiga) {
+    return Container(
+      height: 110,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 120,
+            height: 100,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              child: FittedBox(
+                fit: BoxFit.fill,
+                child: (knjiga.slika != null && knjiga.slika!.isNotEmpty)
+                    ? imageFromString(knjiga.slika!)
+                    : Image.asset(
+                        "assets/images/placeholder.png",
+                        fit: BoxFit.fill,
+                      ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    knjiga.naziv,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    "${knjiga.cijena.toStringAsFixed(2)} KM",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF3C6E71),
+                    ),
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6, bottom: 2),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () async {
+                            if (_cartProvider == null) return;
+
+                            try {
+                              await _cartProvider!.addToCart(knjiga, 1);
+
+                              if (!mounted) return;
+
+                              showCustomSnackBar(
+                                context: context,
+                                message: "Knjiga dodana u korpu.",
+                                icon: Icons.check,
+                              );
+                            } catch (e) {
+                              if (!mounted) return;
+                              showCustomDialog(
+                                context: context,
+                                title: "Greška",
+                                message: e.toString(),
+                                icon: Icons.error,
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD55B91),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.add,
+                                color: Colors.white, size: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

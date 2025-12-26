@@ -11,6 +11,7 @@ using litTrack.Services.NarudzbaStateMachine;
 using Microsoft.OpenApi.Models;
 using litTrack.API.Auth;
 using Microsoft.AspNetCore.Authentication;
+using litTrack.Services.Recommender;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,8 @@ builder.Services.AddTransient<IStavkaNarudzbeValidator, StavkaNarudzbeValidator>
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 builder.Services.AddTransient<IActiveUserServiceAsync, ActiveUserServiceAsync>();
+builder.Services.AddScoped<IKnjigaRecommenderService, KnjigaRecommenderService>();
+
 
 builder.Services.AddControllers(x=>
 {
