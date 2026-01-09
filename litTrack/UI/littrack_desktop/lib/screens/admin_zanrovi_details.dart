@@ -82,7 +82,7 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                 FormBuilderValidators.maxLength(50,
                     errorText: "Naziv može imati najviše 50 karaktera."),
                 FormBuilderValidators.match(
-                  r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                  RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                   errorText:
                       "Naziv mora početi velikim slovom i sadržavati samo slova.",
                 ),
@@ -191,26 +191,26 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
               ),
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.pressed) ||
-                      states.contains(MaterialState.selected)) {
+                    WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.pressed) ||
+                      states.contains(WidgetState.selected)) {
                     return const Color.fromARGB(255, 100, 100, 100);
                   }
-                  if (states.contains(MaterialState.hovered)) {
+                  if (states.contains(WidgetState.hovered)) {
                     return const Color.fromARGB(255, 150, 150, 150);
                   }
                   return const Color.fromARGB(255, 120, 120, 120);
                 }),
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
+                elevation: WidgetStateProperty.all(4),
+                padding: WidgetStateProperty.all(
                   const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+                shadowColor: WidgetStateProperty.all(Colors.black54),
               ),
             ),
           ),
@@ -259,26 +259,26 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                     ),
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.pressed) ||
-                      states.contains(MaterialState.selected)) {
+                    WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.pressed) ||
+                      states.contains(WidgetState.selected)) {
                     return const Color(0xFF41706A);
                   }
-                  if (states.contains(MaterialState.hovered)) {
+                  if (states.contains(WidgetState.hovered)) {
                     return const Color(0xFF51968F);
                   }
                   return const Color(0xFF3C6E71);
                 }),
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
+                elevation: WidgetStateProperty.all(4),
+                padding: WidgetStateProperty.all(
                   const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+                shadowColor: WidgetStateProperty.all(Colors.black54),
               ),
             ),
           ),

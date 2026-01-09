@@ -237,7 +237,7 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           elevation: 5,
-                          shadowColor: Colors.black.withOpacity(0.2),
+                          shadowColor: Colors.black.withAlpha(51),
                         ),
                         child: const Text(
                           "Sačuvaj",
@@ -750,16 +750,33 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
   }
 
   Widget _buildHeader() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 8),
-      child: Text(
-        "Recenzije",
-        textAlign: TextAlign.left,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: Colors.black,
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3C6E71),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(51),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Recenzije",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 19,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Icon(Icons.mode_comment, color: Colors.white, size: 28),
+        ],
       ),
     );
   }
@@ -780,16 +797,16 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
           ),
         ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
               return const Color(0xFF33585B);
             }
             return const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          padding: MaterialStateProperty.all(
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           ),
         ),
@@ -813,11 +830,11 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 232, 232, 232),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha(77),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -891,13 +908,8 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                     children: [
                       Text("${rec.brojLajkova}"),
                       IconButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              MaterialStateProperty.resolveWith<Color?>(
-                            (states) => states.contains(MaterialState.pressed)
-                                ? const Color(0xFF3C6E71).withOpacity(0.2)
-                                : null,
-                          ),
+                        style: ElevatedButton.styleFrom(
+                          overlayColor: const Color(0xFF3C6E71).withAlpha(51),
                         ),
                         onPressed: (isToggling || isOwn)
                             ? null
@@ -911,20 +923,15 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                           color: rec.jeLajkovao == true
                               ? const Color(0xFF3C6E71)
                               : isOwn
-                                  ? Colors.grey.shade600.withOpacity(0.4)
+                                  ? Colors.grey.shade600.withAlpha(102)
                                   : Colors.grey.shade600,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text("${rec.brojDislajkova}"),
                       IconButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              MaterialStateProperty.resolveWith<Color?>(
-                            (states) => states.contains(MaterialState.pressed)
-                                ? const Color(0xFF3C6E71).withOpacity(0.2)
-                                : null,
-                          ),
+                        style: ElevatedButton.styleFrom(
+                          overlayColor: const Color(0xFF3C6E71).withAlpha(51),
                         ),
                         onPressed: (isToggling || isOwn)
                             ? null
@@ -938,7 +945,7 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                           color: rec.jeDislajkovao == true
                               ? const Color(0xFF3C6E71)
                               : isOwn
-                                  ? Colors.grey.shade600.withOpacity(0.4)
+                                  ? Colors.grey.shade600.withAlpha(102)
                                   : Colors.grey.shade600,
                         ),
                       ),
@@ -1018,11 +1025,11 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                 margin: const EdgeInsets.only(left: 28, top: 8, bottom: 8),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withAlpha(77),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -1098,17 +1105,8 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                           style: const TextStyle(fontSize: 14),
                         ),
                         IconButton(
-                          style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (states) {
-                                if (states.contains(MaterialState.pressed)) {
-                                  return const Color(0xFF3C6E71)
-                                      .withOpacity(0.2);
-                                }
-                                return null;
-                              },
-                            ),
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: const Color(0xFF3C6E71).withAlpha(51),
                           ),
                           onPressed: (isToggling || isOwn)
                               ? null
@@ -1123,7 +1121,7 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                             color: odgovor.jeLajkovao == true
                                 ? const Color(0xFF3C6E71)
                                 : isOwn
-                                    ? Colors.grey.shade600.withOpacity(0.4)
+                                    ? Colors.grey.shade600.withAlpha(102)
                                     : Colors.grey.shade600,
                           ),
                         ),
@@ -1133,17 +1131,8 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                           style: const TextStyle(fontSize: 14),
                         ),
                         IconButton(
-                          style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (states) {
-                                if (states.contains(MaterialState.pressed)) {
-                                  return const Color(0xFF3C6E71)
-                                      .withOpacity(0.2);
-                                }
-                                return null;
-                              },
-                            ),
+                          style: ElevatedButton.styleFrom(
+                            overlayColor: const Color(0xFF3C6E71).withAlpha(51),
                           ),
                           onPressed: (isToggling || isOwn)
                               ? null
@@ -1158,7 +1147,7 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
                             color: odgovor.jeDislajkovao == true
                                 ? const Color(0xFF3C6E71)
                                 : isOwn
-                                    ? Colors.grey.shade600.withOpacity(0.4)
+                                    ? Colors.grey.shade600.withAlpha(102)
                                     : Colors.grey.shade600,
                           ),
                         ),

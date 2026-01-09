@@ -8,16 +8,28 @@ import 'package:littrack_mobile/providers/nacin_placanja_provider.dart';
 import 'package:littrack_mobile/providers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/layouts/master_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_paypal_payment_checkout_v2/flutter_paypal_payment_checkout_v2.dart'
+    as paypal;
 
+// ignore: must_be_immutable
 class KreiranjeNarudzbeScreen extends StatefulWidget {
   final List<MapEntry<String, dynamic>> odabraneKnjige;
   final double ukupnaCijena;
+  String? secret;
+  String? public;
+  String? sandBoxMode;
 
-  const KreiranjeNarudzbeScreen({
+  KreiranjeNarudzbeScreen({
     super.key,
     required this.odabraneKnjige,
     required this.ukupnaCijena,
-  });
+  }) {
+    secret = const String.fromEnvironment("_paypalSecret", defaultValue: "");
+    public = const String.fromEnvironment("_paypalPublic", defaultValue: "");
+    sandBoxMode =
+        const String.fromEnvironment("_sandBoxMode", defaultValue: "true");
+  }
 
   @override
   State<KreiranjeNarudzbeScreen> createState() =>
@@ -154,6 +166,7 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
                     ),
                   ),
                   _buildFooter(),
+                  const SizedBox(height: 20),
                 ],
               ),
       ),
@@ -165,11 +178,11 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFD55B91),
+        color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -186,7 +199,7 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Icon(Icons.shopping_bag, color: Colors.white, size: 22),
+          Icon(Icons.shopping_cart, color: Colors.white, size: 22),
         ],
       ),
     );
@@ -199,7 +212,7 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -230,12 +243,23 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
         children: [
           Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 22),
           const SizedBox(width: 10),
-          Expanded(
+          SizedBox(
+            width: 160,
             child: Text(
-              "$label $value",
+              label,
               style: const TextStyle(
+                fontWeight: FontWeight.w700,
                 fontSize: 16,
                 color: Color(0xFF3C6E71),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
           ),
@@ -248,41 +272,37 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
     return FormBuilder(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.home, color: Color(0xFF3C6E71), size: 22),
-                SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    'Unesite vašu adresu u ovom formatu:',
-                    style: TextStyle(
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Center(
-              child: Text(
-                'Grad, adresa',
-                textAlign: TextAlign.center,
+          const Row(
+            children: [
+              Icon(Icons.home_rounded, color: Color(0xFF3C6E71), size: 22),
+              SizedBox(width: 8),
+              Text(
+                "Adresa dostave",
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF3C6E71),
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            "Unesite adresu u formatu:",
+            style: TextStyle(
+              fontSize: 14.5,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            "Grad, adresa",
+            style: TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF3C6E71),
             ),
           ),
           const SizedBox(height: 15),
@@ -331,15 +351,29 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Row(
+          children: [
+            Icon(Icons.payment_rounded, color: Color(0xFF3C6E71), size: 22),
+            SizedBox(width: 8),
+            Text(
+              "Način plaćanja",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3C6E71),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
         const Text(
-          "Odaberite način plaćanja",
+          "Odaberite željeni način plaćanja",
           style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 15.5,
+            fontSize: 14.5,
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 13),
+        const SizedBox(height: 14),
         Center(
           child: Wrap(
             spacing: 12,
@@ -358,7 +392,7 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
               final isSelected = _odabraniNacinPlacanja == np.nacinPlacanjaId;
               return SizedBox(
                 width: 140,
-                height: 48,
+                height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     setState(() => _odabraniNacinPlacanja = np.nacinPlacanjaId);
@@ -376,28 +410,20 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
-                      if (isSelected) return const Color(0xFF3C6E71);
-                      if (states.contains(MaterialState.pressed)) {
-                        return const Color(0xFFE0E0E0);
-                      }
-                      return const Color(0xFFFFFFFF);
-                    }),
-                    surfaceTintColor:
-                        MaterialStateProperty.all(Colors.transparent),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(
-                          color: isSelected
-                              ? const Color(0xFF3C6E71)
-                              : Colors.grey.shade300,
-                        ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSelected
+                        ? const Color(0xFF3C6E71)
+                        : const Color(0xFFFFFFFF),
+                    surfaceTintColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      side: BorderSide(
+                        color: isSelected
+                            ? const Color(0xFF3C6E71)
+                            : Colors.grey.shade300,
                       ),
                     ),
-                    elevation: MaterialStateProperty.all(3),
+                    elevation: 3,
                   ),
                 ),
               );
@@ -415,7 +441,7 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
         color: const Color(0xFFF6F4F3),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withAlpha(38),
             offset: const Offset(0, -3),
             blurRadius: 6,
           ),
@@ -447,10 +473,10 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
                 width: 180,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withAlpha(51),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -487,22 +513,22 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
                         },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
+                        WidgetStateProperty.resolveWith<Color>((states) {
                       if (_isCreatingOrder) return Colors.grey;
-                      if (states.contains(MaterialState.pressed)) {
+                      if (states.contains(WidgetState.pressed)) {
                         return const Color(0xFF33585B);
                       }
                       return const Color(0xFF3C6E71);
                     }),
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    shadowColor: MaterialStateProperty.all(
-                      Colors.black.withOpacity(0.3),
+                    shadowColor: WidgetStateProperty.all(
+                      Colors.black.withAlpha(77),
                     ),
-                    elevation: MaterialStateProperty.all(6),
+                    elevation: WidgetStateProperty.all(6),
                   ),
                   child: _isCreatingOrder
                       ? const SizedBox(
@@ -554,7 +580,11 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
 
     if (nazivPlacanja == "gotovina") {
       await _kreirajNarudzbuGotovina(adresa);
-    } else {}
+    } else if (nazivPlacanja == "paypal") {
+      await _kreirajNarudzbuPaypal(adresa);
+    } else {
+      return;
+    }
   }
 
   Future<void> _kreirajNarudzbuGotovina(String adresa) async {
@@ -600,6 +630,150 @@ class _KreiranjeNarudzbeScreenState extends State<KreiranjeNarudzbeScreen> {
         icon: Icons.error,
       );
     } finally {
+      if (mounted) setState(() => _isCreatingOrder = false);
+    }
+  }
+
+  Future<void> _kreirajNarudzbuPaypal(String adresa) async {
+    if (!mounted) return;
+    setState(() => _isCreatingOrder = true);
+
+    try {
+      var secret = dotenv.env['_paypalSecret'];
+      var public = dotenv.env['_paypalPublic'];
+
+      var valueSecret = (widget.secret == "" || widget.secret == null)
+          ? secret
+          : widget.secret;
+      var valuePublic = (widget.public == "" || widget.public == null)
+          ? public
+          : widget.public;
+
+      if ((valueSecret?.isEmpty ?? true) || (valuePublic?.isEmpty ?? true)) {
+        await showCustomDialog(
+          context: context,
+          title: "Greška",
+          message: "Greška sa PayPal konfiguracijom.",
+          icon: Icons.error,
+        );
+        if (mounted) setState(() => _isCreatingOrder = false);
+        return;
+      }
+
+      final totalUSD = double.parse(
+        widget.ukupnaCijena.toStringAsFixed(2).replaceAll(',', '.'),
+      );
+
+      final items = widget.odabraneKnjige.map((entry) {
+        final knjiga = entry.value;
+
+        return paypal.PaypalTransactionV2Item(
+          sku: knjiga['id'].toString(),
+          name: knjiga['naziv'],
+          description: "Artikal",
+          quantity: knjiga['kolicina'],
+          unitAmount: double.parse(
+            knjiga['cijena'].toStringAsFixed(2),
+          ),
+          currency: 'USD',
+          category: paypal.PayPalItemCategoryV2.physicalGoods,
+        );
+      }).toList();
+
+      final order = paypal.PayPalOrderRequestV2(
+        intent: paypal.PayPalOrderIntentV2.capture,
+        paymentSource: paypal.PayPalPaymentSourceV2(
+          paymentMethodPreference:
+              paypal.PayPalPaymentMethodPreferenceV2.immediatePaymentRequired,
+          shippingPreference: paypal.PayPalShippingPreferenceV2.noShipping,
+        ),
+        purchaseUnits: [
+          paypal.PayPalPurchaseUnitV2(
+            amount: paypal.PayPalAmountV2(
+              currency: 'USD',
+              value: totalUSD,
+              itemTotal: totalUSD,
+              taxTotal: 0.0,
+            ),
+            items: items,
+          ),
+        ],
+      );
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => paypal.PaypalCheckoutView(
+            version: paypal.PayPalApiVersion.v2,
+            sandboxMode: true,
+            clientId: valuePublic!,
+            secretKey: valueSecret!,
+            getAccessToken: null,
+            approvalUrl: null,
+            payPalOrder: order,
+            onUserPayment: (success, payment) async {
+              try {
+                final narudzbaRequest = {
+                  "korisnikId": AuthProvider.korisnikId!,
+                  "nacinPlacanjaId": _odabraniNacinPlacanja!,
+                  "adresa": adresa,
+                  "stavkeNarudzbe": widget.odabraneKnjige.map((entry) {
+                    final knjiga = entry.value;
+                    return {
+                      "knjigaId": knjiga['id'],
+                      "kolicina": knjiga['kolicina'],
+                    };
+                  }).toList(),
+                };
+
+                await narudzbaProvider.insert(narudzbaRequest);
+                _cartProvider?.clearCart();
+
+                if (!mounted)  return const paypal.Right<paypal.PayPalErrorModel, dynamic>(null);
+
+                await showCustomDialog(
+                  context: context,
+                  title: "Uspješno kreirana narudžba",
+                  message: "Vaša narudžba je uspješno plaćena.",
+                  icon: Icons.check_circle,
+                  iconColor: Colors.green,
+                );
+
+                if (!mounted)  return const paypal.Right<paypal.PayPalErrorModel, dynamic>(null);
+
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const MasterScreen()),
+                );
+              } catch (e) {
+                if (mounted) {
+                  await showCustomDialog(
+                    context: context,
+                    title: "Greška",
+                    message: e.toString(),
+                    icon: Icons.error,
+                  );
+                }
+              } finally {
+                if (mounted) setState(() => _isCreatingOrder = false);
+              }
+
+              return const paypal.Right<paypal.PayPalErrorModel, dynamic>(null);
+            },
+            onError: (err) {
+              if (mounted) setState(() => _isCreatingOrder = false);
+              Navigator.pop(context);
+            },
+            onCancel: () {
+              if (mounted) setState(() => _isCreatingOrder = false);
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      );
+
+      if (mounted) {
+        setState(() => _isCreatingOrder = false);
+      }
+    } catch (e) {
       if (mounted) setState(() => _isCreatingOrder = false);
     }
   }

@@ -232,17 +232,13 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
                   icon: const Icon(Icons.check, color: Colors.white),
                   label: const Text("Primijeni",
                       style: TextStyle(color: Colors.white)),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(const Color(0xFF3C6E71)),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3C6E71),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                    shadowColor: MaterialStateProperty.all(
-                      Colors.black.withOpacity(0.3),
-                    ),
-                    elevation: MaterialStateProperty.all(6),
+                    shadowColor: Colors.black.withAlpha(77),
+                    elevation: 6,
                   ),
                 ),
               ],
@@ -362,7 +358,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
             },
             style: ElevatedButton.styleFrom(
               elevation: _prikaziSve ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               backgroundColor:
                   _prikaziSve ? const Color(0xFFD55B91) : Colors.grey[300],
               shape: RoundedRectangleBorder(
@@ -388,7 +384,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
             },
             style: ElevatedButton.styleFrom(
               elevation: !_prikaziSve ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               backgroundColor:
                   !_prikaziSve ? const Color(0xFFD55B91) : Colors.grey[300],
               shape: RoundedRectangleBorder(
@@ -418,7 +414,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -488,7 +484,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withAlpha(51),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -504,7 +500,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3C6E71).withOpacity(0.1),
+                        color: const Color(0xFF3C6E71).withAlpha(26),
                         border: Border.all(
                           color: const Color(0xFF3C6E71),
                           width: 1,
@@ -572,7 +568,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -588,7 +584,7 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

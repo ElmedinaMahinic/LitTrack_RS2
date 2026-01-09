@@ -86,6 +86,15 @@ class _NavikeScreenState extends State<NavikeScreen> {
           children: [
             _buildHeader(),
             const SizedBox(height: 24),
+            const Text(
+              "Pregled vaše aktivnosti i interesovanja u aplikaciji.",
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF3C6E71),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
             if (_isLoading)
               const Center(child: CircularProgressIndicator())
             else ...[
@@ -125,7 +134,7 @@ class _NavikeScreenState extends State<NavikeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -161,7 +170,7 @@ class _NavikeScreenState extends State<NavikeScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

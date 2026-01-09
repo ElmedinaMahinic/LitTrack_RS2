@@ -8,11 +8,12 @@ import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/preporuka_provider.dart';
 import 'package:littrack_desktop/providers/recenzija_odgovor_provider.dart';
 import 'package:littrack_desktop/providers/recenzija_provider.dart';
+import 'package:littrack_desktop/providers/report_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:file_selector/file_selector.dart';
+import 'dart:typed_data';
+import 'package:intl/intl.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -29,6 +30,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int knjigeZaBuduceCitanje = 0;
   String najdrazaKnjigaNaziv = "";
   bool isLoading = true;
+
+  late final ReportProvider _reportProvider;
 
   List<int> narudzbePoMjesecima = List.filled(12, 0);
 
@@ -48,6 +51,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _reportProvider = context.read<ReportProvider>();
     loadData();
   }
 
@@ -120,18 +124,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       runSpacing: 30,
                       children: [
                         _buildStatCard(getProcitaneKnjigeText(procitaneKnjige),
-                            procitaneKnjige),
+                            procitaneKnjige, Icons.check_circle),
                         _buildStatCard(
                             getArhiviraneKnjigeText(arhiviraneKnjige),
-                            arhiviraneKnjige),
-                        _buildStatCard(
-                            getRecenzijeText(brojRecenzija), brojRecenzija),
-                        _buildStatCard(
-                            getPreporukeText(brojPreporuka), brojPreporuka),
+                            arhiviraneKnjige,
+                            Icons.archive),
+                        _buildStatCard(getRecenzijeText(brojRecenzija),
+                            brojRecenzija, Icons.mode_comment),
+                        _buildStatCard(getPreporukeText(brojPreporuka),
+                            brojPreporuka, Icons.mail),
                         _buildStatCard(getZaBuduceText(knjigeZaBuduceCitanje),
-                            knjigeZaBuduceCitanje),
-                        _buildStatCard(
-                            "Trenutna najdraža knjiga", najdrazaKnjigaNaziv),
+                            knjigeZaBuduceCitanje, Icons.bookmark),
+                        _buildStatCard("Trenutna najdraža knjiga",
+                            najdrazaKnjigaNaziv, Icons.favorite),
                       ],
                     ),
                     const SizedBox(height: 50),
@@ -193,7 +198,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               color: Color(0xFF3C6E71),
               fontWeight: FontWeight.w600,
             ),
-            value: selectedDisplayState,
+            initialValue: selectedDisplayState,
             hint: const Text(
               "Sve narudžbe",
               style: TextStyle(color: Colors.black54),
@@ -455,26 +460,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
         ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed) ||
-                states.contains(MaterialState.selected)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed) ||
+                states.contains(WidgetState.selected)) {
               return const Color(0xFF41706A);
             }
-            if (states.contains(MaterialState.hovered)) {
+            if (states.contains(WidgetState.hovered)) {
               return const Color(0xFF51968F);
             }
             return const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          elevation: MaterialStateProperty.all(4),
-          padding: MaterialStateProperty.all(
+          elevation: WidgetStateProperty.all(4),
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(horizontal: 16),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black54),
+          shadowColor: WidgetStateProperty.all(Colors.black54),
         ),
       ),
     );
@@ -485,19 +490,48 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       await showConfirmDialog(
         context: context,
         title: "Generisanje PDF-a",
-        message: "Želite li generisati PDF sa statističkim podacima korisnika?",
+        message: "Želite li preuzeti PDF sa statističkim podacima korisnika?",
         icon: Icons.picture_as_pdf,
         iconColor: Colors.redAccent,
         onConfirm: () async {
           try {
-            final filePath = await generatePdf();
+            final bytes = await _reportProvider.getAdminStatistikaPdf(
+              stateMachine: selectedDisplayState != null
+                  ? stateDisplayToValue[selectedDisplayState!]
+                  : null,
+            );
+
+            if (bytes.isEmpty) return;
+
+            final name =
+                'AdminStatistika_${DateFormat('ddMMyyyy_HHmm').format(DateTime.now().toLocal())}.pdf';
+
+            final location = await getSaveLocation(
+              suggestedName: name,
+              acceptedTypeGroups: [
+                const XTypeGroup(label: 'PDF', extensions: ['pdf']),
+              ],
+            );
+
+            if (location == null) return;
+
+            final pdfBytes = Uint8List.fromList(bytes);
+
+            final file = XFile.fromData(
+              pdfBytes,
+              name: name,
+              mimeType: 'application/pdf',
+            );
+
+            await file.saveTo(location.path);
 
             if (!mounted) return;
 
             await showCustomDialog(
               context: context,
               title: "Uspjeh",
-              message: "Izvještaj uspješno sačuvan.\nLokacija: $filePath",
+              message:
+                  "PDF izvještaj je uspješno sačuvan.\nLokacija: ${location.path}",
               icon: Icons.check_circle_outline,
               iconColor: Colors.green,
             );
@@ -506,7 +540,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             await showCustomDialog(
               context: context,
               title: "Greška",
-              message: "Došlo je do greške pri generisanju PDF-a:\n$e",
+              message: "Greška pri preuzimanju PDF-a:\n$e",
               icon: Icons.error,
               iconColor: Colors.red,
             );
@@ -523,68 +557,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         iconColor: Colors.red,
       );
     }
-  }
-
-  Future<String> generatePdf() async {
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.MultiPage(
-        build: (context) => [
-          pw.Text(
-            'Statistika korisnika',
-            style: pw.TextStyle(
-              fontSize: 20,
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
-          pw.SizedBox(height: 20),
-          pw.Text('Ukupan broj citanja: $procitaneKnjige'),
-          pw.Text('Ukupan broj arhiviranja: $arhiviraneKnjige'),
-          pw.Text('Ukupan broj napisanih recenzija: $brojRecenzija'),
-          pw.Text('Ukupan broj preporuka (globalnih i licnih): $brojPreporuka'),
-          pw.Text('Ukupan broj planiranih citanja: $knjigeZaBuduceCitanje'),
-          pw.Text('Trenutna najdraza knjiga: $najdrazaKnjigaNaziv'),
-          pw.SizedBox(height: 20),
-          pw.Text(
-            'Prikazane narudzbe: ${selectedDisplayState ?? "Sve narudzbe"}',
-          ),
-          pw.SizedBox(height: 15),
-          pw.Text('Narudzbe po mjesecima:'),
-          pw.SizedBox(height: 10),
-          pw.TableHelper.fromTextArray(
-            headers: ['Mjesec', 'Broj narudzbi'],
-            data: List.generate(
-              narudzbePoMjesecima.length,
-              (index) =>
-                  ['${index + 1}. mjesec', '${narudzbePoMjesecima[index]}'],
-            ),
-            headerStyle: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-            ),
-            cellAlignment: pw.Alignment.centerLeft,
-            cellPadding: const pw.EdgeInsets.all(5),
-          ),
-          pw.SizedBox(height: 10),
-          pw.Text(
-            'Ukupan broj narudzbi: ${narudzbePoMjesecima.fold<int>(0, (sum, item) => sum + item)}',
-            style: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    final dir = await getApplicationDocumentsDirectory();
-    final vrijeme = DateTime.now();
-    final formattedDate =
-        '${vrijeme.year}-${vrijeme.month.toString().padLeft(2, '0')}-${vrijeme.day.toString().padLeft(2, '0')}';
-    final path = '${dir.path}/Izvjestaj-Dana-$formattedDate.pdf';
-
-    final file = File(path);
-    await file.writeAsBytes(await pdf.save());
-    return path;
   }
 
   String getProcitaneKnjigeText(int count) {
@@ -617,26 +589,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return "Planiranih čitanja";
   }
 
-  Widget _buildStatCard(String title, dynamic value) {
+  Widget _buildStatCard(String title, dynamic value, IconData icon) {
     final isInt = value is int;
     final valueText = value.toString();
 
-    double getFontSize(String text) {
-      if (text.length <= 20) return 16;
-      if (text.length <= 35) return 13;
-      return 12;
-    }
-
     return Container(
       width: 240,
-      constraints: const BoxConstraints(minHeight: 110),
+      height: 140,
       decoration: BoxDecoration(
         color: const Color(0xFFD5E0DB),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFF3C6E71), width: 1.5),
         boxShadow: const [
           BoxShadow(
-            color: Color.fromARGB(68, 0, 0, 0),
+            color: Color.fromARGB(78, 0, 0, 0),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -646,30 +612,58 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            valueText,
-            style: TextStyle(
-              fontSize: isInt ? 20 : getFontSize(valueText),
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF3C6E71),
+          Icon(icon, size: 32, color: const Color(0xFF3C6E71)),
+          const SizedBox(height: 6),
+          if (isInt) ...[
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF3C6E71),
+              ),
             ),
-            textAlign: TextAlign.center,
-            softWrap: true,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Color(0xFF3C6E71),
-              fontWeight: FontWeight.w500,
+            const SizedBox(height: 6),
+            Text(
+              valueText,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3C6E71),
+              ),
             ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          ] else ...[
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF3C6E71),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      valueText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF3C6E71),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

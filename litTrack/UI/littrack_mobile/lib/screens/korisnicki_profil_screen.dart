@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_mobile/providers/korisnik_provider.dart';
 import 'package:littrack_mobile/providers/auth_provider.dart';
@@ -24,7 +23,6 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
     'prezime': '',
     'email': '',
     'telefon': '',
-    'datumRegistracije': '',
   };
 
   @override
@@ -48,7 +46,6 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
           'prezime': korisnik.prezime ?? '',
           'email': korisnik.email ?? '',
           'telefon': korisnik.telefon ?? '',
-          'datumRegistracije': korisnik.datumRegistracije?.toString() ?? '',
         };
       });
     } catch (e) {
@@ -98,7 +95,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -127,28 +124,23 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         children: [
           Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 22),
           const SizedBox(width: 10),
+          SizedBox(
+            width: 160,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: Color(0xFF3C6E71),
+              ),
+            ),
+          ),
           Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF3C6E71),
-                ),
-                children: [
-                  TextSpan(
-                    text: "$label ",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: value,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
           ),
@@ -164,7 +156,7 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -185,20 +177,6 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
               "Email:", _korisnikPodaci['email'] ?? "/", Icons.email_outlined),
           _buildInfoRow("Telefon:", _korisnikPodaci['telefon'] ?? "/",
               Icons.phone_outlined),
-          _buildInfoRow(
-            "Datum registracije:",
-            (() {
-              final datumString = _korisnikPodaci['datumRegistracije'];
-              if (datumString == null || datumString.isEmpty) return "/";
-              try {
-                final parsedDate = DateTime.parse(datumString).toLocal();
-                return DateFormat('dd.MM.yyyy. HH:mm').format(parsedDate);
-              } catch (_) {
-                return "/";
-              }
-            })(),
-            Icons.calendar_today_outlined,
-          ),
         ],
       ),
     );
@@ -206,17 +184,17 @@ class _KorisnickiProfilScreenState extends State<KorisnickiProfilScreen> {
 
   Widget _buildActionButtons() {
     final buttonStyle = ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-        if (states.contains(MaterialState.pressed)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed)) {
           return const Color(0xFF33585B);
         }
         return const Color(0xFF3C6E71);
       }),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-      elevation: MaterialStateProperty.all(6),
+      shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+      elevation: WidgetStateProperty.all(6),
     );
 
     return Column(

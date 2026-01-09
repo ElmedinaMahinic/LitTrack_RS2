@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/providers/narudzba_provider.dart';
+import 'package:littrack_desktop/providers/report_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:file_selector/file_selector.dart';
+import 'dart:typed_data';
+import 'package:intl/intl.dart';
 
 class RadnikDashboardScreen extends StatefulWidget {
   const RadnikDashboardScreen({super.key});
@@ -22,6 +23,8 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
   int brojKreiranih = 0;
   int brojPoslanih = 0;
   bool isLoading = true;
+
+  late final ReportProvider _reportProvider;
 
   List<int> narudzbePoMjesecima = List.filled(12, 0);
 
@@ -41,6 +44,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _reportProvider = context.read<ReportProvider>();
     loadData();
   }
 
@@ -195,7 +199,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
               color: Color(0xFF3C6E71),
               fontWeight: FontWeight.w600,
             ),
-            value: selectedDisplayState,
+            initialValue: selectedDisplayState,
             hint: const Text(
               "Sve narudžbe",
               style: TextStyle(color: Colors.black54),
@@ -457,26 +461,26 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
           ),
         ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed) ||
-                states.contains(MaterialState.selected)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed) ||
+                states.contains(WidgetState.selected)) {
               return const Color(0xFF41706A);
             }
-            if (states.contains(MaterialState.hovered)) {
+            if (states.contains(WidgetState.hovered)) {
               return const Color(0xFF51968F);
             }
             return const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          elevation: MaterialStateProperty.all(4),
-          padding: MaterialStateProperty.all(
+          elevation: WidgetStateProperty.all(4),
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(horizontal: 16),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black54),
+          shadowColor: WidgetStateProperty.all(Colors.black54),
         ),
       ),
     );
@@ -487,19 +491,50 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
       await showConfirmDialog(
         context: context,
         title: "Generisanje PDF-a",
-        message: "Želite li generisati PDF sa podacima o narudžbama?",
+        message: "Želite li preuzeti PDF sa podacima o narudžbama?",
         icon: Icons.picture_as_pdf,
         iconColor: Colors.redAccent,
         onConfirm: () async {
           try {
-            final filePath = await generatePdf();
+            final bytes = await _reportProvider.getRadnikStatistikaPdf(
+              stateMachine: selectedDisplayState != null
+                  ? stateDisplayToValue[selectedDisplayState!]
+                  : null,
+            );
+
+            if (!mounted) return;
+
+            if (bytes.isEmpty) return;
+
+            final name =
+                'RadnikStatistika_${DateFormat('ddMMyyyy_HHmm').format(DateTime.now().toLocal())}.pdf';
+
+            final location = await getSaveLocation(
+              suggestedName: name,
+              acceptedTypeGroups: [
+                const XTypeGroup(label: 'PDF', extensions: ['pdf']),
+              ],
+            );
+
+            if (location == null) return;
+
+            final pdfBytes = Uint8List.fromList(bytes);
+
+            final file = XFile.fromData(
+              pdfBytes,
+              name: name,
+              mimeType: 'application/pdf',
+            );
+
+            await file.saveTo(location.path);
 
             if (!mounted) return;
 
             await showCustomDialog(
               context: context,
               title: "Uspjeh",
-              message: "Izvještaj uspješno sačuvan.\nLokacija: $filePath",
+              message:
+                  "PDF izvještaj je uspješno sačuvan.\nLokacija: ${location.path}",
               icon: Icons.check_circle_outline,
               iconColor: Colors.green,
             );
@@ -508,7 +543,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
             await showCustomDialog(
               context: context,
               title: "Greška",
-              message: "Došlo je do greške pri generisanju PDF-a:\n$e",
+              message: "Greška pri preuzimanju PDF-a:\n$e",
               icon: Icons.error,
               iconColor: Colors.red,
             );
@@ -525,67 +560,6 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
         iconColor: Colors.red,
       );
     }
-  }
-
-  Future<String> generatePdf() async {
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.MultiPage(
-        build: (context) => [
-          pw.Text(
-            'Statistika narudzbi',
-            style: pw.TextStyle(
-              fontSize: 20,
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
-          pw.SizedBox(height: 20),
-          pw.Text('Broj kreiranih narudzbi: $brojKreiranih'),
-          pw.Text('Broj preuzetih narudzbi: $brojPreuzetih'),
-          pw.Text('Broj poslanih narudzbi: $brojPoslanih'),
-          pw.Text('Broj ponistenih narudzbi: $brojOtkazanih'),
-          pw.Text('Broj zavrsenih narudzbi: $brojZavrsenih'),
-          pw.SizedBox(height: 20),
-          pw.Text(
-            'Prikazane narudzbe: ${selectedDisplayState ?? "Sve narudzbe"}',
-          ),
-          pw.SizedBox(height: 15),
-          pw.Text('Narudzbe po mjesecima:'),
-          pw.SizedBox(height: 10),
-          pw.TableHelper.fromTextArray(
-            headers: ['Mjesec', 'Broj narudzbi'],
-            data: List.generate(
-              narudzbePoMjesecima.length,
-              (index) =>
-                  ['${index + 1}. mjesec', '${narudzbePoMjesecima[index]}'],
-            ),
-            headerStyle: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-            ),
-            cellAlignment: pw.Alignment.centerLeft,
-            cellPadding: const pw.EdgeInsets.all(5),
-          ),
-          pw.SizedBox(height: 10),
-          pw.Text(
-            'Ukupan broj narudzbi: ${narudzbePoMjesecima.fold<int>(0, (sum, item) => sum + item)}',
-            style: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    final dir = await getApplicationDocumentsDirectory();
-    final vrijeme = DateTime.now();
-    final formattedDate =
-        '${vrijeme.year}-${vrijeme.month.toString().padLeft(2, '0')}-${vrijeme.day.toString().padLeft(2, '0')}';
-    final path = '${dir.path}/Statistika-Radnik-$formattedDate.pdf';
-
-    final file = File(path);
-    await file.writeAsBytes(await pdf.save());
-    return path;
   }
 
   String getPreuzeteText(int count) {
@@ -621,7 +595,7 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
   Widget _buildStatCard(String title, int value, IconData icon) {
     return Container(
       width: 240,
-      constraints: const BoxConstraints(minHeight: 120),
+      constraints: const BoxConstraints(minHeight: 130),
       decoration: BoxDecoration(
         color: const Color(0xFFD5E0DB),
         borderRadius: BorderRadius.circular(20),
@@ -639,7 +613,19 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 32, color: const Color(0xFF3C6E71)),
-          const SizedBox(height: 12),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color(0xFF3C6E71),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 5),
           Text(
             value.toString(),
             style: const TextStyle(
@@ -648,18 +634,6 @@ class _RadnikDashboardScreenState extends State<RadnikDashboardScreen> {
               color: Color(0xFF3C6E71),
             ),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14.5,
-              color: Color(0xFF3C6E71),
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

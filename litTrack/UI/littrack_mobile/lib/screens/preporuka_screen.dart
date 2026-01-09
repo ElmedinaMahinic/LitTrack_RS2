@@ -7,6 +7,7 @@ import 'package:littrack_mobile/providers/knjiga_provider.dart';
 import 'package:littrack_mobile/screens/preporuka_user_screen.dart';
 import 'package:littrack_mobile/screens/knjiga_details_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:littrack_mobile/providers/ocjena_provider.dart';
 
 class PreporukaScreen extends StatefulWidget {
   const PreporukaScreen({super.key});
@@ -18,7 +19,10 @@ class PreporukaScreen extends StatefulWidget {
 class _PreporukaScreenState extends State<PreporukaScreen> {
   PreporukaCartProvider? _cartProvider;
   late KnjigaProvider _knjigaProvider;
+  late OcjenaProvider _ocjenaProvider;
+
   List<Map<String, dynamic>> _knjige = [];
+  final Map<int, double> _prosjekOcjena = {};
   bool _isLoading = true;
 
   @override
@@ -27,6 +31,7 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
     if (AuthProvider.korisnikId != null) {
       _cartProvider = PreporukaCartProvider(AuthProvider.korisnikId!);
       _knjigaProvider = context.read<KnjigaProvider>();
+      _ocjenaProvider = context.read<OcjenaProvider>();
       _fetchData();
     }
   }
@@ -41,9 +46,25 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
       final data = await _cartProvider!.getPreporukaList();
 
       if (!mounted) return;
+
+      final knjigeList =
+          data.values.map((e) => Map<String, dynamic>.from(e)).toList();
+
       setState(() {
-        _knjige = data.values.map((e) => Map<String, dynamic>.from(e)).toList();
+        _knjige = knjigeList;
       });
+
+      for (var knjiga in knjigeList) {
+        try {
+          final prosjek = await _ocjenaProvider.getProsjekOcjena(knjiga['id']);
+          if (!mounted) return;
+          setState(() {
+            _prosjekOcjena[knjiga['id']] = prosjek;
+          });
+        } catch (e) {
+          _prosjekOcjena[knjiga['id']] = 0;
+        }
+      }
     } catch (e) {
       if (!mounted) return;
       showCustomDialog(
@@ -55,6 +76,10 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  String formatNumber(num value) {
+    return value.toStringAsFixed(2);
   }
 
   @override
@@ -153,11 +178,11 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFD55B91),
+        color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -181,16 +206,18 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
   }
 
   Widget _buildKnjigaCard(Map<String, dynamic> knjiga) {
+    final prosjek = _prosjekOcjena[knjiga['id']] ?? 0;
+
     return Container(
       width: double.infinity,
-      height: 110,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      height: 120,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -205,7 +232,6 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
               onPressed: (context) async {
                 try {
                   await _cartProvider?.removeKnjiga(knjiga['id']);
-
                   if (!context.mounted) return;
 
                   showCustomSnackBar(
@@ -217,7 +243,6 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                   await _fetchData();
                 } catch (e) {
                   if (!context.mounted) return;
-
                   showCustomSnackBar(
                     context: context,
                     message: "Nije moguće ukloniti knjigu.",
@@ -235,7 +260,6 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
           onTap: () async {
             try {
               final knjigaDetalji = await _knjigaProvider.getById(knjiga['id']);
-
               if (!mounted) return;
 
               final result = await Navigator.push(
@@ -263,13 +287,14 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
           },
           child: Row(
             children: [
+              const SizedBox(width: 10),
               SizedBox(
-                width: 120,
-                height: 100,
+                width: 81,
+                height: 115,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   child: FittedBox(
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     child: knjiga['slika'] != null && knjiga['slika'] is String
                         ? imageFromString(knjiga['slika'])
                         : Image.asset(
@@ -279,9 +304,11 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                   ),
                 ),
               ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -294,14 +321,49 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
                         ),
                         maxLines: 2,
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Text(
-                        knjiga['autorNaziv'] ?? "",
+                        knjiga['autorNaziv'] ?? "-",
                         style: const TextStyle(
+                          fontSize: 13,
                           fontWeight: FontWeight.w500,
+                          color: Colors.black54,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12, bottom: 6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${formatNumber(knjiga['cijena'])} KM',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF3C6E71),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.star,
+                                    color: Color(0xFFD55B91), size: 18),
+                                const SizedBox(width: 4),
+                                Text(
+                                  prosjek > 0
+                                      ? prosjek.toStringAsFixed(1)
+                                      : "-",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -338,19 +400,17 @@ class _PreporukaScreenState extends State<PreporukaScreen> {
               }
             },
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.pressed)) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.pressed)) {
                   return const Color(0xFF33585B);
                 }
                 return const Color(0xFF3C6E71);
               }),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              shadowColor:
-                  MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-              elevation: MaterialStateProperty.all(6),
+              shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+              elevation: WidgetStateProperty.all(6),
             ),
             child: const Text(
               "Dalje",

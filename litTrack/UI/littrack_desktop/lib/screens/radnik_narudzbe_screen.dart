@@ -216,20 +216,20 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                   onPressed: _pickDate,
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(MaterialState.pressed) ||
-                          states.contains(MaterialState.selected)) {
+                        WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.pressed) ||
+                          states.contains(WidgetState.selected)) {
                         return const Color(0xFF41706A);
                       }
-                      if (states.contains(MaterialState.hovered)) {
+                      if (states.contains(WidgetState.hovered)) {
                         return const Color(0xFF51968F);
                       }
                       return const Color(0xFF3C6E71);
                     }),
-                    padding: MaterialStateProperty.all(
+                    padding: WidgetStateProperty.all(
                         const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 16)),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     )),
                   ),
@@ -255,19 +255,19 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                 onPressed: _clearFilters,
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(MaterialState.pressed) ||
-                        states.contains(MaterialState.selected)) {
+                      WidgetStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(WidgetState.pressed) ||
+                        states.contains(WidgetState.selected)) {
                       return const Color(0xFF41706A);
                     }
-                    if (states.contains(MaterialState.hovered)) {
+                    if (states.contains(WidgetState.hovered)) {
                       return const Color(0xFF51968F);
                     }
                     return const Color(0xFF3C6E71);
                   }),
-                  padding: MaterialStateProperty.all(
+                  padding: WidgetStateProperty.all(
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  shape: WidgetStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   )),
                 ),
@@ -397,7 +397,7 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 250),
                     child: DropdownButtonFormField<String>(
-                      value: selectedDisplayState,
+                      initialValue: selectedDisplayState,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -494,7 +494,7 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      hoverColor: Colors.grey.withOpacity(0.1),
+      hoverColor: Colors.grey.withAlpha(26),
       onTap: () async {
         final refresh = await Navigator.push(
           context,
@@ -515,7 +515,7 @@ class _RadnikNarudzbeScreenState extends State<RadnikNarudzbeScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withAlpha(77),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

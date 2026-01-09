@@ -125,7 +125,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -166,7 +166,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha(51),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -218,7 +218,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -239,7 +239,7 @@ class _CiljneGrupeScreenState extends State<CiljneGrupeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -88,12 +88,12 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
 
       initialData['Zanrovi'] = zanrovi
           .where((z) => widget.knjiga!.zanrovi.contains(z.naziv))
-          .map((z) => z.zanrId)
+          .map<int>((z) => z.zanrId as int)
           .toList();
 
       initialData['CiljneGrupe'] = ciljneGrupe
           .where((c) => widget.knjiga!.ciljneGrupe.contains(c.naziv))
-          .map((c) => c.ciljnaGrupaId)
+          .map<int>((c) => c.ciljnaGrupaId as int)
           .toList();
     }
 
@@ -153,7 +153,7 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
                       FormBuilderValidators.maxLength(100,
                           errorText: "Naziv može imati najviše 100 karaktera."),
                       FormBuilderValidators.match(
-                        r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ0-9\s,.\-]*$',
+                        RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ0-9\s,.\-]*$'),
                         errorText:
                             "Naziv mora početi velikim slovom i može sadržavati slova, brojeve i znakove (, . -).",
                       ),
@@ -223,7 +223,12 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
             const SizedBox(height: 20),
             FormBuilderDropdown(
               name: 'AutorId',
-              decoration: _inputDecoration("Autor", "Izaberite autora"),
+              decoration:
+                  _inputDecoration("Autor", "Izaberite autora").copyWith(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
               items: _autori
                   .map((a) => DropdownMenuItem(
                         value: a.autorId,
@@ -234,42 +239,81 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
                   errorText: "Autor je obavezan."),
             ),
             const SizedBox(height: 20),
-            FormBuilderFilterChip(
+            FormBuilderField<List<int>>(
               name: 'Zanrovi',
-              decoration: _inputDecoration("Žanrovi", "Izaberite žanrove"),
-              spacing: 12,
-              runSpacing: 12,
-              options: _zanrovi
-                  .map((z) => FormBuilderChipOption(
-                        value: z.zanrId,
-                        child: Text(z.naziv),
-                      ))
-                  .toList(),
+              initialValue: _initialValue['Zanrovi'] as List<int>? ?? [],
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Potrebno je odabrati barem jedan žanr.";
                 }
                 return null;
               },
+              builder: (field) {
+                return InputDecorator(
+                  decoration:
+                      _inputDecoration("Žanrovi", "Izaberite žanrove").copyWith(
+                    errorText: field.errorText,
+                  ),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: _zanrovi.map((z) {
+                      final selected = field.value?.contains(z.zanrId) ?? false;
+                      return ChoiceChip(
+                        label: Text(z.naziv),
+                        selected: selected,
+                        onSelected: (bool value) {
+                          final current = List<int>.from(field.value ?? []);
+                          if (value) {
+                            current.add(z.zanrId);
+                          } else {
+                            current.remove(z.zanrId);
+                          }
+                          field.didChange(current);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
-            FormBuilderFilterChip(
+            FormBuilderField<List<int>>(
               name: 'CiljneGrupe',
-              decoration:
-                  _inputDecoration("Ciljne grupe", "Izaberite ciljne grupe"),
-              spacing: 12,
-              runSpacing: 12,
-              options: _ciljneGrupe
-                  .map((c) => FormBuilderChipOption(
-                        value: c.ciljnaGrupaId,
-                        child: Text(c.naziv),
-                      ))
-                  .toList(),
+              initialValue: _initialValue['CiljneGrupe'] as List<int>? ?? [],
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Potrebno je odabrati barem jednu ciljnu grupu.";
                 }
                 return null;
+              },
+              builder: (field) {
+                return InputDecorator(
+                  decoration:
+                      _inputDecoration("Ciljne grupe", "Izaberite ciljne grupe")
+                          .copyWith(errorText: field.errorText),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: _ciljneGrupe.map((c) {
+                      final selected =
+                          field.value?.contains(c.ciljnaGrupaId) ?? false;
+                      return ChoiceChip(
+                        label: Text(c.naziv),
+                        selected: selected,
+                        onSelected: (bool value) {
+                          final current = List<int>.from(field.value ?? []);
+                          if (value) {
+                            current.add(c.ciljnaGrupaId);
+                          } else {
+                            current.remove(c.ciljnaGrupaId);
+                          }
+                          field.didChange(current);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -420,24 +464,24 @@ class _AdminKnjigeDetailsScreenState extends State<AdminKnjigeDetailsScreen> {
                 ),
               ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed) ||
-                states.contains(MaterialState.selected)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed) ||
+                states.contains(WidgetState.selected)) {
               return selected;
             }
-            if (states.contains(MaterialState.hovered)) return hover;
+            if (states.contains(WidgetState.hovered)) return hover;
             return normal;
           }),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          elevation: MaterialStateProperty.all(4),
-          padding: MaterialStateProperty.all(
+          elevation: WidgetStateProperty.all(4),
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(horizontal: 16),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black54),
+          shadowColor: WidgetStateProperty.all(Colors.black54),
         ),
       ),
     );

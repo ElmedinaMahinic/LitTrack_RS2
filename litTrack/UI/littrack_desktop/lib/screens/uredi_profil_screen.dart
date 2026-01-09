@@ -115,7 +115,7 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                       FormBuilderValidators.maxLength(50,
                           errorText: "Ime može imati najviše 50 karaktera."),
                       FormBuilderValidators.match(
-                        r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                        RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                         errorText:
                             "Ime mora početi velikim slovom i sadržavati samo slova.",
                       ),
@@ -136,7 +136,7 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                           errorText:
                               "Prezime može imati najviše 50 karaktera."),
                       FormBuilderValidators.match(
-                        r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                        RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                         errorText:
                             "Prezime mora početi velikim slovom i sadržavati samo slova.",
                       ),
@@ -172,7 +172,7 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
                       FormBuilderValidators.required(
                           errorText: "Telefon je obavezan."),
                       FormBuilderValidators.match(
-                        r'^\+\d{7,15}$',
+                        RegExp(r'^\+\d{7,15}$'),
                         errorText:
                             'Telefon mora početi sa + i imati 7-15 cifara.',
                       ),
@@ -408,22 +408,22 @@ class _UrediKorisnikProfilScreenState extends State<UrediKorisnikProfilScreen> {
 
   ButtonStyle _buttonStyle(Color normal, Color hover, {Color? selected}) {
     return ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-        if (states.contains(MaterialState.pressed) ||
-            states.contains(MaterialState.selected)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.selected)) {
           return selected ?? normal;
         }
-        if (states.contains(MaterialState.hovered)) return hover;
+        if (states.contains(WidgetState.hovered)) return hover;
         return normal;
       }),
-      shape: MaterialStateProperty.all(
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      elevation: MaterialStateProperty.all(4),
-      padding: MaterialStateProperty.all(
+      elevation: WidgetStateProperty.all(4),
+      padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 16),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black54),
+      shadowColor: WidgetStateProperty.all(Colors.black54),
     );
   }
 

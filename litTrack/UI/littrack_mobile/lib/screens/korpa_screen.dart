@@ -152,6 +152,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
               ),
             ),
             if (!_isLoading && cartItems.isNotEmpty) _buildFooter(),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -163,11 +164,11 @@ class _KorpaScreenState extends State<KorpaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFD55B91),
+        color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -184,7 +185,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Icon(Icons.shopping_bag, color: Colors.white, size: 28),
+          Icon(Icons.shopping_cart, color: Colors.white, size: 28),
         ],
       ),
     );
@@ -193,14 +194,14 @@ class _KorpaScreenState extends State<KorpaScreen> {
   Widget _buildKnjigaCard(Map<String, dynamic> knjigaDetails, String key) {
     return Container(
       width: double.infinity,
-      height: 110,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      height: 120,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -215,7 +216,6 @@ class _KorpaScreenState extends State<KorpaScreen> {
               onPressed: (context) async {
                 try {
                   await _cartProvider?.deleteFromCart(knjigaDetails['id']);
-
                   if (!context.mounted) return;
 
                   showCustomSnackBar(
@@ -227,7 +227,6 @@ class _KorpaScreenState extends State<KorpaScreen> {
                   await _loadCart();
                 } catch (e) {
                   if (!context.mounted) return;
-
                   showCustomDialog(
                     context: context,
                     title: "Greška",
@@ -244,24 +243,28 @@ class _KorpaScreenState extends State<KorpaScreen> {
         ),
         child: Row(
           children: [
+            const SizedBox(width: 10),
             SizedBox(
-              width: 120,
-              height: 100,
+              width: 81,
+              height: 115,
               child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
                 child: FittedBox(
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   child: knjigaDetails['slika'] != null &&
                           knjigaDetails['slika'] is String
                       ? imageFromString(knjigaDetails['slika'])
-                      : Image.asset("assets/images/placeholder.png",
-                          fit: BoxFit.fill),
+                      : Image.asset(
+                          "assets/images/placeholder.png",
+                          fit: BoxFit.fill,
+                        ),
                 ),
               ),
             ),
+            const SizedBox(width: 12),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -274,91 +277,104 @@ class _KorpaScreenState extends State<KorpaScreen> {
                       ),
                       maxLines: 2,
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 4),
                     Text(
-                      '${formatNumber(knjigaDetails['cijena'])} KM',
+                      knjigaDetails['autorNaziv'] ?? '-',
                       style: const TextStyle(
-                        fontSize: 15,
-                        color: Color(0xFF3C6E71),
-                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                        color: Colors.black54,
                       ),
                     ),
                     const Spacer(),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: knjigaDetails['kolicina'] > 1
-                                ? () async {
-                                    try {
-                                      knjigaDetails['kolicina']--;
-                                      await _cartProvider!.updateCart(
-                                          knjigaDetails['id'],
-                                          knjigaDetails['kolicina']);
-
-                                      if (!mounted) return;
-                                      setState(() {});
-                                    } catch (e) {
-                                      if (!mounted) return;
-
-                                      showCustomDialog(
-                                        context: context,
-                                        title: "Greška",
-                                        message:
-                                            "Ažuriranje količine nije uspjelo: $e",
-                                        icon: Icons.error,
-                                      );
-                                    }
-                                  }
-                                : null,
-                            child: _circleBtn(
-                              icon: Icons.remove,
-                              enabled: knjigaDetails['kolicina'] > 1,
-                            ),
+                        Text(
+                          '${formatNumber(knjigaDetails['cijena'])} KM',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF3C6E71),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            '${knjigaDetails['kolicina']}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: knjigaDetails['kolicina'] < 10
-                                ? () async {
-                                    try {
-                                      knjigaDetails['kolicina']++;
-                                      await _cartProvider!.updateCart(
-                                          knjigaDetails['id'],
-                                          knjigaDetails['kolicina']);
-
-                                      if (!mounted) return;
-                                      setState(() {});
-                                    } catch (e) {
-                                      if (!mounted) return;
-
-                                      showCustomDialog(
-                                        context: context,
-                                        title: "Greška",
-                                        message:
-                                            "Ažuriranje količine nije uspjelo: $e",
-                                        icon: Icons.error,
-                                      );
-                                    }
-                                  }
-                                : null,
-                            child: _circleBtn(
-                              icon: Icons.add,
-                              enabled: knjigaDetails['kolicina'] < 10,
-                            ),
+                          padding: const EdgeInsets.only(right: 12, bottom: 6),
+                          child: Row(
+                            children: [
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: knjigaDetails['kolicina'] > 1
+                                      ? () async {
+                                          try {
+                                            knjigaDetails['kolicina']--;
+                                            await _cartProvider!.updateCart(
+                                              knjigaDetails['id'],
+                                              knjigaDetails['kolicina'],
+                                            );
+                                            if (!mounted) return;
+                                            setState(() {});
+                                          } catch (e) {
+                                            if (!mounted) return;
+                                            showCustomDialog(
+                                              context: context,
+                                              title: "Greška",
+                                              message:
+                                                  "Ažuriranje količine nije uspjelo: $e",
+                                              icon: Icons.error,
+                                            );
+                                          }
+                                        }
+                                      : null,
+                                  child: _circleBtn(
+                                    icon: Icons.remove,
+                                    enabled: knjigaDetails['kolicina'] > 1,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  '${knjigaDetails['kolicina']}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: knjigaDetails['kolicina'] < 10
+                                      ? () async {
+                                          try {
+                                            knjigaDetails['kolicina']++;
+                                            await _cartProvider!.updateCart(
+                                              knjigaDetails['id'],
+                                              knjigaDetails['kolicina'],
+                                            );
+                                            if (!mounted) return;
+                                            setState(() {});
+                                          } catch (e) {
+                                            if (!mounted) return;
+                                            showCustomDialog(
+                                              context: context,
+                                              title: "Greška",
+                                              message:
+                                                  "Ažuriranje količine nije uspjelo: $e",
+                                              icon: Icons.error,
+                                            );
+                                          }
+                                        }
+                                      : null,
+                                  child: _circleBtn(
+                                    icon: Icons.add,
+                                    enabled: knjigaDetails['kolicina'] < 10,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -394,7 +410,7 @@ class _KorpaScreenState extends State<KorpaScreen> {
         color: const Color(0xFFF6F4F3),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withAlpha(26),
             offset: const Offset(0, -3),
             blurRadius: 6,
           )
@@ -422,10 +438,10 @@ class _KorpaScreenState extends State<KorpaScreen> {
                 width: 180,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withAlpha(51),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -473,19 +489,19 @@ class _KorpaScreenState extends State<KorpaScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(MaterialState.pressed)) {
+                        WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.pressed)) {
                         return const Color(0xFF33585B);
                       }
                       return const Color(0xFF3C6E71);
                     }),
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
+                          borderRadius: BorderRadius.circular(10)),
                     ),
-                    shadowColor: MaterialStateProperty.all(
-                        Colors.black.withOpacity(0.3)),
-                    elevation: MaterialStateProperty.all(6),
+                    shadowColor:
+                        WidgetStateProperty.all(Colors.black.withAlpha(77)),
+                    elevation: WidgetStateProperty.all(6),
                   ),
                   child: const Text(
                     "Naruči",

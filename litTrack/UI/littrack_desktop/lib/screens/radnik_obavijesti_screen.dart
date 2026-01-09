@@ -362,7 +362,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
   Widget _buildObavijestCard(Obavijest obavijest) {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      hoverColor: Colors.grey.withOpacity(0.1),
+      hoverColor: Colors.grey.withAlpha(26),
       onTap: () async {
         final refresh = await Navigator.push(
           context,
@@ -384,7 +384,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withAlpha(77),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -409,7 +409,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
                               horizontal: 6, vertical: 2),
                           height: 24,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3C6E71).withOpacity(0.1),
+                            color: const Color(0xFF3C6E71).withAlpha(26),
                             border: Border.all(
                               color: const Color(0xFF3C6E71),
                               width: 1,
@@ -464,20 +464,20 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
 
   ButtonStyle _buttonStyle() {
     return ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-        if (states.contains(MaterialState.pressed) ||
-            states.contains(MaterialState.selected)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.selected)) {
           return const Color(0xFF41706A);
         }
-        if (states.contains(MaterialState.hovered)) {
+        if (states.contains(WidgetState.hovered)) {
           return const Color(0xFF51968F);
         }
         return const Color(0xFF3C6E71);
       }),
-      padding: MaterialStateProperty.all(
+      padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
-      shape: MaterialStateProperty.all(
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

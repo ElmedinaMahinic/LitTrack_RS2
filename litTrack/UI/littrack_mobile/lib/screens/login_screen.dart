@@ -202,28 +202,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton(
-                              onPressed: _isLoggingIn
-                                  ? null
-                                  : _login, 
+                              onPressed: _isLoggingIn ? null : _login,
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
+                                    WidgetStateProperty.resolveWith<Color>(
                                         (states) {
-                                  if (states.contains(MaterialState.pressed)) {
+                                  if (states.contains(WidgetState.pressed)) {
                                     return const Color(0xFF33585B);
                                   }
                                   return const Color(0xFF43675E);
                                 }),
                                 foregroundColor:
-                                    MaterialStateProperty.all(Colors.white),
-                                shape: MaterialStateProperty.all(
+                                    WidgetStateProperty.all(Colors.white),
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                shadowColor: MaterialStateProperty.all(
-                                    Colors.black.withOpacity(0.3)),
-                                elevation: MaterialStateProperty.all(6),
+                                shadowColor: WidgetStateProperty.all(
+                                    Colors.black.withAlpha(77)),
+                                elevation: WidgetStateProperty.all(6),
                               ),
                               child: _isLoggingIn
                                   ? const SizedBox(

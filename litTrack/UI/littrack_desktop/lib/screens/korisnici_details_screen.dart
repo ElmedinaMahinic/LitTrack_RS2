@@ -39,7 +39,7 @@ class KorisniciDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -134,26 +134,26 @@ class KorisniciDetailsScreen extends StatelessWidget {
               ),
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.pressed) ||
-                      states.contains(MaterialState.selected)) {
+                    WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.pressed) ||
+                      states.contains(WidgetState.selected)) {
                     return const Color.fromARGB(255, 100, 100, 100);
                   }
-                  if (states.contains(MaterialState.hovered)) {
+                  if (states.contains(WidgetState.hovered)) {
                     return const Color.fromARGB(255, 150, 150, 150);
                   }
                   return const Color.fromARGB(255, 120, 120, 120);
                 }),
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                elevation: MaterialStateProperty.all(4),
-                padding: MaterialStateProperty.all(
+                elevation: WidgetStateProperty.all(4),
+                padding: WidgetStateProperty.all(
                   const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                shadowColor: MaterialStateProperty.all(Colors.black54),
+                shadowColor: WidgetStateProperty.all(Colors.black54),
               ),
             ),
           ),

@@ -119,11 +119,11 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFD55B91),
+        color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withAlpha(77),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -190,7 +190,8 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
         onPressed: _isLoading
             ? null
             : () async {
-                final isValid = _formKey.currentState?.saveAndValidate() ?? false;
+                final isValid =
+                    _formKey.currentState?.saveAndValidate() ?? false;
                 if (!isValid) return;
 
                 final username =
@@ -202,7 +203,8 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
 
                 int usernameId = 0;
                 try {
-                  usernameId = await _provider.getKorisnikIdByUsername(username);
+                  usernameId =
+                      await _provider.getKorisnikIdByUsername(username);
                 } catch (e) {
                   if (!mounted) return;
                   await showCustomDialog(
@@ -246,19 +248,19 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
                 );
               },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
             if (_isLoading) return Colors.grey;
 
-            if (states.contains(MaterialState.pressed)) {
+            if (states.contains(WidgetState.pressed)) {
               return const Color(0xFF33585B);
             }
             return const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-          elevation: MaterialStateProperty.all(6),
+          shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+          elevation: WidgetStateProperty.all(6),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -281,4 +283,3 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
     );
   }
 }
-

@@ -183,7 +183,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -210,7 +210,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -223,7 +223,7 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
           _buildInfoRow("Šifra:", sifra, Icons.confirmation_number_outlined),
           _buildInfoRow(
             "Datum kreiranja:",
-            DateFormat('dd.MM.yyyy. HH:mm').format(datumNarudzbe.toLocal()),
+            DateFormat('dd.MM.yyyy.').format(datumNarudzbe.toLocal()),
             Icons.calendar_today_outlined,
           ),
           _buildInfoRow("Ukupna cijena:",
@@ -250,12 +250,23 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
         children: [
           Icon(icon, color: const Color(0xFF3C6E71), size: 22),
           const SizedBox(width: 10),
-          Expanded(
+          SizedBox(
+            width: 160,
             child: Text(
-              "$label $value",
+              label,
               style: const TextStyle(
+                fontWeight: FontWeight.w700,
                 fontSize: 16,
                 color: Color(0xFF3C6E71),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
           ),
@@ -285,16 +296,9 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
             color: Color(0xFF3C6E71),
           ),
         ),
-        style: ButtonStyle(
-          padding: MaterialStateProperty.all(
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          ),
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return const Color(0xFF3C6E71).withOpacity(0.1);
-            }
-            return Colors.transparent;
-          }),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          overlayColor: const Color(0xFF3C6E71).withAlpha(26),
         ),
       ),
     );
@@ -330,39 +334,57 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
       );
     } else {
       return Column(
-        children: stavke.asMap().entries.map((entry) {
-          int index = entry.key;
-          StavkaNarudzbe stavka = entry.value;
-
+        children: stavke.map((stavka) {
           return Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha(51),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  "Stavka ${index + 1}",
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF3C6E71),
+                const SizedBox(width: 4),
+                _buildImage(stavka.slika),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stavka.nazivKnjige ?? "-",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "${stavka.cijena.toStringAsFixed(2)} KM",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF3C6E71),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "${stavka.kolicina} kom",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF3C6E71),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Divider(height: 18, thickness: 1),
-                Text("Naziv knjige: ${stavka.nazivKnjige ?? '-'}"),
-                Text("Cijena: ${stavka.cijena.toStringAsFixed(2)} KM"),
-                Text("Količina: ${stavka.kolicina}"),
               ],
             ),
           );
@@ -379,18 +401,18 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
 
     ButtonStyle buttonStyle(bool enabled) {
       return ButtonStyle(
-        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+        backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (!enabled) return Colors.grey;
-          if (states.contains(MaterialState.pressed)) {
+          if (states.contains(WidgetState.pressed)) {
             return const Color(0xFF33585B);
           }
           return const Color(0xFF3C6E71);
         }),
-        shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-        elevation: MaterialStateProperty.all(6),
+        shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+        elevation: WidgetStateProperty.all(6),
       );
     }
 
@@ -444,7 +466,8 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
           buildButtonWithInfo(
             enabled: canOtkazi && !isActionDisabled,
             icon: Icons.cancel_outlined,
-            label: status.toLowerCase() == "ponistena" ? "Poništena" : "Poništi",
+            label:
+                status.toLowerCase() == "ponistena" ? "Poništena" : "Poništi",
             onPressed: () {
               showConfirmDialog(
                 context: context,
@@ -532,6 +555,30 @@ class _NarudzbeDetailsScreenState extends State<NarudzbeDetailsScreen> {
         icon: Icons.error,
         iconColor: Colors.red,
       );
+    }
+  }
+
+  Widget _buildImage(String? slikaBase64) {
+    if (slikaBase64 == null || slikaBase64.isEmpty) {
+      return Image.asset(
+        "assets/images/placeholder.png",
+        width: 81,
+        height: 115,
+        fit: BoxFit.fill,
+      );
+    }
+
+    try {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: SizedBox(
+          width: 81,
+          height: 115,
+          child: imageFromString(slikaBase64),
+        ),
+      );
+    } catch (_) {
+      return const Icon(Icons.broken_image, size: 80);
     }
   }
 }

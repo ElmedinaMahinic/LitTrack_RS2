@@ -142,7 +142,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
               elevation: _prikaziPoslane ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
             ),
             child: Text(
               "Poslane",
@@ -168,7 +168,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
               ),
               padding: const EdgeInsets.symmetric(vertical: 12),
               elevation: !_prikaziPoslane ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
             ),
             child: Text(
               "Primljene",
@@ -192,7 +192,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -239,7 +239,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.black.withAlpha(77),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -255,7 +255,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3C6E71).withOpacity(0.1),
+                      color: const Color(0xFF3C6E71).withAlpha(26),
                       border: Border.all(
                         color: const Color(0xFF3C6E71),
                         width: 1,
@@ -330,7 +330,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -346,7 +346,7 @@ class _LicnePreporukeScreenState extends State<LicnePreporukeScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

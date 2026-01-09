@@ -19,8 +19,13 @@ import 'package:littrack_mobile/providers/nacin_placanja_provider.dart';
 import 'package:littrack_mobile/providers/ocjena_provider.dart';
 import 'package:littrack_mobile/screens/login_screen.dart';
 import 'package:littrack_mobile/screens/registracija_screen_1.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+
   runApp(
     MultiProvider(
       providers: [
@@ -132,22 +137,22 @@ class StartPage extends StatelessWidget {
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(MaterialState.pressed)) {
+                            WidgetStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(WidgetState.pressed)) {
                             return const Color(0xFF33585B);
                           }
                           return const Color(0xFF43675E);
                         }),
                         foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        shape: MaterialStateProperty.all(
+                            WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        shadowColor: MaterialStateProperty.all(
-                            Colors.black.withOpacity(0.3)),
-                        elevation: MaterialStateProperty.all(6),
+                        shadowColor: WidgetStateProperty.all(
+                            Colors.black.withAlpha(77)),
+                        elevation: WidgetStateProperty.all(6),
                       ),
                       child: const Text(
                         "PRIJAVA",
@@ -173,22 +178,22 @@ class StartPage extends StatelessWidget {
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(MaterialState.pressed)) {
+                            WidgetStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(WidgetState.pressed)) {
                             return const Color.fromARGB(255, 142, 179, 168);
                           }
                           return const Color(0xFFB2D9CF);
                         }),
                         foregroundColor:
-                            MaterialStateProperty.all(Colors.black87),
-                        shape: MaterialStateProperty.all(
+                            WidgetStateProperty.all(Colors.black87),
+                        shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        shadowColor: MaterialStateProperty.all(
-                            Colors.black.withOpacity(0.3)),
-                        elevation: MaterialStateProperty.all(6),
+                        shadowColor: WidgetStateProperty.all(
+                            Colors.black.withAlpha(77)),
+                        elevation: WidgetStateProperty.all(6),
                       ),
                       child: const Text(
                         "REGISTRACIJA",

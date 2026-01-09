@@ -12,11 +12,13 @@ using Microsoft.OpenApi.Models;
 using litTrack.API.Auth;
 using Microsoft.AspNetCore.Authentication;
 using litTrack.Services.Recommender;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddTransient<IAutorService, AutorService>();
 builder.Services.AddTransient<IZanrService, ZanrService>();
@@ -59,7 +61,7 @@ builder.Services.AddTransient<IStavkaNarudzbeValidator, StavkaNarudzbeValidator>
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 builder.Services.AddTransient<IActiveUserServiceAsync, ActiveUserServiceAsync>();
 builder.Services.AddScoped<IKnjigaRecommenderService, KnjigaRecommenderService>();
-
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddControllers(x=>
 {

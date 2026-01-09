@@ -16,6 +16,7 @@ import 'package:littrack_desktop/providers/moja_listum_provider.dart';
 import 'package:littrack_desktop/providers/narudzba_provider.dart';
 import 'package:littrack_desktop/providers/stavka_narudzbe_provider.dart';
 import 'package:littrack_desktop/providers/obavijest_provider.dart';
+import 'package:littrack_desktop/providers/report_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
 import 'package:littrack_desktop/screens/admin_dashboard_screen.dart';
 import 'package:littrack_desktop/screens/radnik_dashboard_screen.dart';
@@ -39,6 +40,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
         ChangeNotifierProvider(create: (_) => StavkaNarudzbeProvider()),
         ChangeNotifierProvider(create: (_) => ObavijestProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: const MyApp(),
     ),
@@ -299,20 +301,20 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
+                                    WidgetStateProperty.resolveWith<Color>(
                                         (states) {
-                                  if (states.contains(MaterialState.pressed) ||
-                                      states.contains(MaterialState.selected)) {
+                                  if (states.contains(WidgetState.pressed) ||
+                                      states.contains(WidgetState.selected)) {
                                     return const Color(0xFF41706A);
                                   }
-                                  if (states.contains(MaterialState.hovered)) {
+                                  if (states.contains(WidgetState.hovered)) {
                                     return const Color(0xFF51968F);
                                   }
                                   return const Color(0xFF43675E);
                                 }),
                                 foregroundColor:
-                                    MaterialStateProperty.all(Colors.white),
-                                shape: MaterialStateProperty.all(
+                                    WidgetStateProperty.all(Colors.white),
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20)),
                                 ),

@@ -248,7 +248,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -319,9 +319,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
       itemCount: _knjige.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 10,
+        crossAxisSpacing: 12,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.84,
+        childAspectRatio: 0.8,
       ),
       itemBuilder: (context, index) {
         final knjiga = _knjige[index];
@@ -361,7 +361,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha(51),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -432,15 +432,15 @@ class _HomepageScreenState extends State<HomepageScreen> {
     if (slikaBase64 == null || slikaBase64.isEmpty) {
       imageWidget = Image.asset(
         "assets/images/placeholder.png",
-        height: 120,
-        width: 108,
-        fit: BoxFit.cover,
+        height: 130,
+        width: 105,
+        fit: BoxFit.fill,
       );
     } else {
       try {
         imageWidget = SizedBox(
-          height: 120,
-          width: 108,
+          height: 130,
+          width: 105,
           child: imageFromString(slikaBase64),
         );
       } catch (_) {
@@ -450,7 +450,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
 
     return Center(
       child:
-          ClipRRect(borderRadius: BorderRadius.circular(8), child: imageWidget),
+          ClipRRect(borderRadius: BorderRadius.circular(12), child: imageWidget),
     );
   }
 
@@ -471,7 +471,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
@@ -489,7 +489,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 : null,
             style: ElevatedButton.styleFrom(
               elevation: 6,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),

@@ -83,22 +83,22 @@ class _RegistracijaScreen1State extends State<RegistracijaScreen1> {
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>((states) {
-                          if (states.contains(MaterialState.pressed)) {
+                            WidgetStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(WidgetState.pressed)) {
                             return const Color(0xFF33585B);
                           }
                           return const Color(0xFF43675E);
                         }),
                         foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        shape: MaterialStateProperty.all(
+                            WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        shadowColor: MaterialStateProperty.all(
-                            Colors.black.withOpacity(0.3)),
-                        elevation: MaterialStateProperty.all(6),
+                        shadowColor: WidgetStateProperty.all(
+                            Colors.black.withAlpha(77)),
+                        elevation: WidgetStateProperty.all(6),
                       ),
                       child: const Text(
                         "NASTAVI",

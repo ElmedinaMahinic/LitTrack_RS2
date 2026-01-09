@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
@@ -133,7 +134,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   errorText:
                                       "Ime može imati najviše 50 karaktera."),
                               FormBuilderValidators.match(
-                                r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                                RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                                 errorText:
                                     "Ime mora početi velikim slovom i sadržavati samo slova.",
                               ),
@@ -153,7 +154,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   errorText:
                                       "Prezime može imati najviše 50 karaktera."),
                               FormBuilderValidators.match(
-                                r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                                RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                                 errorText:
                                     "Prezime mora početi velikim slovom i sadržavati samo slova.",
                               ),
@@ -162,6 +163,9 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                           const SizedBox(height: 12),
                           FormBuilderTextField(
                             name: "korisnickoIme",
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            ],
                             decoration: _decoration(
                                 'Korisničko ime', 'Unesite korisničko ime'),
                             validator: FormBuilderValidators.compose([
@@ -171,6 +175,13 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                   errorText: "Minimalno 4 karaktera."),
                               FormBuilderValidators.maxLength(30,
                                   errorText: "Maksimalno 30 karaktera."),
+                              (val) {
+                                if (val != null && val.contains(' ')) {
+                                  return 'Korisničko ime ne smije sadržavati razmake.';
+                                }
+
+                                return null;
+                              },
                             ]),
                           ),
                           const SizedBox(height: 16),
@@ -199,7 +210,7 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                               FormBuilderValidators.required(
                                   errorText: "Telefon je obavezan."),
                               FormBuilderValidators.match(
-                                r'^\+\d{7,15}$',
+                                RegExp(r'^\+\d{7,15}$'),
                                 errorText:
                                     'Telefon mora početi sa + i imati 7-15 cifara.',
                               ),
@@ -304,21 +315,21 @@ class _RegistracijaScreen2State extends State<RegistracijaScreen2> {
                                     },
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
+                                    WidgetStateProperty.resolveWith<Color>(
                                         (states) {
-                                  if (states.contains(MaterialState.pressed)) return const Color(0xFF2E5A58);
+                                  if (states.contains(WidgetState.pressed)) return const Color(0xFF2E5A58);
                                   return const Color(0xFF3C6E71);
                                 }),
                                 foregroundColor:
-                                    MaterialStateProperty.all(Colors.white),
-                                shape: MaterialStateProperty.all(
+                                    WidgetStateProperty.all(Colors.white),
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(25)),
                                 ),
-                                elevation: MaterialStateProperty.all(6),
-                                shadowColor: MaterialStateProperty.all(
-                                    Colors.black.withOpacity(0.3)),
-                                padding: MaterialStateProperty.all(
+                                elevation: WidgetStateProperty.all(6),
+                                shadowColor: WidgetStateProperty.all(
+                                    Colors.black.withAlpha(77)),
+                                padding: WidgetStateProperty.all(
                                     const EdgeInsets.symmetric(horizontal: 16)),
                               ),
                               child: _isSaving

@@ -109,7 +109,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
-              value: _selectedUloga,
+              initialValue: _selectedUloga,
               items: _ulogeList
                   .map((uloga) =>
                       DropdownMenuItem(value: uloga, child: Text(uloga.naziv)))
@@ -129,20 +129,20 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
             },
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.pressed) ||
-                    states.contains(MaterialState.selected)) {
+                  WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.pressed) ||
+                    states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
                 }
-                if (states.contains(MaterialState.hovered)) {
+                if (states.contains(WidgetState.hovered)) {
                   return const Color(0xFF51968F);
                 }
                 return const Color(0xFF3C6E71);
               }),
-              padding: MaterialStateProperty.all(
+              padding: WidgetStateProperty.all(
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
@@ -174,20 +174,20 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
             ),
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.pressed) ||
-                    states.contains(MaterialState.selected)) {
+                  WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.pressed) ||
+                    states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
                 }
-                if (states.contains(MaterialState.hovered)) {
+                if (states.contains(WidgetState.hovered)) {
                   return const Color(0xFF51968F);
                 }
                 return const Color(0xFF3C6E71);
               }),
-              padding: MaterialStateProperty.all(
+              padding: WidgetStateProperty.all(
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
@@ -221,7 +221,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: MaterialStateProperty.all(
+          headingRowColor: WidgetStateProperty.all(
               const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
               color: Color(0xFF3C6E71), fontWeight: FontWeight.bold),
@@ -305,7 +305,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
     final ulogeText = item.uloge?.join(', ') ?? '';
 
     return DataRow(
-      color: MaterialStateProperty.all(Colors.white),
+      color: WidgetStateProperty.all(Colors.white),
       onSelectChanged: (selected) async {
         final result = await Navigator.push(
           context,
@@ -431,21 +431,21 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                 style: const TextStyle(color: Colors.white),
               ),
               style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(const Size(130, 40)),
+                minimumSize: WidgetStateProperty.all(const Size(130, 40)),
                 backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.pressed) ||
-                      states.contains(MaterialState.selected)) {
+                    WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.pressed) ||
+                      states.contains(WidgetState.selected)) {
                     return const Color(0xFF41706A);
                   }
-                  if (states.contains(MaterialState.hovered)) {
+                  if (states.contains(WidgetState.hovered)) {
                     return const Color(0xFF51968F);
                   }
                   return const Color(0xFF3C6E71);
                 }),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                     const EdgeInsets.symmetric(horizontal: 13, vertical: 9)),
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -466,19 +466,19 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
               },
               style: ButtonStyle(
                 backgroundColor:
-                    MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.pressed) ||
-                      states.contains(MaterialState.selected)) {
+                    WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.pressed) ||
+                      states.contains(WidgetState.selected)) {
                     return const Color(0xFF41706A);
                   }
-                  if (states.contains(MaterialState.hovered)) {
+                  if (states.contains(WidgetState.hovered)) {
                     return const Color(0xFF51968F);
                   }
                   return const Color(0xFF3C6E71);
                 }),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                     const EdgeInsets.symmetric(horizontal: 13, vertical: 9)),
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

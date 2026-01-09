@@ -155,10 +155,11 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  _prikaziPreporuke ? const Color(0xFFD55B91) : Colors.grey[300],
+              backgroundColor: _prikaziPreporuke
+                  ? const Color(0xFFD55B91)
+                  : Colors.grey[300],
               elevation: _prikaziPreporuke ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -183,10 +184,11 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  !_prikaziPreporuke ? const Color(0xFFD55B91) : Colors.grey[300],
+              backgroundColor: !_prikaziPreporuke
+                  ? const Color(0xFFD55B91)
+                  : Colors.grey[300],
               elevation: !_prikaziPreporuke ? 8 : 3,
-              shadowColor: Colors.black.withOpacity(0.3),
+              shadowColor: Colors.black.withAlpha(77),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -214,7 +216,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -247,17 +249,15 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
         ? knjiga.autorNaziv ?? "-"
         : (knjiga as KnjigaFavorit).autorNaziv ?? "-";
 
-    final String? slika = jePreporuka
-        ? knjiga.slika
-        : (knjiga as KnjigaFavorit).slika;
+    final String? slika =
+        jePreporuka ? knjiga.slika : (knjiga as KnjigaFavorit).slika;
 
     final String dodatniText = jePreporuka
         ? "Broj preporuka: ${knjiga.brojPreporuka}"
         : "Broj arhiviranja: ${(knjiga as KnjigaFavorit).brojArhiviranja}";
 
-    final int knjigaId = jePreporuka
-        ? knjiga.knjigaId
-        : (knjiga as KnjigaFavorit).knjigaId;
+    final int knjigaId =
+        jePreporuka ? knjiga.knjigaId : (knjiga as KnjigaFavorit).knjigaId;
 
     return GestureDetector(
       onTap: () async {
@@ -291,7 +291,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha(51),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -351,8 +351,8 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
     if (slikaBase64 == null || slikaBase64.isEmpty) {
       return Image.asset(
         "assets/images/placeholder.png",
-        width: 60,
-        height: 60,
+        width: 85,
+        height: 120,
         fit: BoxFit.cover,
       );
     }
@@ -361,8 +361,8 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: SizedBox(
-          width: 60,
-          height: 60,
+          width: 85,
+          height: 120,
           child: imageFromString(slikaBase64),
         ),
       );
@@ -387,7 +387,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
                   : null,
               style: ElevatedButton.styleFrom(
                 elevation: 6,
-                shadowColor: Colors.black.withOpacity(0.15),
+                shadowColor: Colors.black.withAlpha(38),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -406,7 +406,7 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
                   : null,
               style: ElevatedButton.styleFrom(
                 elevation: 6,
-                shadowColor: Colors.black.withOpacity(0.15),
+                shadowColor: Colors.black.withAlpha(38),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -419,5 +419,3 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
     );
   }
 }
-
-

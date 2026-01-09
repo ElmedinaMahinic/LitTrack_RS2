@@ -1,15 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:littrack_desktop/layouts/master_screen.dart';
 import 'package:littrack_desktop/providers/korisnik_provider.dart';
 import 'package:littrack_desktop/providers/uloga_provider.dart';
+import 'package:littrack_desktop/providers/report_provider.dart';
 import 'package:littrack_desktop/providers/utils.dart';
+import 'package:littrack_desktop/models/korisnik.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class AdminDodajRadnikaScreen extends StatefulWidget {
   const AdminDodajRadnikaScreen({super.key});
@@ -23,6 +25,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   late KorisnikProvider _korisnikProvider;
   late UlogaProvider _ulogaProvider;
+  late ReportProvider _reportProvider;
   int? _radnikUlogaId;
   String? _generisanaLozinka;
   final TextEditingController _lozinkaController = TextEditingController();
@@ -33,6 +36,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
     super.initState();
     _korisnikProvider = context.read<KorisnikProvider>();
     _ulogaProvider = context.read<UlogaProvider>();
+    _reportProvider = context.read<ReportProvider>();
     _loadRadnikUloga();
   }
 
@@ -115,7 +119,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                       FormBuilderValidators.maxLength(50,
                           errorText: "Ime može imati najviše 50 karaktera."),
                       FormBuilderValidators.match(
-                        r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                        RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                         errorText:
                             "Ime mora početi velikim slovom i sadržavati samo slova.",
                       ),
@@ -136,7 +140,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                           errorText:
                               "Prezime može imati najviše 50 karaktera."),
                       FormBuilderValidators.match(
-                        r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                        RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                         errorText:
                             "Prezime mora početi velikim slovom i sadržavati samo slova.",
                       ),
@@ -172,7 +176,7 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                       FormBuilderValidators.required(
                           errorText: "Telefon je obavezan."),
                       FormBuilderValidators.match(
-                        r'^\+\d{7,15}$',
+                        RegExp(r'^\+\d{7,15}$'),
                         errorText:
                             'Telefon mora početi sa + i imati 7-15 cifara.',
                       ),
@@ -187,6 +191,9 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
             const SizedBox(height: 15),
             FormBuilderTextField(
               name: 'korisnickoIme',
+              inputFormatters: [
+                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+              ],
               decoration:
                   _decoration('Korisničko ime', 'Unesite korisničko ime'),
               validator: FormBuilderValidators.compose([
@@ -196,6 +203,13 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
                     errorText: "Minimalno 4 karaktera."),
                 FormBuilderValidators.maxLength(30,
                     errorText: "Maksimalno 30 karaktera."),
+                (val) {
+                  if (val != null && val.contains(' ')) {
+                    return 'Korisničko ime ne smije sadržavati razmake.';
+                  }
+
+                  return null;
+                },
               ]),
             ),
             const SizedBox(height: 15),
@@ -329,22 +343,22 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
 
   ButtonStyle _buttonStyle(Color normal, Color hover, Color selected) {
     return ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-        if (states.contains(MaterialState.pressed) ||
-            states.contains(MaterialState.selected)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed) ||
+            states.contains(WidgetState.selected)) {
           return selected;
         }
-        if (states.contains(MaterialState.hovered)) return hover;
+        if (states.contains(WidgetState.hovered)) return hover;
         return normal;
       }),
-      shape: MaterialStateProperty.all(
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      elevation: MaterialStateProperty.all(4),
-      padding: MaterialStateProperty.all(
+      elevation: WidgetStateProperty.all(4),
+      padding: WidgetStateProperty.all(
         const EdgeInsets.symmetric(horizontal: 16),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black54),
+      shadowColor: WidgetStateProperty.all(Colors.black54),
     );
   }
 
@@ -382,7 +396,8 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         'uloge': [_radnikUlogaId],
       };
 
-      await _korisnikProvider.insert(request);
+      final Korisnik noviRadnik = await _korisnikProvider.insert(request);
+      final int radnikId = noviRadnik.korisnikId ?? 0;
       if (!mounted) return;
 
       await showCustomDialog(
@@ -401,12 +416,13 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         message: "Želite li generisati PDF sa podacima o radniku?",
         icon: Icons.picture_as_pdf,
         iconColor: Colors.redAccent,
-        onConfirm: () => createPdfFile(request),
+        onConfirm: () async {
+          await createPdfFile({
+            'id': radnikId,
+            'lozinka': _generisanaLozinka!,
+          });
+        },
       );
-
-      if (!mounted) return;
-
-      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       await showCustomDialog(
@@ -417,75 +433,63 @@ class _AdminDodajRadnikaScreenState extends State<AdminDodajRadnikaScreen> {
         iconColor: Colors.red,
       );
     } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
-  Future<void> createPdfFile(Map<String, dynamic> request) async {
-    final pdf = pw.Document();
+  Future<void> createPdfFile(Map<String, dynamic> radnikData) async {
+    try {
+      final bytes = await _reportProvider.getRadnikKreiranPdf(
+        radnikId: radnikData['id'] ?? 0,
+        plainPassword: radnikData['lozinka'] ?? '',
+      );
 
-    final logoData = await rootBundle.load('assets/images/logo.png');
-    final logoImage = pw.MemoryImage(logoData.buffer.asUint8List());
+      if (bytes.isEmpty) return;
 
-    pdf.addPage(
-      pw.Page(
-        build: (context) => pw.Padding(
-          padding: const pw.EdgeInsets.all(30),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Image(logoImage, width: 80, height: 80),
-                  pw.Text(
-                    "Podaci o radniku",
-                    style: pw.TextStyle(
-                      fontSize: 24,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              pw.SizedBox(height: 30),
-              _pdfLine("Ime", request['ime']),
-              _pdfLine("Prezime", request['prezime']),
-              _pdfLine("Email", request['email']),
-              _pdfLine("Korisnicko ime", request['korisnickoIme']),
-              _pdfLine("Lozinka", request['lozinka']),
-              pw.SizedBox(height: 30),
-              pw.Text(
-                "Molimo sacuvajte ove podatke na sigurnom mjestu.",
-                style: const pw.TextStyle(fontSize: 14),
-              ),
-              pw.Text(
-                "Lozinka je privremena i preporucuje se promjena pri prvom logovanju.",
-                style: const pw.TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+      final name =
+          'Radnik_${radnikData['id']}_${DateFormat('ddMMyyyy_HHmm').format(DateTime.now().toLocal())}.pdf';
 
-    await Printing.layoutPdf(
-      onLayout: (format) async => pdf.save(),
-    );
-  }
-
-  pw.Widget _pdfLine(String label, String value) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Row(
-        children: [
-          pw.Text("$label: ",
-              style:
-                  pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
-          pw.Text(value, style: const pw.TextStyle(fontSize: 14)),
+      final location = await getSaveLocation(
+        suggestedName: name,
+        acceptedTypeGroups: [
+          const XTypeGroup(label: 'PDF', extensions: ['pdf']),
         ],
-      ),
-    );
+      );
+
+      if (location == null) return;
+
+      final pdfBytes = Uint8List.fromList(bytes);
+
+      final file = XFile.fromData(
+        pdfBytes,
+        name: name,
+        mimeType: 'application/pdf',
+      );
+
+      await file.saveTo(location.path);
+
+      if (!mounted) return;
+
+      await showCustomDialog(
+        context: context,
+        title: "Uspjeh",
+        message:
+            "PDF izvještaj je uspješno sačuvan.\nLokacija: ${location.path}",
+        icon: Icons.check_circle_outline,
+        iconColor: Colors.green,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      await showCustomDialog(
+        context: context,
+        title: "Greška",
+        message: "Došlo je do greške pri generisanju PDF-a:\n$e",
+        icon: Icons.error,
+        iconColor: Colors.red,
+      );
+    }
   }
 }

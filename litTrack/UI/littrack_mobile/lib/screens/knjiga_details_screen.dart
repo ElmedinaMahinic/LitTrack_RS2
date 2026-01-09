@@ -687,7 +687,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withAlpha(20),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
@@ -770,7 +770,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   _buildCijena(),
                   const SizedBox(height: 22),
                   _buildButtonKorpa(),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 28),
                   _buildRecommended(),
                 ],
               ),
@@ -835,7 +835,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withAlpha(38),
                             blurRadius: 7,
                             offset: const Offset(0, 4),
                           ),
@@ -925,24 +925,24 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       child: ElevatedButton(
         onPressed: _isLoadingArhivirana ? null : _toggleArhiva,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
             if (_isLoadingArhivirana) return Colors.grey;
 
             if (_jeArhivirana) {
               return const Color(0xFF3C6E71);
             }
 
-            return states.contains(MaterialState.pressed)
+            return states.contains(WidgetState.pressed)
                 ? const Color(0xFF33585B)
                 : const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          shadowColor: MaterialStateProperty.all(
-            Colors.black.withOpacity(_jeArhivirana ? 0.4 : 0.3),
+          shadowColor: WidgetStateProperty.all(
+            Colors.black.withAlpha(_jeArhivirana ? 102 : 77),
           ),
-          elevation: MaterialStateProperty.all(
+          elevation: WidgetStateProperty.all(
             _jeArhivirana ? 8 : 6,
           ),
         ),
@@ -1013,24 +1013,24 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                 }
               },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
             if (isLoading) return Colors.grey;
 
             if (_jeProcitana) {
               return const Color(0xFF3C6E71);
             }
 
-            return states.contains(MaterialState.pressed)
+            return states.contains(WidgetState.pressed)
                 ? const Color(0xFF33585B)
                 : const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          shadowColor: MaterialStateProperty.all(
-            Colors.black.withOpacity(_jeProcitana ? 0.4 : 0.3),
+          shadowColor: WidgetStateProperty.all(
+            Colors.black.withAlpha(_jeProcitana ? 102 : 77),
           ),
-          elevation: MaterialStateProperty.all(_jeProcitana ? 8 : 6),
+          elevation: WidgetStateProperty.all(_jeProcitana ? 8 : 6),
         ),
         child: isLoading
             ? const SizedBox(
@@ -1138,20 +1138,20 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
           );
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
             (states) {
-              if (states.contains(MaterialState.pressed)) {
+              if (states.contains(WidgetState.pressed)) {
                 return const Color.fromARGB(255, 169, 71, 115);
               } else {
                 return const Color(0xFFD55B91);
               }
             },
           ),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-          elevation: MaterialStateProperty.all(6),
+          shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+          elevation: WidgetStateProperty.all(6),
         ),
         child: const Text(
           "Pročitaj recenzije",
@@ -1250,27 +1250,26 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                   }
                 : null,
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (_isLoadingPreporuka ||
                     !mozePreporuciti ||
                     trebaProcitatiPrvo) {
                   return Colors.grey;
                 }
-                if (states.contains(MaterialState.pressed)) {
+                if (states.contains(WidgetState.pressed)) {
                   return const Color(0xFF33585B);
                 }
                 return const Color(0xFF3C6E71);
               }),
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              shadowColor: MaterialStateProperty.all(
-                Colors.black.withOpacity(0.3),
+              shadowColor: WidgetStateProperty.all(
+                Colors.black.withAlpha(77),
               ),
-              elevation: MaterialStateProperty.all(6),
+              elevation: WidgetStateProperty.all(6),
             ),
             child: _isLoadingPreporuka
                 ? const SizedBox(
@@ -1361,22 +1360,20 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                     }
                   },
             style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (dugmeDisable) {
                   return Colors.grey;
                 }
-                if (states.contains(MaterialState.pressed)) {
+                if (states.contains(WidgetState.pressed)) {
                   return const Color(0xFF33585B);
                 }
                 return const Color(0xFF3C6E71);
               }),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              shadowColor:
-                  MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-              elevation: MaterialStateProperty.all(6),
+              shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+              elevation: WidgetStateProperty.all(6),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1498,7 +1495,7 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 17),
+        const SizedBox(height: 19),
         SizedBox(
           width: 220,
           height: 48,
@@ -1553,21 +1550,20 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                     }
                   },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              backgroundColor: WidgetStateProperty.resolveWith<Color>(
                 (states) {
-                  if (states.contains(MaterialState.pressed)) {
+                  if (states.contains(WidgetState.pressed)) {
                     return const Color(0xFF33585B);
                   } else {
                     return const Color(0xFF3C6E71);
                   }
                 },
               ),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              shadowColor:
-                  MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-              elevation: MaterialStateProperty.all(6),
+              shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+              elevation: WidgetStateProperty.all(6),
             ),
             child: _isLoadingKorpa
                 ? const SizedBox(
@@ -1626,14 +1622,14 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
 
   Widget _buildRecommendedCard(Knjiga knjiga) {
     return Container(
-      height: 110,
+      height: 120,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -1641,13 +1637,14 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
       ),
       child: Row(
         children: [
+          const SizedBox(width: 10),
           SizedBox(
-            width: 120,
-            height: 100,
+            width: 81,
+            height: 115,
             child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
               child: FittedBox(
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
                 child: (knjiga.slika != null && knjiga.slika!.isNotEmpty)
                     ? imageFromString(knjiga.slika!)
                     : Image.asset(
@@ -1719,8 +1716,11 @@ class _KnjigaDetailsScreenState extends State<KnjigaDetailsScreen> {
                               color: Color(0xFFD55B91),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.add,
-                                color: Colors.white, size: 20),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),

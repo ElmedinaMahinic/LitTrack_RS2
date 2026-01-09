@@ -164,7 +164,7 @@ class _LicnePreporukeDetailsScreenState
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -191,7 +191,7 @@ class _LicnePreporukeDetailsScreenState
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -206,7 +206,7 @@ class _LicnePreporukeDetailsScreenState
           _buildInfoRow("Naslov:", naslov, Icons.title),
           _buildInfoRow(
             "Datum preporuke:",
-            DateFormat('dd.MM.yyyy. HH:mm').format(datumPreporuke.toLocal()),
+            DateFormat('dd.MM.yyyy.').format(datumPreporuke.toLocal()),
             Icons.calendar_today_outlined,
           ),
         ],
@@ -223,28 +223,23 @@ class _LicnePreporukeDetailsScreenState
         children: [
           Icon(icon, color: iconColor ?? const Color(0xFF3C6E71), size: 22),
           const SizedBox(width: 10),
+          SizedBox(
+            width: 160,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: Color(0xFF3C6E71),
+              ),
+            ),
+          ),
           Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF3C6E71),
-                ),
-                children: [
-                  TextSpan(
-                    text: "$label ",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: value,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
           ),
@@ -263,7 +258,7 @@ class _LicnePreporukeDetailsScreenState
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -308,7 +303,7 @@ class _LicnePreporukeDetailsScreenState
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -335,7 +330,6 @@ class _LicnePreporukeDetailsScreenState
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
-                  decoration: TextDecoration.underline,
                 ),
               ),
             ),

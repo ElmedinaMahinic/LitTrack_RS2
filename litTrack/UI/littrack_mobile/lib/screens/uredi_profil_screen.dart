@@ -175,7 +175,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -211,7 +211,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                 FormBuilderValidators.maxLength(50,
                     errorText: "Maksimalno 50 karaktera."),
                 FormBuilderValidators.match(
-                  r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                  RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                   errorText:
                       "Ime mora početi velikim slovom i sadržavati samo slova.",
                 ),
@@ -227,7 +227,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                 FormBuilderValidators.maxLength(50,
                     errorText: "Maksimalno 50 karaktera."),
                 FormBuilderValidators.match(
-                  r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$',
+                  RegExp(r'^[A-ZČĆŽĐŠ][a-zA-ZčćžđšČĆŽĐŠ\s]*$'),
                   errorText:
                       "Prezime mora početi velikim slovom i sadržavati samo slova.",
                 ),
@@ -254,7 +254,7 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
                 FormBuilderValidators.required(
                     errorText: "Telefon je obavezan."),
                 FormBuilderValidators.match(
-                  r'^\+\d{7,15}$',
+                  RegExp(r'^\+\d{7,15}$'),
                   errorText: 'Telefon mora početi sa + i imati 7-15 cifara.',
                 ),
               ]),
@@ -352,17 +352,17 @@ class _UrediProfilScreenState extends State<UrediProfilScreen> {
 
   Widget _buildActionButtons() {
     final buttonStyle = ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-        if (states.contains(MaterialState.pressed)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.pressed)) {
           return const Color(0xFF33585B);
         }
         return const Color(0xFF3C6E71);
       }),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-      elevation: MaterialStateProperty.all(6),
+      shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+      elevation: WidgetStateProperty.all(6),
     );
 
     return Padding(

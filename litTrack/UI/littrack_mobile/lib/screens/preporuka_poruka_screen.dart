@@ -231,11 +231,11 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFFD55B91),
+        color: const Color(0xFF3C6E71),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -323,18 +323,18 @@ class _PreporukaPorukaScreenState extends State<PreporukaPorukaScreen> {
       child: ElevatedButton(
         onPressed: _isSaving ? null : _save,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
             if (_isSaving) return Colors.grey;
-            if (states.contains(MaterialState.pressed)) {
+            if (states.contains(WidgetState.pressed)) {
               return const Color(0xFF33585B);
             }
             return const Color(0xFF3C6E71);
           }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.3)),
-          elevation: MaterialStateProperty.all(6),
+          shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
+          elevation: WidgetStateProperty.all(6),
         ),
         child: _isSaving
             ? const SizedBox(
