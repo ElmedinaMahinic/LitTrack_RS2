@@ -13,6 +13,7 @@ using litTrack.API.Auth;
 using Microsoft.AspNetCore.Authentication;
 using litTrack.Services.Recommender;
 using QuestPDF.Infrastructure;
+using litTrack.Services.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,7 @@ builder.Services.AddTransient<IStavkaNarudzbeValidator, StavkaNarudzbeValidator>
 
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 builder.Services.AddTransient<IActiveUserServiceAsync, ActiveUserServiceAsync>();
+builder.Services.AddTransient<IRabbitMQService, RabbitMQService>();
 builder.Services.AddScoped<IKnjigaRecommenderService, KnjigaRecommenderService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 

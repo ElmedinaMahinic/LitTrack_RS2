@@ -3,10 +3,12 @@ using litTrack.Model.Exceptions;
 using litTrack.Model.Helpers;
 using litTrack.Model.Requests;
 using litTrack.Model.SearchObjects;
+using litTrack.Model.Messages;
 using litTrack.Services.Auth;
 using litTrack.Services.BaseServicesImplementation;
 using litTrack.Services.Database;
 using litTrack.Services.Interfaces;
+using litTrack.Services.RabbitMQ;
 using litTrack.Services.Validators.Implementation;
 using litTrack.Services.Validators.Interfaces;
 using MapsterMapper;
@@ -27,11 +29,13 @@ namespace litTrack.Services.ServicesImplementation
         private readonly ILogger<KorisnikService> _logger;
         private readonly IPasswordService _passwordService;
         private readonly IActiveUserServiceAsync _activeUserService;
+        private readonly IRabbitMQService _rabbitMQService;
 
         public KorisnikService(_210078Context context, IMapper mapper,
             IUlogaValidator ulogaValidator, IKorisnikValidator korisnikValidator,
             ILogger<KorisnikService> logger, IPasswordService passwordService,
-            IActiveUserServiceAsync activeUserService
+            IActiveUserServiceAsync activeUserService,
+            IRabbitMQService rabbitMQService
          )
             : base(context, mapper)
         {
@@ -40,6 +44,7 @@ namespace litTrack.Services.ServicesImplementation
             _logger = logger;
             _passwordService= passwordService;
             _activeUserService= activeUserService;
+            _rabbitMQService = rabbitMQService;
         }
 
         public override IQueryable<Korisnik> AddFilter(KorisnikSearchObject searchObject, IQueryable<Korisnik> query)
@@ -172,6 +177,22 @@ namespace litTrack.Services.ServicesImplementation
             entity.IsDeleted = false;
 
             _logger.LogInformation("Dodavanje korisnika sa korisničkim imenom: {KorisnickoIme}", entity.KorisnickoIme);
+
+            var emailDto = new EmailDTO
+            {
+                EmailTo = entity.Email,
+                ReceiverName = $"{entity.Ime} {entity.Prezime}",
+                Subject = "Dobrodošli u LitTrack",
+                Message =
+                    $"Poštovanje {entity.Ime},<br><br>" +
+                    $"Vaš profil je uspješno kreiran.<br>" +
+                    $"Sada se možete prijaviti i koristiti sve funkcionalnosti aplikacije.<br><br>" +
+                    $"Lijep pozdrav,<br>" +
+                    $"LitTrack tim"
+            };
+
+
+            await _rabbitMQService.SendAnEmail(emailDto);
 
 
             await base.BeforeInsertAsync(request, entity, cancellationToken);

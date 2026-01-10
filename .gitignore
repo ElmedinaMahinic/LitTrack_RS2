@@ -353,3 +353,4 @@ litTrack/UI/littrack_desktop/.env
 litTrack/.env
 litTrack/litTrack.API/.env
 litTrack/litTrack.Services/.env
+litTrack/litTrack.Subscriber/.env
