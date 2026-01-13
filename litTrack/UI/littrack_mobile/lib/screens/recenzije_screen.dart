@@ -104,7 +104,7 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
       'pageSize': _pageSize,
       'RecenzijaId': recenzijaId,
       'orderBy': 'DatumDodavanja',
-      'sortDirection': 'desc',
+      'sortDirection': 'asc',
     };
     try {
       final result = await _odgovorProvider.get(filter: filter);
@@ -632,6 +632,8 @@ class _RecenzijeScreenState extends State<RecenzijeScreen> {
         automaticallyImplyLeading: false,
         toolbarHeight: kToolbarHeight + 15,
         backgroundColor: const Color(0xFFF6F4F3),
+        surfaceTintColor: Colors.transparent,
+        forceMaterialTransparency: false,
         title: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 6.0, left: 8, right: 8),

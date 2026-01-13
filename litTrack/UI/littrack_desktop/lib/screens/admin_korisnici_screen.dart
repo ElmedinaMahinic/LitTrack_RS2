@@ -40,11 +40,10 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
     _dataSource = KorisnikDataSource(
       provider: _korisnikProvider,
       context: context,
-      refreshParent: _refreshTable,
     );
 
     _loadUloge();
-    _dataSource.filterServerSide('', null);
+    _dataSource.loadInitial();
   }
 
   Future<void> _loadUloge() async {
@@ -53,11 +52,6 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
     setState(() {
       _ulogeList = result.resultList;
     });
-  }
-
-  void _refreshTable() {
-    _dataSource.filterServerSide(
-        _korisnickoImeController.text, _selectedUloga?.ulogaId);
   }
 
   @override
@@ -93,7 +87,9 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
-              onChanged: (_) => _refreshTable(),
+              onChanged: (value) {
+                _dataSource.filterServerSide(value, _selectedUloga?.ulogaId);
+              },
             ),
           ),
           const SizedBox(width: 20),
@@ -101,7 +97,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
             flex: 2,
             child: DropdownButtonFormField<Uloga>(
               decoration: InputDecoration(
-                labelText: 'Uloga',
+                hintText: 'Uloga',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 filled: true,
@@ -115,21 +111,25 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
                       DropdownMenuItem(value: uloga, child: Text(uloga.naziv)))
                   .toList(),
               onChanged: (value) {
-                setState(() => _selectedUloga = value);
-                _refreshTable();
+                setState(() {
+                  _selectedUloga = value;
+                });
+                _dataSource.filterServerSide(
+                    _korisnickoImeController.text, _selectedUloga?.ulogaId);
               },
             ),
           ),
           const SizedBox(width: 20),
           ElevatedButton(
             onPressed: () {
-              _korisnickoImeController.clear();
-              setState(() => _selectedUloga = null);
-              _refreshTable();
+              setState(() {
+                _korisnickoImeController.clear();
+                _selectedUloga = null;
+              });
+              _dataSource.filterServerSide('', null);
             },
             style: ButtonStyle(
-              backgroundColor:
-                  WidgetStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (states.contains(WidgetState.pressed) ||
                     states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
@@ -164,7 +164,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
                     builder: (context) => const AdminDodajRadnikaScreen()),
               );
               if (result == true) {
-                _refreshTable();
+                await _dataSource.reset();
               }
             },
             icon: const Icon(Icons.add, color: Colors.white),
@@ -173,8 +173,7 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
               style: TextStyle(color: Colors.white),
             ),
             style: ButtonStyle(
-              backgroundColor:
-                  WidgetStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (states.contains(WidgetState.pressed) ||
                     states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
@@ -221,8 +220,8 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: WidgetStateProperty.all(
-              const Color.fromARGB(255, 213, 224, 219)),
+          headingRowColor:
+              WidgetStateProperty.all(const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
               color: Color(0xFF3C6E71), fontWeight: FontWeight.bold),
         ),
@@ -230,7 +229,8 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
           showCheckboxColumn: false,
           addEmptyRows: false,
           source: _dataSource,
-          rowsPerPage: 10,
+          rowsPerPage: _dataSource.pageSize,
+          showFirstLastButtons: true,
           columns: const [
             DataColumn(label: Text("ULOGE")),
             DataColumn(label: Text("KORISNIČKO IME")),
@@ -246,11 +246,10 @@ class _AdminKorisniciScreenState extends State<AdminKorisniciScreen> {
 class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
   final KorisnikProvider provider;
   final BuildContext context;
-  final VoidCallback refreshParent;
 
   List<Korisnik> data = [];
   int page = 1;
-  int pageSize = 10;
+  final int pageSize = 10;
   int count = 0;
   String korisnickoImeFilter = '';
   int? ulogaIdFilter;
@@ -258,13 +257,71 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
   KorisnikDataSource({
     required this.provider,
     required this.context,
-    required this.refreshParent,
   });
 
-  void filterServerSide(String ime, int? ulogaId) {
+  Future<void> loadInitial() async {
+    if (!context.mounted) return;
+    try {
+      await reset(targetPage: page);
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
+  }
+
+  void filterServerSide(String ime, int? ulogaId) async {
     korisnickoImeFilter = ime;
     ulogaIdFilter = ulogaId;
-    setNextView();
+    await reset(targetPage: 1);
+  }
+
+  Future<void> reset({int? targetPage}) async {
+    final newPage = targetPage ?? page;
+    final filter = {
+      'KorisnickoIme': korisnickoImeFilter,
+      if (ulogaIdFilter != null) 'UlogaId': ulogaIdFilter,
+    };
+
+    try {
+      var result =
+          await provider.get(filter: filter, page: newPage, pageSize: pageSize);
+      var newData = result.resultList;
+      var newCount = result.count;
+
+      if (newData.isEmpty && newPage > 1) {
+        final fallbackPage = newPage - 1;
+        final fallbackResult = await provider.get(
+          filter: filter,
+          page: fallbackPage,
+          pageSize: pageSize,
+        );
+        newData = fallbackResult.resultList;
+        newCount = fallbackResult.count;
+        page = fallbackPage;
+      } else {
+        page = newPage;
+      }
+
+      data = newData;
+      count = newCount;
+
+      setNextView(startIndex: (page - 1) * pageSize);
+      await Future.delayed(const Duration(milliseconds: 100));
+      notifyListeners();
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
   }
 
   @override
@@ -313,7 +370,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
             builder: (context) => KorisniciDetailsScreen(korisnik: item),
           ),
         );
-        if (result == true) refreshParent();
+        if (result == true) await reset();
       },
       cells: [
         DataCell(
@@ -407,7 +464,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                         iconColor: Colors.green,
                       );
 
-                      refreshParent();
+                      await reset();
                     } catch (e) {
                       if (!context.mounted) return;
                       showCustomDialog(
@@ -462,7 +519,7 @@ class KorisnikDataSource extends AdvancedDataTableSource<Korisnik> {
                         KorisniciDetailsScreen(korisnik: item),
                   ),
                 );
-                if (result == true) refreshParent();
+                if (result == true) await reset();
               },
               style: ButtonStyle(
                 backgroundColor:

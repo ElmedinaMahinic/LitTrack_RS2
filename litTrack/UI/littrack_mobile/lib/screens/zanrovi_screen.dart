@@ -204,7 +204,7 @@ class _ZanroviScreenState extends State<ZanroviScreen> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.asset(
-          "assets/images/placeholder.png",
+          "assets/images/placeholder_zanr.png",
           width: imageSize,
           height: imageSize,
           fit: BoxFit.cover,

@@ -24,19 +24,8 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
   void initState() {
     super.initState();
     _provider = context.read<AutorProvider>();
-    _dataSource = AutorDataSource(
-      provider: _provider,
-      context: context,
-      refreshParent: _refreshTable,
-    );
-    _dataSource.filterServerSide('');
-  }
-
-  void _refreshTable() {
-    if (!mounted) return;
-    setState(() {
-      _dataSource.filterServerSide(_imeController.text);
-    });
+    _dataSource = AutorDataSource(provider: _provider, context: context);
+    _dataSource.loadInitial();
   }
 
   @override
@@ -85,8 +74,7 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
               _dataSource.filterServerSide('');
             },
             style: ButtonStyle(
-              backgroundColor:
-                  WidgetStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (states.contains(WidgetState.pressed) ||
                     states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
@@ -121,7 +109,9 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
                   builder: (context) => const AdminAutoriDetailsScreen(),
                 ),
               );
-              if (result == true) _refreshTable();
+              if (result == true) {
+                await _dataSource.reset();
+              }
             },
             icon: const Icon(Icons.add, color: Colors.white),
             label: const Text(
@@ -129,8 +119,7 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
               style: TextStyle(color: Colors.white),
             ),
             style: ButtonStyle(
-              backgroundColor:
-                  WidgetStateProperty.resolveWith<Color>((states) {
+              backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
                 if (states.contains(WidgetState.pressed) ||
                     states.contains(WidgetState.selected)) {
                   return const Color(0xFF41706A);
@@ -177,8 +166,8 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: WidgetStateProperty.all(
-              const Color.fromARGB(255, 213, 224, 219)),
+          headingRowColor:
+              WidgetStateProperty.all(const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
             color: Color(0xFF3C6E71),
             fontWeight: FontWeight.bold,
@@ -189,7 +178,8 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
           showCheckboxColumn: false,
           addEmptyRows: false,
           source: _dataSource,
-          rowsPerPage: 10,
+          rowsPerPage: _dataSource.pageSize,
+          showFirstLastButtons: true,
           columns: const [
             DataColumn(label: Text("IME")),
             DataColumn(label: Text("PREZIME")),
@@ -204,23 +194,72 @@ class _AdminAutoriScreenState extends State<AdminAutoriScreen> {
 class AutorDataSource extends AdvancedDataTableSource<Autor> {
   final AutorProvider provider;
   final BuildContext context;
-  final VoidCallback refreshParent;
 
   List<Autor> data = [];
   int page = 1;
-  int pageSize = 10;
+  final int pageSize = 10;
   int count = 0;
   String imeFilter = "";
 
-  AutorDataSource({
-    required this.provider,
-    required this.context,
-    required this.refreshParent,
-  });
+  AutorDataSource({required this.provider, required this.context});
 
-  void filterServerSide(String ime) {
+  Future<void> loadInitial() async {
+    if (!context.mounted) return;
+    try {
+      await reset(targetPage: page);
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
+  }
+
+  void filterServerSide(String ime) async {
     imeFilter = ime;
-    setNextView();
+    await reset(targetPage: 1);
+  }
+
+  Future<void> reset({int? targetPage}) async {
+    final newPage = targetPage ?? page;
+    final filter = {'ImePrezime': imeFilter};
+
+    try {
+      final result =
+          await provider.get(filter: filter, page: newPage, pageSize: pageSize);
+
+      var newData = result.resultList;
+      var newCount = result.count;
+
+      if (newData.isEmpty && newPage > 1) {
+        final fallbackPage = newPage - 1;
+        final fallbackResult = await provider.get(
+            filter: filter, page: fallbackPage, pageSize: pageSize);
+        newData = fallbackResult.resultList;
+        newCount = fallbackResult.count;
+        page = fallbackPage;
+      } else {
+        page = newPage;
+      }
+
+      data = newData;
+      count = newCount;
+
+      setNextView(startIndex: (page - 1) * pageSize);
+      await Future.delayed(const Duration(milliseconds: 100));
+      notifyListeners();
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
   }
 
   @override
@@ -236,9 +275,7 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
       count = result.count;
       return RemoteDataSourceDetails(count, data);
     } catch (e) {
-      if (!context.mounted) {
-        return RemoteDataSourceDetails(0, []);
-      }
+      if (!context.mounted) return RemoteDataSourceDetails(0, []);
       showCustomDialog(
         context: context,
         title: 'Greška',
@@ -255,21 +292,39 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
     final item = data[index];
 
     return DataRow(
-      color: WidgetStateProperty.resolveWith<Color?>(
-          (Set<WidgetState> states) {
+      color: WidgetStateProperty.resolveWith<Color?>((states) {
         if (states.contains(WidgetState.hovered)) {
           return const Color(0xFFD8EBEA);
         }
         return Colors.white;
       }),
       onSelectChanged: (selected) async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdminAutoriDetailsScreen(autor: item),
-          ),
-        );
-        if (result == true) refreshParent();
+        if (selected == true) {
+          try {
+            final autor = await provider.getById(item.autorId!);
+            if (!context.mounted) return;
+
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminAutoriDetailsScreen(autor: autor),
+              ),
+            );
+
+            if (result == true) {
+              if (!context.mounted) return;
+              await reset();
+            }
+          } catch (e) {
+            if (!context.mounted) return;
+            showCustomDialog(
+              context: context,
+              title: 'Greška',
+              message: e.toString(),
+              icon: Icons.error,
+            );
+          }
+        }
       },
       cells: [
         DataCell(
@@ -304,14 +359,30 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AdminAutoriDetailsScreen(autor: item),
-                    ),
-                  );
-                  if (result == true) refreshParent();
+                  try {
+                    final autor = await provider.getById(item.autorId!);
+                    if (!context.mounted) return;
+
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AdminAutoriDetailsScreen(autor: autor),
+                      ),
+                    );
+
+                    if (result == true) {
+                      await reset();
+                    }
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    showCustomDialog(
+                      context: context,
+                      title: 'Greška',
+                      message: e.toString(),
+                      icon: Icons.error,
+                    );
+                  }
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.resolveWith<Color>(
@@ -364,7 +435,7 @@ class AutorDataSource extends AdvancedDataTableSource<Autor> {
                           icon: Icons.check_circle,
                           iconColor: Colors.green,
                         );
-                        filterServerSide(imeFilter);
+                        await reset();
                       } catch (e) {
                         if (!context.mounted) return;
                         showCustomDialog(

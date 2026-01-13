@@ -211,7 +211,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _selectedDate != null
-                            ? 'Datum: ${DateFormat('dd.MM.yyyy').format(_selectedDate!)}'
+                            ? 'Obavijesti do: ${DateFormat('dd.MM.yyyy').format(_selectedDate!)}'
                             : 'Odaberi datum',
                         style: const TextStyle(
                           color: Colors.white,
@@ -238,7 +238,7 @@ class _RadnikObavijestiScreenState extends State<RadnikObavijestiScreen> {
               const SizedBox(width: 12),
               Tooltip(
                 message: _showHistorija
-                    ? 'Filtrirajte obavijesti po naslovu i/ili datumu'
+                    ? 'Filtrirajte obavijesti po naslovu i/ili do određenog datuma'
                     : 'Filtrirajte obavijesti po naslovu',
                 decoration: _tooltipDecoration(),
                 textStyle: _tooltipTextStyle(),

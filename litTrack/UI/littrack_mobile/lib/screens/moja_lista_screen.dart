@@ -323,15 +323,17 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
                           children: [
                             Text(
                               knjiga.nazivKnjige ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               knjiga.autorNaziv ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,

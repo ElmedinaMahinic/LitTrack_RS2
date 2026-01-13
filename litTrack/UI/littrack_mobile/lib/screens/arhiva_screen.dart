@@ -297,23 +297,23 @@ class _ArhivaScreenState extends State<ArhivaScreen> {
                     children: [
                       Text(
                         knjiga.nazivKnjige ?? "-",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         knjiga.autorNaziv ?? "-",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: Colors.black54,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
                       ),
                       const Spacer(),
                       Padding(

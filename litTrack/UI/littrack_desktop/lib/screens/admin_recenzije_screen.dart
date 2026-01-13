@@ -37,16 +37,8 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
       recenzijaProvider: _recenzijaProvider,
       odgovorProvider: _recenzijaOdgovorProvider,
       context: context,
-      refreshParent: _refreshTable,
     );
-    _dataSource.filterServerSide('', _prikazTipa);
-  }
-
-  void _refreshTable() {
-    if (!mounted) return;
-    setState(() {
-      _dataSource.filterServerSide(_korisnickoImeController.text, _prikazTipa);
-    });
+    _dataSource.loadInitial();
   }
 
   @override
@@ -97,7 +89,6 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
                 onPressed: () {
                   _korisnickoImeController.clear();
                   _dataSource.filterServerSide('', _prikazTipa);
-                  setState(() {});
                 },
                 style: ButtonStyle(
                   backgroundColor:
@@ -251,8 +242,8 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DataTableTheme(
         data: DataTableThemeData(
-          headingRowColor: WidgetStateProperty.all(
-              const Color.fromARGB(255, 213, 224, 219)),
+          headingRowColor:
+              WidgetStateProperty.all(const Color.fromARGB(255, 213, 224, 219)),
           headingTextStyle: const TextStyle(
             color: Color(0xFF3C6E71),
             fontWeight: FontWeight.bold,
@@ -263,7 +254,8 @@ class _AdminRecenzijeScreenState extends State<AdminRecenzijeScreen> {
           showCheckboxColumn: false,
           addEmptyRows: false,
           source: _dataSource,
-          rowsPerPage: 10,
+          rowsPerPage: _dataSource.pageSize,
+          showFirstLastButtons: true,
           columns: const [
             DataColumn(label: Text("KORISNIČKO IME")),
             DataColumn(label: Text("KOMENTAR")),
@@ -281,11 +273,10 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
   final RecenzijaProvider recenzijaProvider;
   final RecenzijaOdgovorProvider odgovorProvider;
   final BuildContext context;
-  final VoidCallback refreshParent;
 
   List<dynamic> data = [];
   int page = 1;
-  int pageSize = 10;
+  final int pageSize = 10;
   int count = 0;
   String korisnickoImeFilter = "";
   PrikazTipa prikazTipa = PrikazTipa.recenzije;
@@ -294,13 +285,77 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
     required this.recenzijaProvider,
     required this.odgovorProvider,
     required this.context,
-    required this.refreshParent,
   });
 
-  void filterServerSide(String korisnickoIme, PrikazTipa tipa) {
+  Future<void> loadInitial() async {
+    if (!context.mounted) return;
+    try {
+      await reset(targetPage: page);
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
+  }
+
+  void filterServerSide(String korisnickoIme, PrikazTipa tipa) async {
     korisnickoImeFilter = korisnickoIme;
     prikazTipa = tipa;
-    setNextView();
+    await reset(targetPage: 1);
+  }
+
+  Future<void> reset({int? targetPage}) async {
+    final newPage = targetPage ?? page;
+    final filter = {'KorisnickoIme': korisnickoImeFilter};
+
+    try {
+      dynamic result;
+      if (prikazTipa == PrikazTipa.recenzije) {
+        result = await recenzijaProvider.get(
+            filter: filter, page: newPage, pageSize: pageSize);
+      } else {
+        result = await odgovorProvider.get(
+            filter: filter, page: newPage, pageSize: pageSize);
+      }
+
+      var newData = result.resultList;
+      var newCount = result.count;
+
+      if (newData.isEmpty && newPage > 1) {
+        final fallbackPage = newPage - 1;
+        if (prikazTipa == PrikazTipa.recenzije) {
+          result = await recenzijaProvider.get(
+              filter: filter, page: fallbackPage, pageSize: pageSize);
+        } else {
+          result = await odgovorProvider.get(
+              filter: filter, page: fallbackPage, pageSize: pageSize);
+        }
+        newData = result.resultList;
+        newCount = result.count;
+        page = fallbackPage;
+      } else {
+        page = newPage;
+      }
+
+      data = newData;
+      count = newCount;
+
+      setNextView(startIndex: (page - 1) * pageSize);
+      await Future.delayed(const Duration(milliseconds: 100));
+      notifyListeners();
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
   }
 
   @override
@@ -375,18 +430,29 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
         }
         return Colors.white;
       }),
-      onSelectChanged: (selected) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AdminRecenzijeDetailsScreen(
-              recenzija: item is Recenzija ? item : null,
-              odgovor: item is RecenzijaOdgovor ? item : null,
-            ),
-          ),
-        ).then((value) {
-          if (value == true) refreshParent();
-        });
+      onSelectChanged: (selected) async {
+        if (selected == true) {
+          try {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AdminRecenzijeDetailsScreen(
+                  recenzija: item is Recenzija ? item : null,
+                  odgovor: item is RecenzijaOdgovor ? item : null,
+                ),
+              ),
+            );
+            if (result == true) await reset();
+          } catch (e) {
+            if (!context.mounted) return;
+            showCustomDialog(
+              context: context,
+              title: 'Greška',
+              message: e.toString(),
+              icon: Icons.error,
+            );
+          }
+        }
       },
       cells: [
         DataCell(
@@ -447,18 +513,27 @@ class RecenzijaDataSource extends AdvancedDataTableSource<dynamic> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AdminRecenzijeDetailsScreen(
-                        recenzija: item is Recenzija ? item : null,
-                        odgovor: item is RecenzijaOdgovor ? item : null,
+                onPressed: () async {
+                  try {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AdminRecenzijeDetailsScreen(
+                          recenzija: item is Recenzija ? item : null,
+                          odgovor: item is RecenzijaOdgovor ? item : null,
+                        ),
                       ),
-                    ),
-                  ).then((value) {
-                    if (value == true) refreshParent();
-                  });
+                    );
+                    if (result == true) await reset();
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    showCustomDialog(
+                      context: context,
+                      title: 'Greška',
+                      message: e.toString(),
+                      icon: Icons.error,
+                    );
+                  }
                 },
                 style: ButtonStyle(
                   backgroundColor:

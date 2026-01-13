@@ -257,7 +257,7 @@ class _PreporukaUserScreenState extends State<PreporukaUserScreen> {
             return const Color(0xFF3C6E71);
           }),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           shadowColor: WidgetStateProperty.all(Colors.black.withAlpha(77)),
           elevation: WidgetStateProperty.all(6),

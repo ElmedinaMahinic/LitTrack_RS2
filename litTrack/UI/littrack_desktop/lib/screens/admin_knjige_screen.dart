@@ -26,7 +26,7 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
     super.initState();
     _provider = context.read<KnjigaProvider>();
     _dataSource = KnjigaDataSource(provider: _provider, context: context);
-    _dataSource.filterServerSide('', '');
+    _dataSource.loadInitial();
   }
 
   @override
@@ -99,7 +99,6 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
               _nazivController.clear();
               _autorNazivController.clear();
               _dataSource.filterServerSide('', '');
-              setState(() {});
             },
             style: ButtonStyle(
               backgroundColor:
@@ -139,10 +138,7 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
                 ),
               );
               if (result == true) {
-                _dataSource.filterServerSide(
-                  _nazivController.text,
-                  _autorNazivController.text,
-                );
+               await _dataSource.reset();
               }
             },
             icon: const Icon(Icons.add, color: Colors.white),
@@ -209,7 +205,8 @@ class _AdminKnjigeScreenState extends State<AdminKnjigeScreen> {
           showCheckboxColumn: false,
           addEmptyRows: false,
           source: _dataSource,
-          rowsPerPage: 10,
+          rowsPerPage: _dataSource.pageSize,
+          showFirstLastButtons: true,
           columns: const [
             DataColumn(label: Text("NAZIV")),
             DataColumn(label: Text("AUTOR")),
@@ -228,17 +225,74 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
 
   List<Knjiga> data = [];
   int page = 1;
-  int pageSize = 10;
+  final int pageSize = 10;
   int count = 0;
   String nazivFilter = "";
   String autorNazivFilter = "";
 
   KnjigaDataSource({required this.provider, required this.context});
 
-  void filterServerSide(String naziv, String autorNaziv) {
+  Future<void> loadInitial() async {
+    if (!context.mounted) return;
+    try {
+      await reset(targetPage: page);
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
+  }
+
+  void filterServerSide(String naziv, String autorNaziv) async {
     nazivFilter = naziv;
     autorNazivFilter = autorNaziv;
-    setNextView();
+    await reset(targetPage: 1);
+  }
+
+  Future<void> reset({int? targetPage}) async {
+    final newPage = targetPage ?? page;
+    final filter = {
+      'Naziv': nazivFilter,
+      'AutorNaziv': autorNazivFilter,
+    };
+
+    try {
+      final result =
+          await provider.get(filter: filter, page: newPage, pageSize: pageSize);
+
+      var newData = result.resultList;
+      var newCount = result.count;
+
+      if (newData.isEmpty && newPage > 1) {
+        final fallbackPage = newPage - 1;
+        final fallbackResult =
+            await provider.get(filter: filter, page: fallbackPage, pageSize: pageSize);
+        newData = fallbackResult.resultList;
+        newCount = fallbackResult.count;
+        page = fallbackPage;
+      } else {
+        page = newPage;
+      }
+
+      data = newData;
+      count = newCount;
+
+      setNextView(startIndex: (page - 1) * pageSize);
+      await Future.delayed(const Duration(milliseconds: 100));
+      notifyListeners();
+    } catch (e) {
+      if (!context.mounted) return;
+      showCustomDialog(
+        context: context,
+        title: 'Greška',
+        message: e.toString(),
+        icon: Icons.error,
+      );
+    }
   }
 
   @override
@@ -289,7 +343,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
               ),
             );
             if (result == true) {
-              filterServerSide(nazivFilter, autorNazivFilter);
+              await reset();
             }
           } catch (e) {
             if (!context.mounted) return;
@@ -363,7 +417,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                       ),
                     );
                     if (result == true) {
-                      filterServerSide(nazivFilter, autorNazivFilter);
+                      await reset();
                     }
                   } catch (e) {
                     if (!context.mounted) return;
@@ -424,7 +478,7 @@ class KnjigaDataSource extends AdvancedDataTableSource<Knjiga> {
                           icon: Icons.check_circle,
                           iconColor: Colors.green,
                         );
-                        filterServerSide(nazivFilter, autorNazivFilter);
+                        await reset();
                       } catch (e) {
                         if (!context.mounted) return;
                         showCustomDialog(

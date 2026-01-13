@@ -154,7 +154,7 @@ class _AdminZanrDetailsScreenState extends State<AdminZanrDetailsScreen> {
                               fit: BoxFit.cover,
                             )
                           : Image.asset(
-                              'assets/images/placeholder.png',
+                              'assets/images/placeholder_zanr.png',
                               fit: BoxFit.cover,
                             ),
                     ),

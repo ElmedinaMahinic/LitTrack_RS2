@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using litTrack.Services.Database;
 
@@ -11,9 +12,11 @@ using litTrack.Services.Database;
 namespace litTrack.Services.Migrations
 {
     [DbContext(typeof(_210078Context))]
-    partial class _210078ContextModelSnapshot : ModelSnapshot
+    [Migration("20260112092903_DataSeed")]
+    partial class DataSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
