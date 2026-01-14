@@ -59,7 +59,7 @@ namespace litTrack.Services.ServicesImplementation
                     page.Header()
                         .PaddingBottom(15)
                         .AlignCenter()
-                        .Text("📊 Izvještaj o narudžbama")
+                        .Text("Izvještaj o narudžbama")
                         .FontSize(22)
                         .SemiBold()
                         .FontColor(Colors.Teal.Darken2);
@@ -163,7 +163,7 @@ namespace litTrack.Services.ServicesImplementation
                         col.Item().PaddingTop(20);
 
                         col.Item()
-                           .Text("📅 Narudžbe po mjesecima")
+                           .Text("Narudžbe po mjesecima")
                            .FontSize(15)
                            .Bold();
 
@@ -260,7 +260,7 @@ namespace litTrack.Services.ServicesImplementation
 
                     page.Header().AlignCenter()
                         .PaddingBottom(15)
-                        .Text("📊 Admin izvještaj sistema")
+                        .Text("Admin izvještaj sistema")
                         .FontSize(22)
                         .SemiBold()
                         .FontColor(Colors.Teal.Darken2);
@@ -269,7 +269,7 @@ namespace litTrack.Services.ServicesImplementation
                     {
                         col.Spacing(12);
 
-                        col.Item().Text("👤 Statistika korisnika").FontSize(16).Bold();
+                        col.Item().Text("Statistika korisnika").FontSize(16).Bold();
                         col.Item().LineHorizontal(1);
 
                         col.Item().Row(row =>
@@ -361,12 +361,12 @@ namespace litTrack.Services.ServicesImplementation
 
                         col.Item().PaddingTop(20);
 
-                        col.Item().Text("📦 Statistika narudžbi").FontSize(16).Bold();
+                        col.Item().Text("Statistika narudžbi").FontSize(16).Bold();
                         col.Item().Text($"Filter: {stateMachine ?? "Sve narudžbe"}").FontSize(12);
 
                         col.Item().PaddingTop(5);
 
-                        col.Item().Text("📅 Narudžbe po mjesecima").Bold();
+                        col.Item().Text("Narudžbe po mjesecima").Bold();
 
                         col.Item().Table(table =>
                         {
@@ -427,7 +427,7 @@ namespace litTrack.Services.ServicesImplementation
                     page.Margin(40);
 
                     page.Header().AlignCenter()
-                        .Text("📄 Podaci o novom radniku")
+                        .Text("Podaci o novom radniku")
                         .FontSize(22)
                         .SemiBold()
                         .FontColor(Colors.Teal.Darken2);
@@ -454,7 +454,7 @@ namespace litTrack.Services.ServicesImplementation
                         Line("Lozinka:", plainPassword);
 
                         col.Item().PaddingTop(15).Text(
-                            "🔒 Ova lozinka je privremena i mora se promijeniti prilikom prve prijave.")
+                            "Ova lozinka je privremena i mora se promijeniti prilikom prve prijave.")
                             .FontColor(Colors.Red.Darken1);
 
                         col.Item().PaddingTop(20)

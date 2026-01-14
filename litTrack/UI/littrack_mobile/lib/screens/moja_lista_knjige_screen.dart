@@ -117,7 +117,7 @@ class _MojaListaKnjigeScreenState extends State<MojaListaKnjigeScreen> {
                     color: Colors.black,
                     size: 30,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context, true),
                 ),
                 Row(
                   children: [

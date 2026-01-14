@@ -62,7 +62,14 @@ class _MojeNarudzbeScreenState extends State<MojeNarudzbeScreen> {
       if (_datumOd != null)
         'DatumNarudzbeGTE': DateFormat('yyyy-MM-dd').format(_datumOd!),
       if (_datumDo != null)
-        'DatumNarudzbeLTE': DateFormat('yyyy-MM-dd').format(_datumDo!),
+        'DatumNarudzbeLTE': DateTime(
+          _datumDo!.year,
+          _datumDo!.month,
+          _datumDo!.day,
+          23,
+          59,
+          59,
+        ),
       'orderBy': 'DatumNarudzbe',
       'sortDirection': 'desc',
     };

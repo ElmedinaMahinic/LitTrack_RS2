@@ -122,4 +122,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<_210078Context>();
+    dataContext.Database.Migrate();
+}
+
 app.Run();

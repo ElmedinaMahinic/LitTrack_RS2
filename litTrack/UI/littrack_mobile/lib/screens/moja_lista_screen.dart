@@ -205,14 +205,18 @@ class _MojaListaScreenState extends State<MojaListaScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
                         MojaListaKnjigeScreen(jeProcitana: jeProcitana),
                   ),
                 );
+
+                if (result == true) {
+                  _fetchData();
+                }
               },
               child: const Text(
                 "Vidi sve >>",

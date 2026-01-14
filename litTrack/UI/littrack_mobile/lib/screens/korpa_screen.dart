@@ -298,41 +298,32 @@ class _KorpaScreenState extends State<KorpaScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         knjigaDetails['naziv'] ?? '',
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
-                        knjigaDetails['autorNaziv'] ?? '-',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        '${formatNumber(knjigaDetails['cijena'])} KM',
                         style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.black54,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF3C6E71),
                         ),
                       ),
                       const Spacer(),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            '${formatNumber(knjigaDetails['cijena'])} KM',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF3C6E71),
-                            ),
-                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.only(right: 12, bottom: 6),

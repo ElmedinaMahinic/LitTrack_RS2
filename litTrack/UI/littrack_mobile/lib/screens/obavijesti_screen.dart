@@ -53,7 +53,16 @@ class _ObavijestiScreenState extends State<ObavijestiScreen> {
       if (_datumOd != null)
         'DatumObavijestiGTE': DateFormat('yyyy-MM-dd').format(_datumOd!),
       if (_datumDo != null)
-        'DatumObavijestiLTE': DateFormat('yyyy-MM-dd').format(_datumDo!),
+        'DatumObavijestiLTE': DateFormat('yyyy-MM-dd HH:mm:ss').format(
+          DateTime(
+            _datumDo!.year,
+            _datumDo!.month,
+            _datumDo!.day,
+            23,
+            59,
+            59,
+          ),
+        ),
       'orderBy': 'DatumObavijesti',
       'sortDirection': 'desc',
     };

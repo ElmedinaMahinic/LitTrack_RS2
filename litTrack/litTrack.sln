@@ -9,7 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "litTrack.Model", "litTrack.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "litTrack.Services", "litTrack.Services\litTrack.Services.csproj", "{44DC7B21-82BE-4E71-A8CA-99C1BFDC3754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "litTrack.Subscriber", "litTrack.Subscriber\litTrack.Subscriber.csproj", "{9F577DE6-BE18-42AC-AA9E-D2A45066C19E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "litTrack.Subscriber", "litTrack.Subscriber\litTrack.Subscriber.csproj", "{9F577DE6-BE18-42AC-AA9E-D2A45066C19E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D25E7C40-52F5-4490-9652-F29F1FA9D3D5}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

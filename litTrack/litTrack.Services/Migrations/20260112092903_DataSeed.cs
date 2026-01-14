@@ -387,7 +387,7 @@ namespace litTrack.Services.Migrations
                     { 6, 0, 1, new DateTime(2025, 1, 6, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 1, "Odlična knjiga, uživao sam.", 4, null },
                     { 7, 0, 1, new DateTime(2025, 1, 7, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 2, "Vrlo zanimljivo štivo.", 4, null },
                     { 8, 0, 1, new DateTime(2025, 1, 8, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 13, "Sjajan uvod u serijal.", 4, null },
-                    { 9, 0, 1, new DateTime(2025, 1, 9, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 14, "Drugi dio je jednako dobar.", 4, null },
+                    { 9, 0, 0, new DateTime(2025, 1, 9, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 14, "Drugi dio je jednako dobar.", 4, null },
                     { 10, 0, 0, new DateTime(2025, 1, 10, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 15, "Nije loše, iznenadila me je radnja knjige.", 4, null },
                     { 11, 1, 0, new DateTime(2025, 1, 11, 12, 0, 0, 0, DateTimeKind.Unspecified), false, 19, "Svidjela mi se, vrijedi pročitati bar jednom.", 4, null }
                 });

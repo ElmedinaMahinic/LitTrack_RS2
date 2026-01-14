@@ -379,40 +379,34 @@ class _PreporukeFavoritiScreenState extends State<PreporukeFavoritiScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Opacity(
-            opacity: 0.3,
-            child: ElevatedButton(
-              onPressed: _currentPage > 1
-                  ? () => _fetchKnjige(page: _currentPage - 1)
-                  : null,
-              style: ElevatedButton.styleFrom(
-                elevation: 6,
-                shadowColor: Colors.black.withAlpha(38),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          ElevatedButton(
+            onPressed: _currentPage > 1
+                ? () => _fetchKnjige(page: _currentPage - 1)
+                : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withAlpha(38),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text("Prethodna"),
             ),
+            child: const Text("Prethodna"),
           ),
           const SizedBox(width: 20),
           Text("Stranica $_currentPage / $totalPages"),
           const SizedBox(width: 20),
-          Opacity(
-            opacity: 0.3,
-            child: ElevatedButton(
-              onPressed: _currentPage < totalPages
-                  ? () => _fetchKnjige(page: _currentPage + 1)
-                  : null,
-              style: ElevatedButton.styleFrom(
-                elevation: 6,
-                shadowColor: Colors.black.withAlpha(38),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          ElevatedButton(
+            onPressed: _currentPage < totalPages
+                ? () => _fetchKnjige(page: _currentPage + 1)
+                : null,
+            style: ElevatedButton.styleFrom(
+              elevation: 6,
+              shadowColor: Colors.black.withAlpha(38),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text("Sljedeća"),
             ),
+            child: const Text("Sljedeća"),
           ),
         ],
       ),
